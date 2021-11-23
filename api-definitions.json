@@ -1,0 +1,62 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "My API",
+    "version": "1.0",
+    "x-logo": {
+      "url": ""
+    }
+  },
+  "paths": {
+    "/post": {
+      "summary": "Get all posts",
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": []
+      },
+      "x-last-modified": 1637683798097
+    },
+    "/user": {
+      "summary": "Get all Users",
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": []
+      },
+      "x-last-modified": 1637683987150
+    },
+    "/user/{ID}": {
+      "summary": "Get specific User",
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": []
+      },
+      "x-last-modified": 1637684005588
+    }
+  },
+  "components": {
+    "securitySchemes": {},
+    "schemas": {},
+    "headers": {},
+    "responses": {},
+    "parameters": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "https://api.example.io"
+    }
+  ],
+  "security": []
+}
