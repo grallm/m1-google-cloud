@@ -20,6 +20,16 @@ paths:
       responses:
         '200':
           description: OK
+    post:
+      summary: Post a post
+      tags: ["Post"]
+      security:
+        - Auth: []
+      requestBody:
+        $ref: '#/components/requestBodies/Post'
+      responses:
+        '200':
+          description: OK
 
   # Specific post
   /post/{postId}:
@@ -39,6 +49,7 @@ paths:
         '200':
           description: "
             - Post data : creator (name, profile image), image, description, number likes, date
+
             - Auth : if liked"
 
   # Like/Unlike a post
@@ -84,6 +95,7 @@ paths:
         '200':
           description: "
             - User data : name, followers, number posts
+
             - Auth : if follow"
 
   # Follow/Unfollow an User
@@ -121,6 +133,7 @@ paths:
         '200':
           description: "
             - All posts, same data than `/post/{postId}`
+
             - Auth : if liked"
 
   # Get following
@@ -149,7 +162,18 @@ components:
     Auth:
       type: http
       scheme: basic
-  schemas: {}
-  headers: {}
-  responses: {}
-  parameters: {}
+  schemas:
+    Post:
+      properties:
+        image:
+          type: string
+        description:
+          type: string
+  requestBodies:
+    Post:
+      description: A JSON object containing pet information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Post'
