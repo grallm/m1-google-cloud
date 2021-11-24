@@ -5,7 +5,7 @@ info:
   x-logo:
     url: ''
   description: |-
-    Our REST API routes definitions our "Web, Cloud and Datastores" project
+    Our REST API routes definition our "Web, Cloud and Datastores" project
     Malo GRALL @grallm
     Guillaume POIGNANT
     Mathis ROCHER
@@ -23,7 +23,7 @@ paths:
 
   # Specific post
   /post/{postId}:
-    summary: Get specific User
+    summary: Get specific Post
     get:
       tags: ["post"]
       parameters:
@@ -32,9 +32,14 @@ paths:
         required: true
         schema:
           type: string
+      security:
+        - {}
+        - BasicAuth: []
       responses:
         '200':
-          description: OK
+          description: |-
+            - Post data : creator (name, profile image), image, description, number likes, date
+            - Auth : if liked
 
 # Users
   /user:
@@ -55,9 +60,34 @@ paths:
         required: true
         schema:
           type: string
+      security:
+        - {}
+        - BasicAuth: []
       responses:
         '200':
-          description: OK
+          description: |-
+            - User data : name, followers, number posts
+            - Auth : if follow
+
+  # User's posts
+  /user/{userId}/posts:
+    summary: Get posts of a User
+    get:
+      tags: ["user"]
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        schema:
+          type: string
+      security:
+        - {}
+        - BasicAuth: []
+      responses:
+        '200':
+          description: |-
+            - All posts, same data than `/post/{postId}`
+            - Auth : if liked
 
   # Get following
   /user/{userId}/following:
@@ -82,7 +112,7 @@ tags:
 
 components:
   securitySchemes:
-    BasicAuth:
+    Auth:
       type: http
       scheme: basic
   schemas: {}
