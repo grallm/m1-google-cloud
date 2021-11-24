@@ -4,28 +4,28 @@ info:
   version: '1.0'
   x-logo:
     url: ''
-  description: |-
-    Our REST API routes definition our "Web, Cloud and Datastores" project
+  description: "
+    Our REST API routes definition our 'Web, Cloud and Datastores' project
     Malo GRALL @grallm
     Guillaume POIGNANT
-    Mathis ROCHER
+    Mathis ROCHER"
 servers:
   - url: https://api.example.io
 paths:
 # POSTS
   /post:
-    summary: Get all posts
     get:
-      tags: ["post"]
+      summary: Get all posts
+      tags: ["Post"]
       responses:
         '200':
           description: OK
 
   # Specific post
   /post/{postId}:
-    summary: Get specific Post
     get:
-      tags: ["post"]
+      summary: Get specific Post
+      tags: ["Post"]
       parameters:
       - name: "postId"
         in: "path"
@@ -34,16 +34,18 @@ paths:
           type: string
       security:
         - {}
-        - BasicAuth: []
+        - Auth: []
       responses:
         '200':
-          description: |-
+          description: "
             - Post data : creator (name, profile image), image, description, number likes, date
-            - Auth : if liked
-    # Like/Unlike an User
+            - Auth : if liked"
+
+  # Like/Unlike a post
+  /post/{postId}/like:
     post:
-      description: Follow/Unfollow an User
-      tags: ["post"]
+      summary: Like/Unlike a post
+      tags: ["Post"]
       parameters:
       - name: "postId"
         in: "path"
@@ -51,24 +53,24 @@ paths:
         schema:
           type: string
       security:
-        - BasicAuth: []
+        - Auth: []
       responses:
         '200':
           description: OK
 
 # USERS
   /user:
-    summary: Get all Users
     get:
-      tags: ["user"]
+      summary: Get all Users
+      tags: ["User"]
       responses:
         '200':
           description: OK
 
   /user/{userId}:
     get:
-      description: Get specific User
-      tags: ["user"]
+      summary: Get specific User
+      tags: ["User"]
       parameters:
       - name: "userId"
         in: "path"
@@ -77,16 +79,18 @@ paths:
           type: string
       security:
         - {}
-        - BasicAuth: []
+        - Auth: []
       responses:
         '200':
-          description: |-
+          description: "
             - User data : name, followers, number posts
-            - Auth : if follow
-    # Follow/Unfollow an User
+            - Auth : if follow"
+
+  # Follow/Unfollow an User
+  /user/{userId}/follow:
     post:
-      description: Follow/Unfollow an User
-      tags: ["user"]
+      summary: Follow/Unfollow an User
+      tags: ["User"]
       parameters:
       - name: "userId"
         in: "path"
@@ -94,16 +98,16 @@ paths:
         schema:
           type: string
       security:
-        - BasicAuth: []
+        - Auth: []
       responses:
         '200':
           description: OK
 
   # User's posts
   /user/{userId}/posts:
-    summary: Get posts of a User
     get:
-      tags: ["user"]
+      summary: Get posts of a User
+      tags: ["User"]
       parameters:
       - name: "userId"
         in: "path"
@@ -112,18 +116,18 @@ paths:
           type: string
       security:
         - {}
-        - BasicAuth: []
+        - Auth: []
       responses:
         '200':
-          description: |-
+          description: "
             - All posts, same data than `/post/{postId}`
-            - Auth : if liked
+            - Auth : if liked"
 
   # Get following
   /user/{userId}/following:
-    summary: Get all followed account from User
     get:
-      tags: ["user"]
+      summary: Get all followed account from User
+      tags: ["User"]
       parameters:
       - name: "userId"
         in: "path"
@@ -135,9 +139,9 @@ paths:
           description: OK
 
 tags:
-  - name: post
+  - name: Post
     description: Everything linked to "TinyGram" posts
-  - name: user
+  - name: User
     description: Everything linked to "TinyGram" users
 
 components:
