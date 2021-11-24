@@ -12,7 +12,7 @@ info:
 servers:
   - url: https://api.example.io
 paths:
-# Posts
+# POSTS
   /post:
     summary: Get all posts
     get:
@@ -40,8 +40,23 @@ paths:
           description: |-
             - Post data : creator (name, profile image), image, description, number likes, date
             - Auth : if liked
+    # Like/Unlike an User
+    post:
+      description: Follow/Unfollow an User
+      tags: ["post"]
+      parameters:
+      - name: "postId"
+        in: "path"
+        required: true
+        schema:
+          type: string
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: OK
 
-# Users
+# USERS
   /user:
     summary: Get all Users
     get:
@@ -51,8 +66,8 @@ paths:
           description: OK
 
   /user/{userId}:
-    summary: Get specific User
     get:
+      description: Get specific User
       tags: ["user"]
       parameters:
       - name: "userId"
@@ -68,6 +83,21 @@ paths:
           description: |-
             - User data : name, followers, number posts
             - Auth : if follow
+    # Follow/Unfollow an User
+    post:
+      description: Follow/Unfollow an User
+      tags: ["user"]
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        schema:
+          type: string
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: OK
 
   # User's posts
   /user/{userId}/posts:
