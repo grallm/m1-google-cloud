@@ -43,7 +43,7 @@ paths:
         schema:
           type: string
       security:
-        - {}
+        - {} # Optional Auth
         - Auth: []
       responses:
         '200':
@@ -150,6 +150,20 @@ paths:
       responses:
         '200':
           description: OK
+
+# TIMELINE
+  /timeline:
+    get:
+      summary: "Get timeline of posts for home page"
+      security:
+        - {}
+        - Auth: []
+      responses:
+        '200':
+          description: "
+            - 10 last posts
+
+            - Auth : 10 last posts from followers"
 
 tags:
   - name: Post
