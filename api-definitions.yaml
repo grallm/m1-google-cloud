@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: REST API - App Engine Java Servlet
+  version: '1.0'
+  x-logo:
+    url: ''
+  description: |-
+    Our REST API routes definitions our "Web, Cloud and Datastores" project
+    Malo GRALL @grallm
+    Guillaume POIGNANT
+    Mathis ROCHER
+servers:
+  - url: https://api.example.io
+paths:
+# Posts
+  /post:
+    summary: Get all posts
+    get:
+      tags: ["post"]
+      responses:
+        '200':
+          description: OK
+
+  # Specific post
+  /post/{postId}:
+    summary: Get specific User
+    get:
+      tags: ["post"]
+      parameters:
+      - name: "postId"
+        in: "path"
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+
+# Users
+  /user:
+    summary: Get all Users
+    get:
+      tags: ["user"]
+      responses:
+        '200':
+          description: OK
+
+  /user/{userId}:
+    summary: Get specific User
+    get:
+      tags: ["user"]
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+
+  # Get following
+  /user/{userId}/following:
+    summary: Get all followed account from User
+    get:
+      tags: ["user"]
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+
+tags:
+  - name: post
+    description: Everything linked to "TinyGram" posts
+  - name: user
+    description: Everything linked to "TinyGram" users
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas: {}
+  headers: {}
+  responses: {}
+  parameters: {}
