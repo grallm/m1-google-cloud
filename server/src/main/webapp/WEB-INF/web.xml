@@ -23,10 +23,6 @@
 	</servlet-mapping>
 
 
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-	</welcome-file-list>
-
 	<!-- [START api_management] -->
     <!-- Add a filter that fetches the service config from service management. -->
 <!-- 	<filter> -->
