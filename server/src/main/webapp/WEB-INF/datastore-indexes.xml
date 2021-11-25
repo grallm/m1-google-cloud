@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="false">
+  <datastore-index kind="Friend" ancestor="false" source="manual">
+    <property name="friends" direction="asc"/>
+    <property name="age" direction="asc"/>
+  </datastore-index>
+</datastore-indexes>
