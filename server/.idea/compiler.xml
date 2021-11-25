@@ -87,12 +87,14 @@
           <entry name="$MAVEN_REPOSITORY$/pl/pragmatists/JUnitParams/1.0.5/JUnitParams-1.0.5.jar" />
         </processorPath>
         <module name="WebAndCloud" />
+        <module name="server" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="WebAndCloud" options="-XDcompilePolicy=simple -Xplugin:ErrorProne" />
+      <module name="server" options="-XDcompilePolicy=simple -Xplugin:ErrorProne" />
     </option>
   </component>
 </project>
