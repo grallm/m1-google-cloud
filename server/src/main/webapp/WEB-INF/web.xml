@@ -13,28 +13,28 @@
 		<servlet-class>com.google.api.server.spi.EndpointsServlet</servlet-class>
 		<init-param>
 			<param-name>services</param-name>
-			<param-value>foo.ScoreEndpoint</param-value>
+			<param-value>endpoint.PostEndpoint</param-value>
 		</init-param>
 	</servlet>
 	<!-- Route API method requests to the backend. -->
 	<servlet-mapping>
 		<servlet-name>EndpointsServlet</servlet-name>
-		<url-pattern>/_ah/api/*</url-pattern>
+		<url-pattern>/_ah/endpoint/*</url-pattern>
 	</servlet-mapping>
 
 
 	<!-- [START api_management] -->
     <!-- Add a filter that fetches the service config from service management. -->
 <!-- 	<filter> -->
-<!-- 		<filter-name>endpoints-api-configuration</filter-name> -->
-<!-- 		<filter-class>com.google.api.control.ServiceManagementConfigFilter</filter-class> -->
+<!-- 		<filter-name>endpoints-endpoint-configuration</filter-name> -->
+<!-- 		<filter-class>com.google.endpoint.control.ServiceManagementConfigFilter</filter-class> -->
 <!-- 	</filter> -->
 
 
 	<!-- Add a filter that performs Endpoints logging and monitoring. -->
 <!-- 	<filter> -->
-<!-- 		<filter-name>endpoints-api-controller</filter-name> -->
-<!-- 		<filter-class>com.google.api.control.extensions.appengine.GoogleAppEngineControlFilter</filter-class> -->
+<!-- 		<filter-name>endpoints-endpoint-controller</filter-name> -->
+<!-- 		<filter-class>com.google.endpoint.control.extensions.appengine.GoogleAppEngineControlFilter</filter-class> -->
 <!-- 		<init-param> -->
 <!-- 			<param-name>endpoints.projectId</param-name> -->
 <!-- 			<param-value>${endpoints.project.id}</param-value> -->
@@ -48,19 +48,19 @@
     <!-- It seems that order matters the 2 filters below -->
 
 <!--     <filter-mapping> -->
-<!--         <filter-name>endpoints-api-configuration</filter-name> -->
+<!--         <filter-name>endpoints-endpoint-configuration</filter-name> -->
 <!--         <servlet-name>EndpointsServlet</servlet-name> -->
 <!--     </filter-mapping> -->
 
 <!--     <filter-mapping> -->
-<!--         <filter-name>endpoints-api-controller</filter-name> -->
+<!--         <filter-name>endpoints-endpoint-controller</filter-name> -->
 <!--         <servlet-name>EndpointsServlet</servlet-name> -->
 <!--     </filter-mapping> -->
 
 
 
 <!-- 	<filter-mapping> -->
-<!-- 		<filter-name>endpoints-api-configuration</filter-name> -->
+<!-- 		<filter-name>endpoints-endpoint-configuration</filter-name> -->
 <!-- 		<servlet-name>EndpointsServlet</servlet-name> -->
 <!-- 		<dispatcher>REQUEST</dispatcher> -->
 <!-- 		<dispatcher>INCLUDE</dispatcher> -->
