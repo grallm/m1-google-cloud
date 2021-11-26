@@ -1,5 +1,13 @@
 indexes:
-- kind: Friend 
+# Own a Post
+- kind: Post
   properties: 
-    - name: friends
-    - name: age
+    - name: owner
+    - name: date
+      direction: desc
+
+# Followings
+- kind: Follow
+  properties:
+    - name: user
+    - name: follow

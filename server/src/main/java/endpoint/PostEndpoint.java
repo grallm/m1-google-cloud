@@ -78,7 +78,7 @@ public class PostEndpoint {
 
     /**
      * Get a Post from its ID
-     * @param id If of the post
+     * @param id ID of the post
      * @return Post
      */
     @ApiMethod(path = "post/{id}")
