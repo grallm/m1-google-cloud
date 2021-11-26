@@ -35,8 +35,7 @@ public class UserEndpoint {
             httpMethod = ApiMethod.HttpMethod.GET
     )
     public List<Entity> getAllUsers() {
-        Query q = new Query("User")
-                .addSort("lastConnected", Query.SortDirection.DESCENDING);
+        Query q = new Query("User");
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(q);
@@ -98,7 +97,9 @@ public class UserEndpoint {
      * @param follow email of the User which first one may follow
      * @return
      */
-    @ApiMethod(path = "user/{follow}/follow")
+    @ApiMethod(path = "user/{follow}/follow",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
     public Entity getFollows(@Named("user") String user, @Named("follow") String follow)
             throws UnauthorizedException
     {
