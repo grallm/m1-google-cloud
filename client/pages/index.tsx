@@ -14,8 +14,11 @@ const Home: NextPage = () => {
 
       <main className='pt-3 mx-auto' style={{ maxWidth: '720px' }}>
         <Container>
-          <Post />
-          <Post />
+          <Post
+            owner='Malo'
+            image='https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg'
+            description='Super Poste'
+          />
         </Container>
       </main>
     </div>

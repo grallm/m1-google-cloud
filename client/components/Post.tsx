@@ -3,27 +3,26 @@ import { Button, Card } from "react-bootstrap"
 import Image from 'next/image'
 
 interface Props {
-  
+  owner: string
+  image: string
+  description: string
 }
-const Post: React.FC<{}> = () => {
+const Post: React.FC<Props> = ({ image, owner, description }) => {
   return (
     <Card className="mb-4">
+      <Card.Title className="p-3">{owner}</Card.Title>
+
+      <Image
+        src={image}
+        alt="Image"
+        layout="responsive"
+        width={100}
+        height={100}
+        objectFit="cover"
+      />
+
       <Card.Body>
-        <div>
-          <Image
-            src='https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg'
-            alt="Image"
-            layout="responsive"
-            width={100}
-            height={100}
-            objectFit="cover"
-          />
-        </div>
-        <Card.Title>Card Title</Card.Title>
-        <Card.Text>
-          Some quick example text to build on the card title and make up the bulk of
-          the card&apos;s content.
-        </Card.Text>
+        <Card.Text>{description}</Card.Text>
         <Button variant="primary">Go somewhere</Button>
       </Card.Body>
     </Card>
