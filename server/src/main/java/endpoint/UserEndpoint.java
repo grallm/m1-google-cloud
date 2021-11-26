@@ -166,4 +166,29 @@ public class UserEndpoint
 		
 		return followingEntity;
 	}
+	
+	/**
+	 * Return user list of posts
+	 * http://localhost:8080/_ah/api/instaCrash/v1/user/matproz.gaming@gmail.com/posts
+	 *
+	 * @param email
+	 * @return
+	 */
+	@ApiMethod(path = "user/{email}/posts")
+	public List<Entity> getUserPosts(@Named("email") String email) throws EntityNotFoundException
+	{
+		// Get user key
+//		Key postKey = KeyFactory.createKey("User", email);
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+//		Entity user = datastore.get(postKey);
+		
+		
+		// Get all posts
+		Query q = new Query("Post").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.EQUAL, email));
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1));
+		
+		return results;
+	}
 }
