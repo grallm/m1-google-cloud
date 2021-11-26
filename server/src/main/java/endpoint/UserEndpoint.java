@@ -75,7 +75,7 @@ public class UserEndpoint
 	 * @return User
 	 */
 	@ApiMethod(path = "user/{email}")
-	public Entity getUser(@Named("email") String email) throws EntityNotFoundException
+	public Entity getUserByEmail(@Named("email") String email) throws EntityNotFoundException
 	{
 		Key postKey = KeyFactory.createKey("User", email);
 		
@@ -84,6 +84,26 @@ public class UserEndpoint
 		Entity user = datastore.get(postKey);
 		
 		return user;
+	}
+	
+	/**
+	 * Get all the users with specified name
+	 * http://localhost:8080/_ah/api/instaCrash/v1/user/name/ArKeid0s
+	 *
+	 * @param name name of the User
+	 * @return User
+	 */
+	@ApiMethod(path = "user/name/{name}")
+	public List<Entity> getUsersByName(@Named("name") String name) throws EntityNotFoundException
+	{
+		Query q = new Query("User").setFilter(new Query.FilterPredicate("name", Query.FilterOperator.EQUAL, name));
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
+		
+		return results;
 	}
 	
 	/**
