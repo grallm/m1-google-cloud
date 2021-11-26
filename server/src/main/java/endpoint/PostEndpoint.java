@@ -7,9 +7,9 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
+import jdk.jfr.Name;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Api(name = "instaCrash", version = "v1",
 		// audiences = "616939906371-cnpc0ocrc71ae3hbann3glgiktfgregk.apps.googleusercontent.com",
@@ -84,5 +84,34 @@ public class PostEndpoint
 		Entity post = datastore.get(postKey);
 		
 		return post;
+	}
+	
+	/**
+	 * Get all the users that like the post
+	 * http://localhost:8080/_ah/api/instaCrash/v1/post/{id}/likes
+	 *
+	 * @param id
+	 * @return
+	 */
+	@ApiMethod(path = "post/{id}/likes")
+	public List<Entity> getListUserLike(@Named("id") String id)
+	{
+		Query q = new Query("Like").setFilter(new Query.FilterPredicate("postId", Query.FilterOperator.EQUAL, id));
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
+		List<Entity> users = new ArrayList<>();
+		
+		for (Entity likes : results)
+		{
+			Query q2 = new Query("User").setFilter(new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, likes.getProperty("userEmail")));
+			PreparedQuery pq2 = datastore.prepare(q2);
+			
+			users.add(pq2.asList(FetchOptions.Builder.withLimit(1)).get(0));
+		}
+		
+		return users;
 	}
 }
