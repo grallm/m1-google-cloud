@@ -5,7 +5,7 @@ import { Container, Nav, Navbar } from 'react-bootstrap'
 
 const Header: React.FC<{}> = () => {
   return (
-    <Navbar className="border-bottom">
+    <Navbar className="border-bottom fixed-top bg-white">
       <Container>
         <Navbar.Brand>
           InstaCrash
@@ -29,7 +29,7 @@ const Header: React.FC<{}> = () => {
           </div>
         </div>
       </Container>
-    </Navbar>    
+    </Navbar>
   )
 }
 
