@@ -114,4 +114,45 @@ public class PostEndpoint
 		
 		return users;
 	}
+
+
+	/**
+	 * Get a Post from its ID
+	 *
+	 * @param id ID of the post
+	 * @return Post
+	 */
+	@ApiMethod(path = "post/timeLine/{id}")
+	public List<Entity> getTimeLine(@Named("id") String id) throws EntityNotFoundException {
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		//get all followers of user
+		Query qFollowers = new Query("Follow")
+				.setFilter(new Query.FilterPredicate("following", Query.FilterOperator.EQUAL, id));
+
+		PreparedQuery pq = datastore.prepare(qFollowers);
+		List<Object> followList = new ArrayList<>();
+
+		pq.asIterator().forEachRemaining(entity -> {
+			followList.add(entity.getProperty("user"));
+			System.out.println("Value :" + entity.getProperty("user"));
+		});
+
+		//fonctionne jusqu'ici
+
+		if(followList.isEmpty()) {
+			System.out.println("Empty list");
+		}
+
+		Query qFollowerPosts = new Query("Post")
+				.setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.IN, followList));
+
+		pq = datastore.prepare(qFollowerPosts);
+
+		return pq.asList(FetchOptions.Builder.withLimit(20));
+	}
+
+
+
 }
