@@ -11,6 +11,7 @@ import entities.UserTiny;
 
 import java.util.Date;
 import java.util.List;
+
 @Api(
         name = "instaCrash",
         version = "v1",
@@ -35,7 +36,7 @@ public class UserEndpoint {
     )
     public List<Entity> getAllUsers() {
         Query q = new Query("User")
-                .addSort("date", Query.SortDirection.DESCENDING);
+                .addSort("lastConnected", Query.SortDirection.DESCENDING);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(q);
