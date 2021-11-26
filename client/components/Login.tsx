@@ -1,10 +1,24 @@
 import { useSession, signIn, signOut } from "next-auth/client"
-import React from "react"
+import React, { useEffect } from "react"
+
+const apiRoute = process.env.NEXT_PUBLIC_API_URL || ''
 
 const Login: React.FC<{}> = () => {
-  const [session, loading] = useSession()
+  const [session] = useSession()
 
-  console.log(session)
+  useEffect(() => {
+    // Add user to Datastore
+    if (session) {
+      fetch(`${apiRoute}/user`, {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Malo',
+          email: 'malo.grall@gmail.com'
+        })
+      })
+      .catch(e => console.error(e))
+    }
+  }, [session])
 
   return (
     <div>

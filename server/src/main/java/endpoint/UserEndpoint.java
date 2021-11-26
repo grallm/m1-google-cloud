@@ -3,14 +3,12 @@ package endpoint;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.appengine.api.datastore.*;
-import entities.Post;
+import entities.UserTiny;
 
 import java.util.Date;
 import java.util.List;
-
 @Api(
         name = "instaCrash",
         version = "v1",
@@ -23,18 +21,18 @@ import java.util.List;
                 packagePath = ""
         )
 )
-public class PostEndpoint {
+public class UserEndpoint {
     /**
-     * Get all 20 last Posts
+     * Get all Users
      * @return All Posts
      */
     @ApiMethod(
-            name = "getAllPosts",
-            path = "post",
+            name = "getAllUsers",
+            path = "user",
             httpMethod = ApiMethod.HttpMethod.GET
     )
-    public List<Entity> getAllPosts() {
-        Query q = new Query("Post")
+    public List<Entity> getAllUsers() {
+        Query q = new Query("User")
                 .addSort("date", Query.SortDirection.DESCENDING);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -46,27 +44,26 @@ public class PostEndpoint {
     }
 
     /**
-     * Add a Post
-     * @return Created Post
+     * Add a user
+     * @return Created User
      */
     @ApiMethod(
-            name = "addPost",
-            path = "post",
+            name = "addUser",
+            path = "user",
             httpMethod = ApiMethod.HttpMethod.POST
     )
-    public Entity addPost(Post post) throws BadRequestException {
+    public Entity addUser(UserTiny userTiny) throws BadRequestException {
         // Validate given post
-        if (post.owner.trim().length() < 4) {
-            throw new BadRequestException("Invalid Post");
+        if (userTiny.email.trim().length() < 4) {
+            throw new BadRequestException("Invalid User");
         }
 
         // Add post to Datastore
         Date now = new Date();
-        Entity e = new Entity("Post", post.owner + ":" + now.getTime());
-        e.setProperty("owner", post.owner);
-        e.setProperty("url", post.image);
-        e.setProperty("body", post.description);
-        e.setProperty("date", now);
+        Entity e = new Entity("User", userTiny.email);
+        e.setProperty("email", userTiny.email);
+        e.setProperty("name", userTiny.name);
+        e.setProperty("lastConnected", now);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Transaction txn = datastore.beginTransaction();
@@ -74,21 +71,5 @@ public class PostEndpoint {
         txn.commit();
 
         return e;
-    }
-
-    /**
-     * Get a Post from its ID
-     * @param id If of the post
-     * @return Post
-     */
-    @ApiMethod(path = "post/{id}")
-    public Entity getPost(@Named("id") String id) throws EntityNotFoundException {
-        Key postKey = KeyFactory.createKey("Post", id);
-
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-        Entity post = datastore.get(postKey);
-
-        return post;
     }
 }
