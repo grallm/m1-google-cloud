@@ -2,7 +2,7 @@ import type { AppProps } from 'next/app'
 import { Provider } from "next-auth/client"
 import Header from '../components/Header'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.css'
 
 // The following import prevents a Font Awesome icon server-side rendering bug,
 // where the icons flash from a very large icon down to a properly sized one:
