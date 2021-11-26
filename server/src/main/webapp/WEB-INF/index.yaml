@@ -1,13 +1,13 @@
 indexes:
-# Own a Post
-- kind: Post
-  properties: 
-    - name: owner
-    - name: date
-      direction: desc
+  # Own a Post
+  - kind: Post
+    properties:
+      - name: owner
+      - name: date
+        direction: desc
 
-# Followings
-- kind: Follow
-  properties:
-    - name: user
-    - name: follow
+  # Followings
+  - kind: Follow
+    properties:
+      - name: user
+      - name: following
