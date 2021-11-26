@@ -4,11 +4,17 @@ import React from "react"
 const Login: React.FC<{}> = () => {
   const [session, loading] = useSession()
 
+  console.log(session)
+
   return (
     <div>
       {
         session ? (
-          <div>{session}</div>
+          <div>
+            {session.user?.email}
+            {session.user?.name}
+            <button onClick={() => signOut()}>Sign out</button>
+          </div>
         )
         : (
           <div>
