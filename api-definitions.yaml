@@ -10,7 +10,7 @@ info:
     Guillaume POIGNANT
     Mathis ROCHER"
 servers:
-  - url: https://api.example.io
+  - url: https://tinycrash.ew.r.appspot.com/_ah/api/instaCrash
 paths:
 # POSTS
   /post:

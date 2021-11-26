@@ -3,16 +3,13 @@ package endpoint;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Api(
         name = "instaCrash",
@@ -21,14 +18,14 @@ import java.util.Set;
         // clientIds = "616939906371-cnpc0ocrc71ae3hbann3glgiktfgregk.apps.googleusercontent.com",
         namespace =
         @ApiNamespace(
-                ownerDomain = "helloworld.example.com",
-                ownerName = "helloworld.example.com",
+                ownerDomain = "tinycrash.ew.r.appspot.com",
+                ownerName = "tinycrash.ew.r.appspot.com",
                 packagePath = ""
         )
 )
 public class PostEndpoint {
     /**
-     * Get all Posts
+     * Get all 20 last Posts
      * @return All Posts
      */
     @ApiMethod(
@@ -37,12 +34,16 @@ public class PostEndpoint {
             httpMethod = ApiMethod.HttpMethod.GET
     )
     public List<Entity> getAllPosts() {
-        Query q = new Query("Score").addSort("score", Query.SortDirection.DESCENDING);
+        Query q = new Query("Post")
+                .addSort("date", Query.SortDirection.DESCENDING);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(q);
-        List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
-        return result;
+
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
+        System.out.println(results.get(0).getKey().toString());
+
+        return results;
     }
 
     /**
@@ -56,16 +57,17 @@ public class PostEndpoint {
     )
     public Entity addPost(Post post) throws BadRequestException {
         // Validate given post
-        // if (post.owner.trim().length() < 4) {
-        //     throw new BadRequestException("Invalid Post");
-        // }
+        if (post.owner.trim().length() < 4) {
+            throw new BadRequestException("Invalid Post");
+        }
 
         // Add post to Datastore
-        Entity e = new Entity("Post");
+        Date now = new Date();
+        Entity e = new Entity("Post", post.owner + ":" + now.getTime());
         e.setProperty("owner", post.owner);
         e.setProperty("url", post.image);
         e.setProperty("body", post.description);
-        e.setProperty("date", new Date());
+        e.setProperty("date", now);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Transaction txn = datastore.beginTransaction();
@@ -73,5 +75,23 @@ public class PostEndpoint {
         txn.commit();
 
         return e;
+    }
+
+    /**
+     * Get a Post from its ID
+     * @param id If of the post
+     * @return Post
+     */
+    @ApiMethod(path = "post/{id}")
+    public Entity getPost(@Named("id") String id) throws EntityNotFoundException {
+        System.out.println(id);
+
+        Key postKey = KeyFactory.createKey("Post", id);
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+        Entity post = datastore.get(postKey);
+
+        return post;
     }
 }
