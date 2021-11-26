@@ -1,7 +1,6 @@
 import { useSession, signIn, signOut } from "next-auth/client"
 import React, { useEffect } from "react"
-
-const apiRoute = process.env.NEXT_PUBLIC_API_URL || ''
+import { addUser } from "../utils/user.api"
 
 const Login: React.FC<{}> = () => {
   const [session] = useSession()
@@ -9,14 +8,7 @@ const Login: React.FC<{}> = () => {
   useEffect(() => {
     // Add user to Datastore
     if (session) {
-      fetch(`${apiRoute}/user`, {
-        method: 'POST',
-        body: JSON.stringify({
-          name: 'Malo',
-          email: 'malo.grall@gmail.com'
-        })
-      })
-      .catch(e => console.error(e))
+      addUser(session)
     }
   }, [session])
 
