@@ -83,7 +83,23 @@ public class PostEndpoint {
      * @return Post
      */
     @ApiMethod(path = "post/{id}")
-    public Entity getPost(@Named("id") String id) throws EntityNotFoundException {
+    public Entity getPost(    /**
+                                   * Get a Post from its ID
+                                   * @param id If of the post
+     * @return Post
+                                   */
+                              @ApiMethod(path = "post/{id}")
+                                  public Entity getPost(@Named("id") String id) throws EntityNotFoundException {
+        System.out.println(id);
+
+        Key postKey = KeyFactory.createKey("Post", id);
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+        Entity post = datastore.get(postKey);
+
+        return post;
+    }@Named("id") String id) throws EntityNotFoundException {
         System.out.println(id);
 
         Key postKey = KeyFactory.createKey("Post", id);
