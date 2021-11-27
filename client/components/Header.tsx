@@ -1,4 +1,4 @@
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Container, Nav, Navbar } from 'react-bootstrap'
@@ -22,6 +22,13 @@ const Header: React.FC<{}> = () => {
         </button>
         <div className="navbar-collapse collapse">
           <Nav className="me-auto">
+            {/* Feed */}
+            <Link href='/' passHref>
+              <Nav.Link active={router.pathname === '/'}>
+                <FontAwesomeIcon icon={faHome} /> Feed
+              </Nav.Link>
+            </Link>
+
             {/* Post */}
             <Link href='/post' passHref>
               <Nav.Link active={router.pathname === '/post'}>
