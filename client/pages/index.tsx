@@ -20,34 +20,30 @@ const Home: NextPage = () => {
   }, [])
 
   return (
-    <div className='bg-light' style={{ minHeight: '100vh', paddingTop: '57px' }}>
+    <Container>
       <Head>
-        <title>InstaCrash</title>
+        <title>InstaCrash - Feed</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className='pt-3 mx-auto' style={{ maxWidth: '720px' }}>
-        <Container>
-          {
-            !posts
-              ? (
-                <div className='w-100 d-flex justify-content-center mt-5'>
-                  <Spinner animation="border" variant='warning' style={{ width: '50px', height: '50px' }} />
-                </div>
-              )
-              : posts.map((post, i) => (
-                <div key={i}>
-                  <Post
-                    owner={post.owner}
-                    image={post.image}
-                    description={post.body}
-                  />
-                </div>
-              ))
-          }
-        </Container>
-      </main>
-    </div>
+      {
+        !posts
+          ? (
+            <div className='w-100 d-flex justify-content-center mt-5'>
+              <Spinner animation="border" variant='warning' style={{ width: '50px', height: '50px' }} />
+            </div>
+          )
+          : posts.map((post, i) => (
+            <div key={i}>
+              <Post
+                owner={post.owner}
+                image={post.image}
+                description={post.body}
+              />
+            </div>
+          ))
+      }
+    </Container>
   )
 }
 
