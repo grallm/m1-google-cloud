@@ -1,5 +1,5 @@
-import React from "react"
-import { Button, Card } from "react-bootstrap"
+import React from 'react'
+import { Button, Card } from 'react-bootstrap'
 import Image from 'next/image'
 
 interface Props {

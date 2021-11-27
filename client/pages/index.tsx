@@ -36,13 +36,13 @@ const Home: NextPage = () => {
                 </div>
               )
               : posts.map((post, i) => (
-                  <div key={i}>
-                    <Post
-                      owner={post.owner}
-                      image={post.image}
-                      description={post.body}
-                    />
-                  </div>
+                <div key={i}>
+                  <Post
+                    owner={post.owner}
+                    image={post.image}
+                    description={post.body}
+                  />
+                </div>
               ))
           }
         </Container>

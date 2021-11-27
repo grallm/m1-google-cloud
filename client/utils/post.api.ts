@@ -1,23 +1,23 @@
-import { PostEntity } from "../entities/Post.entity"
-import { apiRoute, EntityList } from "./common.api"
+import { PostEntity } from '../entities/Post.entity'
+import { apiRoute, EntityList } from './common.api'
 
 export interface ApiPost {
-  key:        {
-    kind:      string;
-    appId:     string;
-    id:        string;
-    name:      string;
-    complete:  boolean;
+  key: {
+    kind: string;
+    appId: string;
+    id: string;
+    name: string;
+    complete: boolean;
     namespace: string;
   };
-  appId:      string;
-  kind:       string;
-  namespace:  string;
+  appId: string;
+  kind: string;
+  namespace: string;
   properties: {
     owner: string;
-    date:  string;
-    body:  string;
-    url:   string;
+    date: string;
+    body: string;
+    url: string;
   };
 }
 
@@ -37,7 +37,6 @@ export const getAllPosts = async (): Promise<PostEntity[]> => {
       body: post.properties.body,
       image: post.properties.url
     }))
-
   } catch (error) {
     console.error(error)
 

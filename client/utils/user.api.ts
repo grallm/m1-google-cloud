@@ -1,5 +1,5 @@
-import { Session } from "next-auth"
-import { apiRoute } from "./common.api"
+import { Session } from 'next-auth'
+import { apiRoute } from './common.api'
 
 /**
  * Add a User to the DB

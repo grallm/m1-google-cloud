@@ -1,6 +1,6 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import React from "react"
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
 import { Container, Nav, Navbar } from 'react-bootstrap'
 
 const Header: React.FC<{}> = () => {
@@ -10,7 +10,7 @@ const Header: React.FC<{}> = () => {
         <Navbar.Brand>
           InstaCrash
         </Navbar.Brand>
-        
+
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
