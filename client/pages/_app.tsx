@@ -16,7 +16,11 @@ function MyApp ({ Component, pageProps }: AppProps) {
     <Provider session={pageProps.session}>
       <Header/>
 
-      <Component {...pageProps} />
+      <div className='bg-light' style={{ minHeight: '100vh', paddingTop: '57px' }}>
+        <main className='pt-3 mx-auto' style={{ maxWidth: '720px' }}>
+          <Component {...pageProps} />
+        </main>
+      </div>
     </Provider>
   )
 }
