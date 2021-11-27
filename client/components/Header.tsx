@@ -2,23 +2,32 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Container, Nav, Navbar } from 'react-bootstrap'
+import Link from 'next/link'
+import { useRouter } from 'next/dist/client/router'
 
 const Header: React.FC<{}> = () => {
+  const router = useRouter()
+
   return (
     <Navbar className="border-bottom fixed-top bg-white">
       <Container>
-        <Navbar.Brand>
-          InstaCrash
-        </Navbar.Brand>
+        <Link href='/' passHref>
+          <Navbar.Brand>
+            InstaCrash
+          </Navbar.Brand>
+        </Link>
 
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="navbar-collapse collapse">
           <Nav className="me-auto">
-            <Nav.Link className="fs-6">
-              <FontAwesomeIcon icon={faPlus} /> Poster
-            </Nav.Link>
+            {/* Post */}
+            <Link href='/post' passHref>
+              <Nav.Link active={router.pathname === '/post'}>
+                <FontAwesomeIcon icon={faPlus} /> Poster
+              </Nav.Link>
+            </Link>
           </Nav>
 
           {/* Right */}
