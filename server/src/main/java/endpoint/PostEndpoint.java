@@ -114,45 +114,47 @@ public class PostEndpoint
 		
 		return users;
 	}
-
-
+	
+	
 	/**
-	 * Get a Post from its ID
+	 * Get the timeline of a user
 	 *
-	 * @param id ID of the post
+	 * @param userId ID of the user
 	 * @return Post
 	 */
-	@ApiMethod(path = "post/timeLine/{id}")
-	public List<Entity> getTimeLine(@Named("id") String id) throws EntityNotFoundException {
-
+	@ApiMethod(path = "post/timeLine/{userId}")
+	public List<Entity> getTimeLine(@Named("userId") String userId) throws EntityNotFoundException
+	{
+		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
+		
 		//get all followers of user
-		Query qFollowers = new Query("Follow")
-				.setFilter(new Query.FilterPredicate("following", Query.FilterOperator.EQUAL, id));
-
+		Query qFollowers = new Query("Follow").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.EQUAL, userId));
+		
 		PreparedQuery pq = datastore.prepare(qFollowers);
 		List<Object> followList = new ArrayList<>();
-
-		pq.asIterator().forEachRemaining(entity -> {
-			followList.add(entity.getProperty("user"));
-			System.out.println("Value :" + entity.getProperty("user"));
-		});
-
-		//fonctionne jusqu'ici
-
-		if(followList.isEmpty()) {
+		
+		pq.asIterator().forEachRemaining(entity ->
+										 {
+											 followList.add(entity.getProperty("user"));
+											 System.out.println("Value :" + entity.getProperty("user"));
+										 });
+		
+		if (followList.isEmpty())
+		{
 			System.out.println("Empty list");
 		}
-
-		Query qFollowerPosts = new Query("Post")
-				.setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.IN, followList));
-
+		
+		Query qFollowerPosts = new Query("Post").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.IN, followList));
+		
 		pq = datastore.prepare(qFollowerPosts);
-
+		
 		return pq.asList(FetchOptions.Builder.withLimit(20));
 	}
-
-
-
 }
+/**
+ * Architecture idea:
+ * Add list of follow in user
+ * Foreach followers get last 10 posts and add them to temp list and reorder by date attribute
+ * Display temp list as timeline
+ */
