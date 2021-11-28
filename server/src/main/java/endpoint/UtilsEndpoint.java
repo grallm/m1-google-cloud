@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
+import entities.ShardedCounter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,10 +69,14 @@ public class UtilsEndpoint {
 
             list.add(e);
 
+
+
+
             for (int j = 0; j < nbPostPerUser; j++) {
                 // Add post to Datastore
                 now = new Date();
-                e = new Entity("Post", "autoGen" + i + "@mail.mail" + ":" + now.getTime());
+                String postid = "autoGen" + i + "@mail.mail" + ":" + now.getTime();
+                e = new Entity("Post", postid);
                 e.setProperty("owner", "autoGen" + i + "@mail.mail");
                 e.setProperty("url", "https://Nicecrash" + i + "/" + j);
                 e.setProperty("body", "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil");
@@ -83,6 +88,23 @@ public class UtilsEndpoint {
                 txn.commit();
 
                 list.add(e);
+
+                //un user like ses propres posts mais ducoup ça aide pas sur les shards
+                e = new Entity("Like");
+                e.setProperty("postId", postid);
+                e.setProperty("userEmail", "autoGen" + i + "@mail.mail");
+
+                datastore = DatastoreServiceFactory.getDatastoreService();
+                txn = datastore.beginTransaction();
+                datastore.put(e);
+                txn.commit();
+                ShardedCounter sc = new ShardedCounter(postid);
+                sc.increment();
+
+                list.add(e);
+
+
+
             }
         }
 
@@ -137,6 +159,5 @@ public class UtilsEndpoint {
         }
         return list;
     }
-
 
 }
