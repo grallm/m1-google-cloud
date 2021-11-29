@@ -1,5 +1,6 @@
 import NextAuth, { DefaultSession } from 'next-auth'
 import Providers from 'next-auth/providers'
+import { apiRoute } from '../../../utils/common.api'
 
 export type SessionWithAccessToken = DefaultSession & {
   user?: {
@@ -21,7 +22,19 @@ export default NextAuth({
       // https://blog.srij.dev/nextauth-google-access-token
       if (account?.accessToken) {
         token.accessToken = account.accessToken
+
+        // Register user on Java Server
+        if (user) {
+          fetch(`${apiRoute}/user?access_token=${account.accessToken}`, {
+            method: 'POST',
+            body: JSON.stringify({
+              name: user.name || 'NAME',
+              email: user.email || 'EMAIL'
+            })
+          })
+        }
       }
+
       return token
     },
     async session (session, userOrToken) {

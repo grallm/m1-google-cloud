@@ -135,7 +135,8 @@ public class PostEndpoint {
      * @param userId ID of the user
      * @return Timeline posts
      */
-    public List<Entity> getTimeLine(String userId) throws EntityNotFoundException {
+    @ApiMethod(path = "post/timeLine/{userId}")
+    public List<Entity> getTimeLine(@Named("userId") String userId) throws EntityNotFoundException {
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 

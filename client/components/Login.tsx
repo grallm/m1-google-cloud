@@ -1,9 +1,8 @@
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useSession, signIn } from 'next-auth/client'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Button, Modal, Spinner } from 'react-bootstrap'
-import { addUser } from '../utils/user.api'
 
 interface Props {
   callbackUrl?: string
@@ -12,13 +11,6 @@ const Login: React.FC<Props> = ({ callbackUrl }) => {
   const [session, loading] = useSession()
 
   const [show, setShow] = useState(false)
-
-  useEffect(() => {
-    // Add user to Datastore
-    if (session) {
-      addUser(session)
-    }
-  }, [session])
 
   if (session) return null
 

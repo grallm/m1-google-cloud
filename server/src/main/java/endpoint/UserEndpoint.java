@@ -1,5 +1,6 @@
 package endpoint;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -38,23 +39,27 @@ public class UserEndpoint
 	}
 	
 	/**
-	 * Add a user
+	 * Register a user, gettint it's ID from Access Token
 	 * http://localhost:8080/_ah/api/instaCrash/v1/user/
-	 *
+	 * @param user User id
 	 * @return Created User
 	 */
 	@ApiMethod(name = "addUser", path = "user", httpMethod = ApiMethod.HttpMethod.POST)
-	public Entity addUser(UserTiny userTiny) throws BadRequestException
+	public Entity addUser(User user, UserTiny userTiny) throws BadRequestException, UnauthorizedException
 	{
+		if (user == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
+
 		// Validate given post
 		if (userTiny.email.trim().length() < 4)
 		{
 			throw new BadRequestException("Invalid User");
 		}
-		
+
 		// Add post to Datastore
 		Date now = new Date();
-		Entity e = new Entity("User", userTiny.email);
+		Entity e = new Entity("User", user.getId());
 		e.setProperty("email", userTiny.email);
 		e.setProperty("name", userTiny.name);
 		e.setProperty("lastConnected", now);
@@ -68,22 +73,20 @@ public class UserEndpoint
 	}
 	
 	/**
-	 * Get a User from its email
-	 * http://localhost:8080/_ah/api/instaCrash/v1/user/matproz.gaming@gmail.com
+	 * Get a User from its ID
+	 * http://localhost:8080/_ah/api/instaCrash/v1/user/123
 	 *
-	 * @param email email of the User
+	 * @param userId id of the User
 	 * @return User
 	 */
-	@ApiMethod(path = "user/{email}")
-	public Entity getUserByEmail(@Named("email") String email) throws EntityNotFoundException
+	@ApiMethod(path = "user/{userId}")
+	public Entity getUser(@Named("userId") String userId) throws EntityNotFoundException
 	{
-		Key postKey = KeyFactory.createKey("User", email);
+		Key userKey = KeyFactory.createKey("User", userId);
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
-		Entity user = datastore.get(postKey);
-		
-		return user;
+		return datastore.get(userKey);
 	}
 	
 	/**
