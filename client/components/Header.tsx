@@ -2,10 +2,10 @@ import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
-import { Button, Container, Modal, Nav, Navbar } from 'react-bootstrap'
+import { Button, Container, Modal, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { signIn, useSession } from 'next-auth/client'
+import { signIn, signOut, useSession } from 'next-auth/client'
 
 const Header: React.FC<{}> = () => {
   const router = useRouter()
@@ -45,10 +45,17 @@ const Header: React.FC<{}> = () => {
           {/* Right */}
           <div className='justify-content-end'>
             <Navbar.Text>
-              <Button variant="outline-primary" onClick={() => setShow(true)}>Connexion</Button>
-            </Navbar.Text>
-            <Navbar.Text>
-              <Button variant="outline-primary" onClick={() => console.log(session)}>Connexion</Button>
+              {
+                session?.user?.name
+                  ? (
+                    <NavDropdown title={session.user.name}>
+                      <NavDropdown.Item href="#action/3.4">
+                        <Button variant="outline-danger" onClick={() => signOut()}>Se déconnecter</Button>
+                      </NavDropdown.Item>
+                    </NavDropdown>
+                  )
+                  : <Button variant="outline-primary" onClick={() => setShow(true)}>Connexion</Button>
+              }
             </Navbar.Text>
           </div>
         </div>
