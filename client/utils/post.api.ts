@@ -25,7 +25,7 @@ export interface ApiPost {
  * Fetch all posts
  * @returns Formatted Posts
  */
-export const getAllPosts = async (): Promise<PostEntity[]> => {
+export const getAllPosts = async (user?: string): Promise<PostEntity[]> => {
   try {
     const res = await fetch(`${apiRoute}/post`)
     const posts = await res.json() as EntityList<ApiPost>

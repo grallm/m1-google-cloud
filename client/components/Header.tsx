@@ -1,12 +1,17 @@
 import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
-import { Container, Nav, Navbar } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Button, Container, Modal, Nav, Navbar } from 'react-bootstrap'
 import Link from 'next/link'
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
+import { signIn, useSession } from 'next-auth/client'
 
 const Header: React.FC<{}> = () => {
   const router = useRouter()
+  const [session] = useSession()
+
+  const [show, setShow] = useState(false)
 
   return (
     <Navbar className="border-bottom fixed-top bg-white">
@@ -40,11 +45,39 @@ const Header: React.FC<{}> = () => {
           {/* Right */}
           <div className='justify-content-end'>
             <Navbar.Text>
-              USERNAME
+              <Button variant="outline-primary" onClick={() => setShow(true)}>Connexion</Button>
+            </Navbar.Text>
+            <Navbar.Text>
+              <Button variant="outline-primary" onClick={() => console.log(session)}>Connexion</Button>
             </Navbar.Text>
           </div>
         </div>
       </Container>
+
+      {/* Auth modal */}
+      <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Connexion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='d-flex justify-content-center'>
+          <Button
+            variant="outline-primary"
+            size='lg'
+            className='my-4'
+            onClick={() => signIn('google', { callbackUrl: '/' })}
+          ><FontAwesomeIcon icon={faGoogle} /> Connexion avec Google</Button>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={() => setShow(false)}>
+            Annuler
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Navbar>
   )
 }

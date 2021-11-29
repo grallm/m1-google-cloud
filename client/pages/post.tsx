@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { Button, Container, Form } from 'react-bootstrap'
 
-const Post: NextPage = () => {
+const PostPage: NextPage = () => {
   return (
     <Container className=' bg-white border p-3 rounded'>
       <Head>
@@ -29,4 +29,4 @@ const Post: NextPage = () => {
   )
 }
 
-export default Post
+export default PostPage
