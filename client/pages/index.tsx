@@ -1,23 +1,31 @@
 import type { NextPage } from 'next'
+import { useSession } from 'next-auth/client'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { Container, Spinner } from 'react-bootstrap'
 import Post from '../components/Post'
 import { PostEntity } from '../entities/Post.entity'
 import { getAllPosts } from '../utils/post.api'
+import { SessionWithAccessToken } from './api/auth/[...nextauth]'
 
 const Home: NextPage = () => {
+  const [session, loading] = useSession()
+
   const [posts, setPosts] = useState<PostEntity[] | null>(null)
 
   /**
    * Fetch all posts
    */
   useEffect(() => {
-    getAllPosts()
-      .then(posts => {
-        setPosts(posts)
-      })
-  }, [])
+    if (!loading) {
+      const sessionWithAccess: SessionWithAccessToken = session as unknown as SessionWithAccessToken
+
+      getAllPosts(sessionWithAccess?.user?.accessToken || null)
+        .then(posts => {
+          setPosts(posts)
+        })
+    }
+  }, [loading, session])
 
   return (
     <Container>

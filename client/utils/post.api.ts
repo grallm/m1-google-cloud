@@ -25,9 +25,10 @@ export interface ApiPost {
  * Fetch all posts
  * @returns Formatted Posts
  */
-export const getAllPosts = async (user?: string): Promise<PostEntity[]> => {
+export const getAllPosts = async (token?: string | null): Promise<PostEntity[]> => {
   try {
-    const res = await fetch(`${apiRoute}/post`)
+    console.log(apiRoute)
+    const res = await fetch(`${apiRoute}/post` + (token ? `?access_token=${token}` : ''))
     const posts = await res.json() as EntityList<ApiPost>
 
     return posts.items.map(post => ({
@@ -38,6 +39,7 @@ export const getAllPosts = async (user?: string): Promise<PostEntity[]> => {
       image: post.properties.url
     }))
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error)
 
     return []

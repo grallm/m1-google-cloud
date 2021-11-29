@@ -1,5 +1,6 @@
 package endpoint;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -11,36 +12,45 @@ import entities.Post;
 import java.util.*;
 
 @Api(name = "instaCrash", version = "v1",
-        // audiences = "616939906371-cnpc0ocrc71ae3hbann3glgiktfgregk.apps.googleusercontent.com",
-        // clientIds = "616939906371-cnpc0ocrc71ae3hbann3glgiktfgregk.apps.googleusercontent.com",
+        audiences = "616939906371-cnpc0ocrc71ae3hbann3glgiktfgregk.apps.googleusercontent.com",
+        clientIds = "616939906371-cnpc0ocrc71ae3hbann3glgiktfgregk.apps.googleusercontent.com",
         namespace = @ApiNamespace(ownerDomain = "tinycrash.ew.r.appspot.com", ownerName = "tinycrash.ew.r.appspot.com", packagePath = ""))
 public class PostEndpoint {
     /**
      * Get all 20 last Posts
-     * http://localhost:8080/_ah/api/instaCrash/v1/post
+     * If access_token given gets user's timeline
      *
+     * @param user If access_token given
      * @return All Posts
      */
     @ApiMethod(name = "getAllPosts", path = "post", httpMethod = ApiMethod.HttpMethod.GET)
-    public List<Entity> getAllPosts() {
-        Query q = new Query("Post").addSort("date", Query.SortDirection.DESCENDING);
+    public List<Entity> getAllPosts(User user) throws EntityNotFoundException {
+        List<Entity> results;
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery pq = datastore.prepare(q);
+        // Gets all posts if no user
+        if (user == null) {
+            Query q = new Query("Post").addSort("date", Query.SortDirection.DESCENDING);
 
-        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            PreparedQuery pq = datastore.prepare(q);
 
-        /*
-         * FOR TESTING number of likes
-         */
-        /*
-        for (Entity e : results) {
-            ShardedCounter sc = new ShardedCounter(e.getKey().getName());
+            results = pq.asList(FetchOptions.Builder.withLimit(20));
 
-            e.setProperty("likes", sc.getCount());
+            /*
+             * FOR TESTING number of likes
+             */
+            /*
+            for (Entity e : results) {
+                ShardedCounter sc = new ShardedCounter(e.getKey().getName());
 
+                e.setProperty("likes", sc.getCount());
+
+            }
+            */
+        } else {
+            results = getTimeLine(user.getId());
         }
-        */
+
         return results;
     }
 
@@ -123,10 +133,9 @@ public class PostEndpoint {
      * Get the timeline of a user
      *
      * @param userId ID of the user
-     * @return Post
+     * @return Timeline posts
      */
-    @ApiMethod(path = "post/timeLine/{userId}")
-    public List<Entity> getTimeLine(@Named("userId") String userId) throws EntityNotFoundException {
+    public List<Entity> getTimeLine(String userId) throws EntityNotFoundException {
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 

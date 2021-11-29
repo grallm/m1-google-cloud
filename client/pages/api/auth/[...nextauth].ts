@@ -1,6 +1,12 @@
 import NextAuth, { DefaultSession } from 'next-auth'
 import Providers from 'next-auth/providers'
 
+export type SessionWithAccessToken = DefaultSession & {
+  user?: {
+    accessToken: string
+  }
+};
+
 export default NextAuth({
   secret: process.env.JWT_SECRET,
   providers: [
@@ -20,11 +26,6 @@ export default NextAuth({
     },
     async session (session, userOrToken) {
       // Adding accessToken from JWT into Session
-      type SessionWithAccessToken = DefaultSession & {
-        user?: {
-          accessToken: string
-        }
-      };
       const sessionWithAccess: SessionWithAccessToken = session as unknown as SessionWithAccessToken
       if (sessionWithAccess.user && userOrToken.accessToken) {
         sessionWithAccess.user.accessToken = userOrToken.accessToken as string
