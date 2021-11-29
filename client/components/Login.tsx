@@ -1,9 +1,14 @@
-import { useSession, signIn, signOut } from 'next-auth/client'
-import React, { useEffect } from 'react'
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useSession, signIn } from 'next-auth/client'
+import React, { useEffect, useState } from 'react'
+import { Button, Modal, Spinner } from 'react-bootstrap'
 import { addUser } from '../utils/user.api'
 
 const Login: React.FC<{}> = () => {
-  const [session] = useSession()
+  const [session, loading] = useSession()
+
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
     // Add user to Datastore
@@ -12,25 +17,44 @@ const Login: React.FC<{}> = () => {
     }
   }, [session])
 
+  if (session) return null
+
   return (
-    <div>
+    <>
       {
-        session
+        loading
           ? (
-            <div>
-              {session.user?.email}
-              {session.user?.name}
-              <button onClick={() => signOut()}>Sign out</button>
+            <div className='w-100 d-flex justify-content-center'>
+              <Spinner animation="border" variant='warning' style={{ width: '50px', height: '50px' }} />
             </div>
           )
-          : (
-            <div>
-            Not signed in <br />
-              <button onClick={() => signIn('google', { callbackUrl: '/' })}>Sign in</button>
-            </div>
-          )
+          : <Button variant="outline-primary" onClick={() => setShow(true)}>Connexion</Button>
       }
-    </div>
+      {/* Auth modal */}
+      <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Connexion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='d-flex justify-content-center'>
+          <Button
+            variant="outline-primary"
+            size='lg'
+            className='my-4'
+            onClick={() => signIn('google', { callbackUrl: '/' })}
+          ><FontAwesomeIcon icon={faGoogle} /> Connexion avec Google</Button>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={() => setShow(false)}>
+            Annuler
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   )
 }
 

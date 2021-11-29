@@ -35,11 +35,15 @@ const Header: React.FC<{}> = () => {
             </Link>
 
             {/* Post */}
-            <Link href='/post' passHref>
-              <Nav.Link active={router.pathname === '/post'}>
-                <FontAwesomeIcon icon={faPlus} /> Poster
-              </Nav.Link>
-            </Link>
+            {
+              session && (
+                <Link href='/post' passHref>
+                  <Nav.Link active={router.pathname === '/post'}>
+                    <FontAwesomeIcon icon={faPlus} /> Poster
+                  </Nav.Link>
+                </Link>
+              )
+            }
           </Nav>
 
           {/* Right */}
@@ -49,7 +53,7 @@ const Header: React.FC<{}> = () => {
                 session?.user?.name
                   ? (
                     <NavDropdown title={session.user.name}>
-                      <NavDropdown.Item href="#action/3.4">
+                      <NavDropdown.Item>
                         <Button variant="outline-danger" onClick={() => signOut()}>Se déconnecter</Button>
                       </NavDropdown.Item>
                     </NavDropdown>
