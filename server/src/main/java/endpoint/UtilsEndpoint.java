@@ -55,7 +55,6 @@ public class UtilsEndpoint {
     private List<Entity> generateUserAndPosts(int nbPostPerUser) throws UnauthorizedException, BadRequestException {
 
         List<Entity> list = new ArrayList<>();
-        Date now;
         Entity e;
         DatastoreService datastore;
         Transaction txn;
@@ -82,20 +81,10 @@ public class UtilsEndpoint {
                 list.add(createdPost);
 
                 //un user like ses propres posts mais ducoup ça aide pas sur les shards
-                e = new Entity("Like");
-                e.setProperty("postId", createdPost.getKey().getName());
-                e.setProperty("userEmail", "autoGen" + i + "@mail.mail");
-
-                datastore = DatastoreServiceFactory.getDatastoreService();
-                txn = datastore.beginTransaction();
-                datastore.put(e);
-                txn.commit();
-                ShardedCounter sc = new ShardedCounter(createdPost.getKey().getName());
-                sc.increment();
-
-                list.add(e);
-
-
+                list.add(likeEndpoint.likePost(new Like(
+                        createdPost.getKey().getName(),
+                        Integer.toString(i)
+                )));
 
             }
         }

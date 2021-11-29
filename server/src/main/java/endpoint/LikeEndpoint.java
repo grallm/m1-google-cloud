@@ -24,9 +24,9 @@ public class LikeEndpoint
 	public Entity likePost(Like like)
 	{
 		// Add like to Datastore
-		Entity e = new Entity("Like");
+		Entity e = new Entity("Like", like.postId + ":" + like.userId);
 		e.setProperty("postId", like.postId);
-		e.setProperty("userEmail", like.userEmail);
+		e.setProperty("userEmail", like.userId);
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
@@ -36,9 +36,6 @@ public class LikeEndpoint
 		ShardedCounter sc = new ShardedCounter(like.postId);
 		sc.increment();
 
-
-
-		
 		return e;
 	}
 
