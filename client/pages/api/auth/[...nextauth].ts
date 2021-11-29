@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth'
+import NextAuth, { DefaultSession } from 'next-auth'
 import Providers from 'next-auth/providers'
 
 export default NextAuth({
@@ -11,15 +11,26 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt (token, user, account, profile, isNewUser) {
-      console.log(token)
-      console.log(user)
-      console.log(account)
-      console.log(profile)
-      console.log(isNewUser)
+      // Adding Google Access Token in JWT
+      // https://blog.srij.dev/nextauth-google-access-token
       if (account?.accessToken) {
         token.accessToken = account.accessToken
       }
       return token
+    },
+    async session (session, userOrToken) {
+      // Adding accessToken from JWT into Session
+      type SessionWithAccessToken = DefaultSession & {
+        user?: {
+          accessToken: string
+        }
+      };
+      const sessionWithAccess: SessionWithAccessToken = session as unknown as SessionWithAccessToken
+      if (sessionWithAccess.user && userOrToken.accessToken) {
+        sessionWithAccess.user.accessToken = userOrToken.accessToken as string
+      }
+
+      return sessionWithAccess
     }
   }
 })
