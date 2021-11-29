@@ -53,6 +53,8 @@ const Header: React.FC<{}> = () => {
                 session?.user?.name
                   ? (
                     <NavDropdown title={session.user.name}>
+                      <NavDropdown.Item href={session.user.email || '/'}>Mon Profil</NavDropdown.Item>
+                      <NavDropdown.Divider />
                       <NavDropdown.Item>
                         <Button variant="outline-danger" onClick={() => signOut()}>Se déconnecter</Button>
                       </NavDropdown.Item>

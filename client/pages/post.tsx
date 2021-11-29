@@ -21,7 +21,7 @@ const PostPage: NextPage = () => {
               <div className='mb-2'>
               Vous devez être connecté pour continuer :
               </div>
-              <Login />
+              <Login callbackUrl='/post' />
             </div>
           )
           : (

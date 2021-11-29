@@ -31,6 +31,10 @@ export default NextAuth({
       }
 
       return sessionWithAccess
+    },
+    async redirect (url, baseurl) {
+      // Redirect to given URL
+      return url || baseurl
     }
   }
 })

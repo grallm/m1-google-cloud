@@ -5,7 +5,10 @@ import React, { useEffect, useState } from 'react'
 import { Button, Modal, Spinner } from 'react-bootstrap'
 import { addUser } from '../utils/user.api'
 
-const Login: React.FC<{}> = () => {
+interface Props {
+  callbackUrl?: string
+}
+const Login: React.FC<Props> = ({ callbackUrl }) => {
   const [session, loading] = useSession()
 
   const [show, setShow] = useState(false)
@@ -45,7 +48,7 @@ const Login: React.FC<{}> = () => {
             variant="outline-primary"
             size='lg'
             className='my-4'
-            onClick={() => signIn('google', { callbackUrl: '/' })}
+            onClick={() => signIn('google', { callbackUrl: callbackUrl || '/' })}
           ><FontAwesomeIcon icon={faGoogle} /> Connexion avec Google</Button>
         </Modal.Body>
         <Modal.Footer>
