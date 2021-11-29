@@ -17,4 +17,11 @@ public class Post {
     public String image;
 
     public String description;
+
+    public Post(String ownerId, String owner, String image, String description) {
+        this.ownerId = ownerId;
+        this.owner = owner;
+        this.image = image;
+        this.description = description;
+    }
 }

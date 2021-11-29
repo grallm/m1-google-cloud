@@ -73,32 +73,24 @@ public class UtilsEndpoint {
 
             for (int j = 0; j < nbPostPerUser; j++) {
                 // Add post to Datastore
-                now = new Date();
-                String postid = i + ":" + now.getTime();
-                e = new Entity("Post", postid);
-                e.setProperty("owner", "Bob" + i);
-                e.setProperty("ownerId", i);
-                e.setProperty("url", "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg");
-                e.setProperty("body", "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil");
-                e.setProperty("date", now);
-
-                datastore = DatastoreServiceFactory.getDatastoreService();
-                txn = datastore.beginTransaction();
-                datastore.put(e);
-                txn.commit();
-
-                list.add(e);
+                Entity createdPost = postEndpoint.addPost(new Post(
+                    Integer.toString(i),
+                    "Bob" + i,
+                    "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
+                    "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil"
+                ));
+                list.add(createdPost);
 
                 //un user like ses propres posts mais ducoup ça aide pas sur les shards
                 e = new Entity("Like");
-                e.setProperty("postId", postid);
+                e.setProperty("postId", createdPost.getKey().getName());
                 e.setProperty("userEmail", "autoGen" + i + "@mail.mail");
 
                 datastore = DatastoreServiceFactory.getDatastoreService();
                 txn = datastore.beginTransaction();
                 datastore.put(e);
                 txn.commit();
-                ShardedCounter sc = new ShardedCounter(postid);
+                ShardedCounter sc = new ShardedCounter(createdPost.getKey().getName());
                 sc.increment();
 
                 list.add(e);
