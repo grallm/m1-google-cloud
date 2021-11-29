@@ -27,7 +27,6 @@ export interface ApiPost {
  */
 export const getAllPosts = async (token?: string | null): Promise<PostEntity[]> => {
   try {
-    console.log(apiRoute)
     const res = await fetch(`${apiRoute}/post` + (token ? `?access_token=${token}` : ''))
     const posts = await res.json() as EntityList<ApiPost>
 

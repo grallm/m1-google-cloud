@@ -69,8 +69,9 @@ public class PostEndpoint {
 
         // Add post to Datastore
         Date now = new Date();
-        Entity e = new Entity("Post", post.owner + ":" + now.getTime());
+        Entity e = new Entity("Post", post.ownerId + ":" + now.getTime());
         e.setProperty("owner", post.owner);
+        e.setProperty("ownerId", post.ownerId);
         e.setProperty("url", post.image);
         e.setProperty("body", post.description);
         e.setProperty("date", now);
@@ -152,8 +153,10 @@ public class PostEndpoint {
             System.out.println("Value :" + entity.getProperty("user"));
         });
 
+        // If follows nobody, return null
         if (followList.isEmpty()) {
             System.out.println("Empty list");
+            return null;
         }
 
         Query qFollowerPosts = new Query("Post").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.IN, followList));

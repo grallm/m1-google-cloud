@@ -51,16 +51,10 @@ public class UserEndpoint
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		// Validate given post
-		if (userTiny.email.trim().length() < 4)
-		{
-			throw new BadRequestException("Invalid User");
-		}
-
 		// Add post to Datastore
 		Date now = new Date();
 		Entity e = new Entity("User", user.getId());
-		e.setProperty("email", userTiny.email);
+		e.setProperty("email", user.getEmail());
 		e.setProperty("name", userTiny.name);
 		e.setProperty("lastConnected", now);
 		

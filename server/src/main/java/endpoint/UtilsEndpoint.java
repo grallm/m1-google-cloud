@@ -1,12 +1,17 @@
 package endpoint;
 
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
+import entities.Like;
+import entities.Post;
 import entities.ShardedCounter;
+import entities.UserTiny;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +40,7 @@ public class UtilsEndpoint {
      * @return List of Entity created
      */
     @ApiMethod(name = "populate", path="utils/populate", httpMethod = ApiMethod.HttpMethod.GET)
-    public List<Entity> populate() throws EntityNotFoundException, UnauthorizedException {
+    public List<Entity> populate() throws EntityNotFoundException, UnauthorizedException, BadRequestException {
 
         List<Entity> list = generateUserAndPosts(3);
         list.addAll(generateFriends());
@@ -47,38 +52,33 @@ public class UtilsEndpoint {
      * @param nbPostPerUser number of post that will be generated per user
      * @return list of User and their nbPostPerUser Posts
      */
-    private List<Entity> generateUserAndPosts(int nbPostPerUser) {
+    private List<Entity> generateUserAndPosts(int nbPostPerUser) throws UnauthorizedException, BadRequestException {
 
         List<Entity> list = new ArrayList<>();
         Date now;
         Entity e;
         DatastoreService datastore;
         Transaction txn;
-        for (int i = 0; i < 100; i++) {
-            // Add post to Datastore
-            now = new Date();
-            e = new Entity("User", "autoGen" + i + "@mail.mail");
-            e.setProperty("email", "autoGen" + i + "@mail.mail");
-            e.setProperty("name", "Bob" + i);
-            e.setProperty("lastConnected", now);
 
-            datastore = DatastoreServiceFactory.getDatastoreService();
-            txn = datastore.beginTransaction();
-            datastore.put(e);
-            txn.commit();
+        UserEndpoint userEndpoint = new UserEndpoint();
+        PostEndpoint postEndpoint = new PostEndpoint();
+        LikeEndpoint likeEndpoint = new LikeEndpoint();
 
-            list.add(e);
-
-
-
+        for (int i = 1; i < 101; i++) {
+            // Add User to Datastore
+            list.add(userEndpoint.addUser(
+                    new User(Integer.toString(i), "autoGen" + i + "@mail.mail"),
+                    new UserTiny("Bob" + i)
+            ));
 
             for (int j = 0; j < nbPostPerUser; j++) {
                 // Add post to Datastore
                 now = new Date();
-                String postid = "autoGen" + i + "@mail.mail" + ":" + now.getTime();
+                String postid = i + ":" + now.getTime();
                 e = new Entity("Post", postid);
-                e.setProperty("owner", "autoGen" + i + "@mail.mail");
-                e.setProperty("url", "https://Nicecrash" + i + "/" + j);
+                e.setProperty("owner", "Bob" + i);
+                e.setProperty("ownerId", i);
+                e.setProperty("url", "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg");
                 e.setProperty("body", "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil");
                 e.setProperty("date", now);
 
