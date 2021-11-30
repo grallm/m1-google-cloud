@@ -8,4 +8,5 @@ public class UserTiny {
     public UserTiny(String name) {
         this.name = name;
     }
+    public UserTiny() {};
 }

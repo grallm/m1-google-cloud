@@ -23,7 +23,7 @@ public class UserEndpoint
 	 * Get all Users
 	 * http://localhost:8080/_ah/api/instaCrash/v1/user
 	 *
-	 * @return All Posts
+	 * @return All users
 	 */
 	@ApiMethod(name = "getAllUsers", path = "user", httpMethod = ApiMethod.HttpMethod.GET)
 	public List<Entity> getAllUsers()
@@ -33,11 +33,11 @@ public class UserEndpoint
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		PreparedQuery pq = datastore.prepare(q);
 		
-		List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
+		List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(200));
 		
 		return results;
 	}
-	
+
 	/**
 	 * Register a user, gettint it's ID from Access Token
 	 * http://localhost:8080/_ah/api/instaCrash/v1/user/
@@ -107,12 +107,12 @@ public class UserEndpoint
 	 * Check if a user follows userFollowing
 	 * http://localhost:8080/_ah/api/instaCrash/v1/user/matproz.gaming@gmail.com/follow?user=malo.grall@gmail.com
 	 *
-	 * @param user          email of the User
+	 * @param user          id of the User
 	 * @param userFollowing email of the suspected followed User
 	 * @return
 	 */
 	@ApiMethod(path = "user/{userFollowing}/follow", httpMethod = ApiMethod.HttpMethod.GET)
-	public Entity getIsFollowing(@Named("user") String user, @Named("userFollowing") String userFollowing) throws UnauthorizedException
+	public Entity getIsFollowing(@Named("userId") String user, @Named("userFollowing") String userFollowing) throws UnauthorizedException
 	{
 		// Not connected
 		if (user == null)
@@ -134,11 +134,11 @@ public class UserEndpoint
 	}
 	
 	/**
-	 * Follow a user, giving its email
+	 * Follow a user, giving its user id
 	 * http://localhost:8080/_ah/api/instaCrash/v1/user/matproz.gaming@gmail.com/follow/follow?user=malo.grall@gmail.com
 	 *
-	 * @param user         email of the User
-	 * @param userToFollow email of the User to follow
+	 * @param user         user id of the User
+	 * @param userToFollow userId of the User to follow
 	 * @return
 	 */
 	@ApiMethod(path = "user/{userToFollow}/follow", httpMethod = ApiMethod.HttpMethod.POST)
@@ -164,11 +164,11 @@ public class UserEndpoint
 	}
 	
 	/**
-	 * Unfollow a user, giving its email
+	 * Unfollow a user, giving its user id
 	 * http://localhost:8080/_ah/api/instaCrash/v1/user/matproz.gaming@gmail.com/unfollow/unfollow?user=malo.grall@gmail.com
 	 *
-	 * @param user           email of the User
-	 * @param userToUnfollow email of the User to unfollow
+	 * @param user           user id of the User
+	 * @param userToUnfollow userId of the User to unfollow
 	 * @return
 	 */
 	@ApiMethod(path = "user/{userToUnfollow}/unfollow", httpMethod = ApiMethod.HttpMethod.DELETE)
@@ -191,13 +191,13 @@ public class UserEndpoint
 	 * @param email
 	 * @return
 	 */
-	@ApiMethod(path = "user/{email}/posts")
-	public List<Entity> getUserPosts(@Named("email") String email) throws EntityNotFoundException
+	@ApiMethod(path = "user/{userId}/posts")
+	public List<Entity> getUserPosts(@Named("userId") String userId) throws EntityNotFoundException
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
 		// Get all posts
-		Query q = new Query("Post").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.EQUAL, email));
+		Query q = new Query("Post").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.EQUAL, userId));
 		PreparedQuery pq = datastore.prepare(q);
 		
 		List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));

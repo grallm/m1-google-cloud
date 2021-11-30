@@ -103,10 +103,10 @@ public class PostEndpoint {
     }
 
     /**
-     * Get all the users that like the post
+     * Get all the users that likes the post
      * http://localhost:8080/_ah/api/instaCrash/v1/post/{id}/likes
      *
-     * @param id
+     * @param id The Post_ID
      * @return
      */
     @ApiMethod(path = "post/{id}/likes")
