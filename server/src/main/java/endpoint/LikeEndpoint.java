@@ -48,6 +48,23 @@ public class LikeEndpoint
 		return e;
 	}
 
+	@ApiMethod(path = "like/{postId}", httpMethod = ApiMethod.HttpMethod.DELETE)
+	public void unlikePost(@Named("postId") String postId, User user) throws UnauthorizedException, EntityNotFoundException {
+		if (user == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
+
+		Key likeKey = KeyFactory.createKey("Like", postId + ':' + user.getId());
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
+		datastore.delete(likeKey);
+		txn.commit();
+
+		/**
+		 * TODO
+		 * Decrement sharded counter
+		 */
+	}
 
 
 	/**
@@ -78,7 +95,7 @@ public class LikeEndpoint
 	 * @throws EntityNotFoundException
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(path = "like/{postId}")
+	@ApiMethod(path = "like/{postId}", httpMethod = ApiMethod.HttpMethod.GET)
 	public Entity doesLike(@Named("postId") String postId, User user) throws EntityNotFoundException, UnauthorizedException {
 		UserEndpoint userEndpoint = new UserEndpoint();
 		if (user == null) {
