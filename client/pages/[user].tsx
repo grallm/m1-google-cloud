@@ -44,7 +44,6 @@ const User: NextPage = () => {
    * Check if follows
    */
   useEffect(() => {
-    console.log(session)
     if (session?.user && user) {
       setFollowsUser(!!session.user.listFollowing.find(follows => follows === user))
     }
@@ -69,18 +68,24 @@ const User: NextPage = () => {
           )
           : userState
             ? (
-              <div className='d-flex align-items-center'>
-                <h3 className='m-0 me-3'>{user}</h3>
-                <Button
-                  variant={followsUser ? 'outline-primary' : 'primary'}
-                  onClick={() => {
-                    setFollowsUser(!followsUser)
+              <div className='d-flex align-items-center justify-content-between'>
+                <div className='d-flex align-items-center'>
+                  <h3 className='m-0 me-3'>{userState.name}</h3>
+                  <Button
+                    variant={followsUser ? 'outline-primary' : 'primary'}
+                    onClick={() => {
+                      setFollowsUser(!followsUser)
 
-                    if (session?.user?.accessToken && typeof user === 'string') {
-                      followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken)
-                    }
-                  }}
-                >{followsUser ? 'Abonné' : 'S\'abonner'}</Button>
+                      if (session?.user?.accessToken && typeof user === 'string') {
+                        followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken)
+                      }
+                    }}
+                  >{followsUser ? 'Se désabonner' : 'S\'abonner'}</Button>
+                </div>
+
+                <div>
+                  <div><span className='fw-bold'>{userState.listFollowing?.length || 0}</span> abonnements</div>
+                </div>
               </div>
             )
             : (
