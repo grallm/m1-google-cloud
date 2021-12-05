@@ -58,7 +58,7 @@ const User: NextPage = () => {
       <div className='bg-white border rounded mb-3 p-3'>
         {loadingUser
           ? (
-            <div className="w-100 d-flex justify-content-center mt-5">
+            <div className="w-100 d-flex justify-content-center">
               <Spinner
                 animation="border"
                 variant="warning"
@@ -97,6 +97,7 @@ const User: NextPage = () => {
       {posts?.map((post, i) => (
         <div key={i}>
           <Post
+            ownerId={post.ownerId}
             owner={post.owner}
             image={post.url}
             description={post.body}

@@ -6,9 +6,7 @@ import { apiRoute, EntityList } from './common.api'
  * @param token Goole Access Token (optional)
  * @returns Formatted Posts
  */
-export const getAllPosts = async (
-  token?: string | null
-): Promise<PostEntity[]> => {
+export const getAllPosts = async (token?: string | null): Promise<PostEntity[]> => {
   try {
     const res = await fetch(
       `${apiRoute}/post` + (token ? `?access_token=${token}` : '')
@@ -18,10 +16,7 @@ export const getAllPosts = async (
 
     return posts?.items.map((post) => ({
       id: post.key.id,
-      owner: post.properties.owner,
-      date: post.properties.date,
-      body: post.properties.body,
-      url: post.properties.url
+      ...post.properties
     })) || []
   } catch (error) {
     // eslint-disable-next-line no-console

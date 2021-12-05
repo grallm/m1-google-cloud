@@ -41,10 +41,7 @@ export const getUserPosts = async (userId: string): Promise<PostEntity[]> => {
 
     return posts?.items.map((post) => ({
       id: post.key.id,
-      owner: post.properties.owner,
-      date: post.properties.date,
-      body: post.properties.body,
-      url: post.properties.url
+      ...post.properties
     })) || []
   } catch (error) {
     // eslint-disable-next-line no-console

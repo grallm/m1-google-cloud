@@ -45,7 +45,7 @@ public class UserEndpoint {
      * @return Created User
      */
     @ApiMethod(name = "addUser", path = "user", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity addUser(User user, UserTiny userTiny) throws UnauthorizedException, EntityNotFoundException {
+    public Entity addUser(User user, UserTiny userTiny) throws UnauthorizedException {
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
         }
@@ -97,7 +97,7 @@ public class UserEndpoint {
      * @return User
      */
     @ApiMethod(path = "user/name/{name}")
-    public List<Entity> getUsersByName(@Named("name") String name) throws EntityNotFoundException {
+    public List<Entity> getUsersByName(@Named("name") String name) {
         Query q = new Query("User").setFilter(new Query.FilterPredicate("name", Query.FilterOperator.EQUAL, name));
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -251,11 +251,11 @@ public class UserEndpoint {
      * @return
      */
     @ApiMethod(path = "user/{userId}/posts")
-    public List<Entity> getUserPosts(@Named("userId") String userId) throws EntityNotFoundException {
+    public List<Entity> getUserPosts(@Named("userId") String userId) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         // Get all posts
-        Query q = new Query("Post").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.EQUAL, userId));
+        Query q = new Query("Post").setFilter(new Query.FilterPredicate("ownerId", Query.FilterOperator.EQUAL, userId));
         PreparedQuery pq = datastore.prepare(q);
 
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));

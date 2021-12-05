@@ -88,11 +88,11 @@ public class PostEndpoint {
      * @return Created Post
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity addPost(Post post) throws BadRequestException {
+    public Entity addPost(User user, Post post) throws BadRequestException {
 
         // Add post to Datastore
-        Entity e = new Entity("Post", post.ownerId + ":" + post.date);
-        e.setProperty("ownerId", post.ownerId);
+        Entity e = new Entity("Post", user.getId() + ":" + post.date);
+        e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
         e.setProperty("url", post.image);
         e.setProperty("body", post.description);

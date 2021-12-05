@@ -88,10 +88,16 @@ public class UtilsEndpoint {
             for (int j = 0; j < nbPostPerUser; j++) {
                 // Add post to Datastore
 
-                Entity createdPost = postEndpoint.addPost(new Post(Integer.toString(i), Integer.toString(i),
-                        "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
-                        "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil",
-                        now));
+                Entity createdPost = postEndpoint.addPost(
+                        user,
+                        new Post(
+                            Integer.toString(i),
+                            userTiny.name,
+                            "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
+                            "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil",
+                            now
+                        )
+                );
 
 
              /*   Entity createdPost = postEndpoint.addPost(new Post(

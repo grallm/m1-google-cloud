@@ -6,14 +6,15 @@ import { faHeart } from '@fortawesome/free-regular-svg-icons'
 import Link from 'next/link'
 
 interface Props {
+  ownerId: string
   owner: string
   image: string
   description: string
 }
-const Post: React.FC<Props> = ({ image, owner, description }) => {
+const Post: React.FC<Props> = ({ ownerId, image, owner, description }) => {
   return (
     <Card className="mb-4">
-      <Link href={owner} passHref>
+      <Link href={ownerId} passHref>
         <Card.Title role='button' className="p-3 pb-2">{owner}</Card.Title>
       </Link>
 
