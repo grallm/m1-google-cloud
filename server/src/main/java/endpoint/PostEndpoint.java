@@ -8,6 +8,7 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
+import entities.ShardedCounter;
 
 import java.util.*;
 
@@ -34,19 +35,20 @@ public class PostEndpoint {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             PreparedQuery pq = datastore.prepare(q);
 
-            results = pq.asList(FetchOptions.Builder.withLimit(20));
+            results = pq.asList(FetchOptions.Builder.withLimit(2000));
 
             /*
              * FOR TESTING number of likes
              */
-            /*
+
             for (Entity e : results) {
+
                 ShardedCounter sc = new ShardedCounter(e.getKey().getName());
 
                 e.setProperty("likes", sc.getCount());
 
             }
-            */
+
         }
 
         /*else {
@@ -64,7 +66,7 @@ public class PostEndpoint {
      * @throws EntityNotFoundException
      */
     @ApiMethod(path = "post/getUserPosts", httpMethod = ApiMethod.HttpMethod.GET)
-    public List<Entity> getUserPosts(String userId) throws EntityNotFoundException {
+    public List<Entity> getUserPosts(@Named("userId") String userId) throws EntityNotFoundException {
         List<Entity> results;
 
         Query q = new Query("Post")
@@ -87,14 +89,14 @@ public class PostEndpoint {
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
     public Entity addPost(Post post) throws BadRequestException {
+
         // Add post to Datastore
-        Date now = new Date();
-        Entity e = new Entity("Post", post.ownerId + ":" + now.getTime());
+        Entity e = new Entity("Post", post.ownerId + ":" + post.date);
         e.setProperty("ownerId", post.ownerId);
         e.setProperty("owner", post.owner);
         e.setProperty("url", post.image);
         e.setProperty("body", post.description);
-        e.setProperty("date", now);
+        e.setProperty("date", post.date);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Transaction txn = datastore.beginTransaction();

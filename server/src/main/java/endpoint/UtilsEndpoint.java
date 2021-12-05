@@ -12,7 +12,9 @@ import entities.Like;
 import entities.Post;
 import entities.UserTiny;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -59,6 +61,8 @@ public class UtilsEndpoint {
 
         Random r = new Random();
 
+        java.util.Date now = new java.util.Date();
+
         List<User> userList = new ArrayList<>();
         List<Entity> postList = new ArrayList<>();
         User user;
@@ -79,29 +83,39 @@ public class UtilsEndpoint {
 
             for (int j = 0; j < nbPostPerUser; j++) {
                 // Add post to Datastore
-                Entity createdPost = postEndpoint.addPost(new Post(
+
+                Entity createdPost = postEndpoint.addPost(new Post(Integer.toString(i), "Bob" + i,
+                        "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
+                        "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil",
+                        now));
+
+
+             /*   Entity createdPost = postEndpoint.addPost(new Post(
                         Integer.toString(i),
                         "Bob" + i,
                         "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
                         "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil"
-                ));
+                ));*/
                 postList.add(createdPost);
                 list.add(createdPost);
-
             }
-
-
         }
 
 
+        ArrayList<Integer> randomLikes;
+
         //Random likes :
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
+            randomLikes = new ArrayList<>();
+            for (int j = 1; j < postList.size() - 1; j++) {
+                randomLikes.add(j);
+            }
+            Collections.shuffle(randomLikes);
 
-
-            for (int k = 0; k < r.nextInt(postList.size()-1); k++) {
+            for (int k = 1; k < r.nextInt(postList.size() - 1); k++) {
 
                 list.add(likeEndpoint.likePost(new Like(
-                        postList.get(k).getKey().getName(),
+                        postList.get(randomLikes.get(k)).getKey().getName(),
                         Integer.toString(i)
 
                 )));
@@ -111,7 +125,7 @@ public class UtilsEndpoint {
         int a;
         List<Integer> intList;
 
-        for (int i = 1; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
 
             // Add the follow entity to datastore
             intList = new ArrayList<>();
@@ -119,7 +133,7 @@ public class UtilsEndpoint {
 
                 do {
                     a = r.nextInt(100);
-                } while (a == i && ! intList.contains(a));
+                } while (a == i && !intList.contains(a));
                 intList.add(a);
 
                 userEndpoint.follow(userList.get(i), Integer.toString(a));
