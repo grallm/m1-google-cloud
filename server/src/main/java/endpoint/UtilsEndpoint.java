@@ -52,16 +52,15 @@ public class UtilsEndpoint {
     private List<Entity> generateUserAndPosts(int nbPostPerUser) throws UnauthorizedException, BadRequestException, EntityNotFoundException {
 
         List<Entity> list = new ArrayList<>();
-        Entity e;
-        DatastoreService datastore;
-        Transaction txn;
 
         UserEndpoint userEndpoint = new UserEndpoint();
         PostEndpoint postEndpoint = new PostEndpoint();
         LikeEndpoint likeEndpoint = new LikeEndpoint();
 
+        Random r = new Random();
+
         List<User> userList = new ArrayList<>();
-        List<UserTiny> tinyUserList = new ArrayList<>();
+        List<Entity> postList = new ArrayList<>();
         User user;
         UserTiny userTiny;
 
@@ -86,89 +85,49 @@ public class UtilsEndpoint {
                         "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
                         "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil"
                 ));
+                postList.add(createdPost);
                 list.add(createdPost);
-
-                //un user like ses propres posts mais ducoup ça aide pas sur les shards
-                list.add(likeEndpoint.likePost(new Like(
-                        createdPost.getKey().getName(),
-                        Integer.toString(i)
-                )));
 
             }
 
 
         }
 
-        Random r = new Random();
+
+        //Random likes :
+        for(int i = 0; i < 100; i++) {
+
+
+            for (int k = 0; k < r.nextInt(postList.size()-1); k++) {
+
+                list.add(likeEndpoint.likePost(new Like(
+                        postList.get(k).getKey().getName(),
+                        Integer.toString(i)
+
+                )));
+            }
+        }
+
         int a;
-        int b;
+        List<Integer> intList;
 
         for (int i = 1; i < 100; i++) {
 
             // Add the follow entity to datastore
+            intList = new ArrayList<>();
+            for (int k = 0; k < r.nextInt(50); k++) {
 
+                do {
+                    a = r.nextInt(100);
+                } while (a == i && ! intList.contains(a));
+                intList.add(a);
 
-            do {
-                a = r.nextInt(100);
-            } while (a == i);
-                follow(Integer.toString(i), Integer.toString(a));
-            do {
-                b = r.nextInt(100);
-            } while (b == i || b == a);
+                userEndpoint.follow(userList.get(i), Integer.toString(a));
 
-            follow(Integer.toString(i), Integer.toString(b));
-        }
-
-
-        return list;
-    }
-
-    /**
-     * @return List of Entity Follow linking every auto-generated User with 2 others
-     */
-    private List<Entity> generateFriends() throws UnauthorizedException, EntityNotFoundException {
-        List<Entity> list = new ArrayList<>();
-        Random r = new Random();
-        int a;
-        int b;
-
-        UserEndpoint userEndpoint = new UserEndpoint();
-
-
-        for (int i = 0; i < 100; i++) {
-
-            // Add the follow entity to datastore
-
-
-            do {
-                a = r.nextInt(100);
-            } while (a == i);
-                follow(KeyFactory.createKey(Integer.toString(i), "autoGen" + i + "@mail.mail").toString(), "autoGen" + a + "@mail.mail");
-
-
-            do {
-                b = r.nextInt(100);
-            } while (b == i || b == a);
-
-            follow("autoGen" + i + "@mail.mail", "autoGen" + b + "@mail.mail");
+            }
         }
         return list;
     }
 
-    private Entity follow(String userId, String userToFollow) throws EntityNotFoundException {
-        Entity userChecked = UserEndpoint.getUser(userId);
 
-        ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
-
-        if (listFollowing == null || listFollowing.isEmpty()) {
-            listFollowing = new ArrayList<>();
-
-        }
-        listFollowing.add(userToFollow);
-        userChecked.setProperty("listFollowing", listFollowing);
-
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(userChecked);
-        return userChecked;
-    }
 }
