@@ -45,18 +45,26 @@ public class UserEndpoint {
      * @return Created User
      */
     @ApiMethod(name = "addUser", path = "user", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity addUser(User user, UserTiny userTiny) throws BadRequestException, UnauthorizedException {
+    public Entity addUser(User user, UserTiny userTiny) throws UnauthorizedException, EntityNotFoundException {
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        // Add user to Datastore
+        // If already exists, fetch
+        Entity e = null;
+        try {
+            e = getUser(user.getId());
+        } catch (Exception err) {
+            System.out.println("castch");
+            e = new Entity("User", user.getId());
+
+            e.setProperty("email", user.getEmail());
+            e.setProperty("name", userTiny.name);
+            e.setProperty("listFollowing", new ArrayList<String>());
+        }
+
         Date now = new Date();
-        Entity e = new Entity("User", user.getId());
-        e.setProperty("email", user.getEmail());
-        e.setProperty("name", userTiny.name);
         e.setProperty("lastConnected", now);
-        e.setProperty("listFollowing", new ArrayList<String>());
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Transaction txn = datastore.beginTransaction();
@@ -258,5 +266,12 @@ public class UserEndpoint {
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
 
         return results;
+    }
+
+    @ApiMethod(path = "user/fromToken")
+    public Entity getUserFromToken(User user) throws EntityNotFoundException, UnauthorizedException {
+        if (user == null) throw new UnauthorizedException("Invalid credentials");
+
+        return getUser(user.getId());
     }
 }
