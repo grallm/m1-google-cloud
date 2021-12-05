@@ -45,10 +45,6 @@ export default NextAuth({
       }
 
       return session
-    },
-    async redirect (url, baseurl) {
-      // Redirect to given URL
-      return url || baseurl
     }
   }
 })

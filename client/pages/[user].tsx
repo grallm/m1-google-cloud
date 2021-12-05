@@ -2,18 +2,21 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import { Button, Container, Spinner } from 'react-bootstrap'
+import { Button, Container, Modal, Spinner } from 'react-bootstrap'
 import Post from '../components/Post'
 import { PostEntity } from '../entities/Post.entity'
 import { getUserPosts, getUser, followUser, unfollowUser } from '../utils/user.api'
 import { UserEntity } from '../entities/User.entity'
-import { useSession } from 'next-auth/client'
+import { signIn, useSession } from 'next-auth/client'
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const User: NextPage = () => {
   const router = useRouter()
   const { user } = router.query
   const [session] = useSession()
 
+  const [showConnectAlert, setShowConnectAlert] = useState(false)
   const [posts, setPosts] = useState<PostEntity[] | null>(null)
   const [loadingUser, setLoadingUser] = useState(true)
   const [userState, setUserState] = useState<UserEntity | null>(null)
@@ -74,10 +77,15 @@ const User: NextPage = () => {
                   <Button
                     variant={followsUser ? 'outline-primary' : 'primary'}
                     onClick={() => {
-                      setFollowsUser(!followsUser)
+                      // Connected
+                      if (session) {
+                        setFollowsUser(!followsUser)
 
-                      if (session?.user?.accessToken && typeof user === 'string') {
-                        followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken)
+                        if (session?.user?.accessToken && typeof user === 'string') {
+                          followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken)
+                        }
+                      } else {
+                        setShowConnectAlert(true)
                       }
                     }}
                   >{followsUser ? 'Se désabonner' : 'S\'abonner'}</Button>
@@ -105,6 +113,31 @@ const User: NextPage = () => {
         </div>
       ))
       }
+
+      {/* Auth modal */}
+      <Modal
+        show={showConnectAlert}
+        onHide={() => setShowConnectAlert(false)}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Connexion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='d-flex justify-content-center'>
+          <Button
+            variant="outline-primary"
+            size='lg'
+            className='my-4'
+            onClick={() => signIn('google', { callbackUrl: 'http://localhost:3000/' + router.asPath })}
+          ><FontAwesomeIcon icon={faGoogle} /> Connexion avec Google</Button>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={() => setShowConnectAlert(false)}>
+            Annuler
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   )
 }
