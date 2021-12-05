@@ -62,11 +62,6 @@ public class PostEndpoint {
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
     public Entity addPost(Post post) throws BadRequestException {
-        // Validate given post
-        if (post.owner.trim().length() < 4) {
-            throw new BadRequestException("Invalid Post");
-        }
-
         // Add post to Datastore
         Date now = new Date();
         Entity e = new Entity("Post", post.ownerId + ":" + now.getTime());

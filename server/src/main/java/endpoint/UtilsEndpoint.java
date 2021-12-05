@@ -40,7 +40,7 @@ public class UtilsEndpoint {
      * @return List of Entity created
      */
     @ApiMethod(name = "populate", path="utils/populate", httpMethod = ApiMethod.HttpMethod.GET)
-    public List<Entity> populate() throws EntityNotFoundException, UnauthorizedException, BadRequestException {
+    public List<Entity> populate() throws UnauthorizedException, BadRequestException {
 
         List<Entity> list = generateUserAndPosts(3);
         list.addAll(generateFriends());
@@ -74,7 +74,7 @@ public class UtilsEndpoint {
                 // Add post to Datastore
                 Entity createdPost = postEndpoint.addPost(new Post(
                     Integer.toString(i),
-                    "Bob" + i,
+                    Integer.toString(i),
                     "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
                     "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil"
                 ));
