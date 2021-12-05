@@ -13,7 +13,7 @@ export const getAllPosts = async (
     const res = await fetch(
       `${apiRoute}/post` + (token ? `?access_token=${token}` : '')
     )
-    console.log(res.body)
+
     const posts = (await res.json()) as EntityList<PostEntity>
 
     return posts?.items.map((post) => ({

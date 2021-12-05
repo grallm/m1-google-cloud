@@ -56,7 +56,9 @@ export const getUserPosts = async (userId: string): Promise<PostEntity[]> => {
 
 export const followUser = async (userId: string, accessToken: string): Promise<boolean> => {
   try {
-    const res = await fetch(`${apiRoute}/user/${userId}/follow?access_token=${accessToken}`)
+    const res = await fetch(`${apiRoute}/user/${userId}/follow?access_token=${accessToken}`, {
+      method: 'POST'
+    })
     await res.json()
 
     return res.ok
@@ -70,7 +72,9 @@ export const followUser = async (userId: string, accessToken: string): Promise<b
 
 export const unfollowUser = async (userId: string, accessToken: string): Promise<boolean> => {
   try {
-    const res = await fetch(`${apiRoute}/user/${userId}/unfollow?access_token=${accessToken}`)
+    const res = await fetch(`${apiRoute}/user/${userId}/unfollow?access_token=${accessToken}`, {
+      method: 'DELETE'
+    })
     await res.json()
 
     return res.ok

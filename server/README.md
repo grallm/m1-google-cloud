@@ -12,3 +12,6 @@
 ## More
 ### Admin panel
 - http://localhost:8080/_ah/admin/
+
+### Generate OpenAPI doc
+- `mvn endpoints-framework:openApiDocs`

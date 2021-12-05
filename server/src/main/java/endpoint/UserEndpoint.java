@@ -55,7 +55,6 @@ public class UserEndpoint {
         try {
             e = getUser(user.getId());
         } catch (Exception err) {
-            System.out.println("castch");
             e = new Entity("User", user.getId());
 
             e.setProperty("email", user.getEmail());
@@ -82,7 +81,7 @@ public class UserEndpoint {
      * @return User
      */
     @ApiMethod(path = "user/{userId}")
-    public static Entity getUser(@Named("userId") String userId) throws EntityNotFoundException {
+    public Entity getUser(@Named("userId") String userId) throws EntityNotFoundException {
         Key userKey = KeyFactory.createKey("User", userId);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -217,21 +216,16 @@ public class UserEndpoint {
      * @return
      */
     @ApiMethod(path = "user/{userToUnfollow}/unfollow", httpMethod = ApiMethod.HttpMethod.DELETE)
-    public Entity unfollow(@Named("user") String user, @Named("userToUnfollow") String userToUnfollow) throws EntityNotFoundException, UnauthorizedException {
-        Entity userChecked = null;
-
+    public Entity unfollow(User user, @Named("userToUnfollow") String userToUnfollow) throws EntityNotFoundException, UnauthorizedException {
         // Not connected
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        try {
-            userChecked = getUser(user);
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace();
-        }
+        // Check if user is registered
+        Entity userChecked = getUser(user.getId());
 
-        if (userChecked != null && getIsFollowing(user, userToUnfollow) != null) {
+        if (userChecked != null && getIsFollowing(user.getId(), userToUnfollow) != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
 
             if (listFollowing == null || listFollowing.isEmpty()) {
@@ -244,6 +238,7 @@ public class UserEndpoint {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             datastore.put(userChecked);
         }
+
         return userChecked;
     }
     //endregion

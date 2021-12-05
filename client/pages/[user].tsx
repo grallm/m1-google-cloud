@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { Button, Container, Spinner } from 'react-bootstrap'
 import Post from '../components/Post'
 import { PostEntity } from '../entities/Post.entity'
-import { getUserPosts, getUser } from '../utils/user.api'
+import { getUserPosts, getUser, followUser, unfollowUser } from '../utils/user.api'
 import { UserEntity } from '../entities/User.entity'
 import { useSession } from 'next-auth/client'
 
@@ -17,6 +17,8 @@ const User: NextPage = () => {
   const [posts, setPosts] = useState<PostEntity[] | null>(null)
   const [loadingUser, setLoadingUser] = useState(true)
   const [userState, setUserState] = useState<UserEntity | null>(null)
+  const [followsUser, setFollowsUser] = useState(false)
+
   /**
    * Fetch all posts
    */
@@ -38,10 +40,20 @@ const User: NextPage = () => {
     }
   }, [user])
 
+  /**
+   * Check if follows
+   */
+  useEffect(() => {
+    console.log(session)
+    if (session?.user && user) {
+      setFollowsUser(!!session.user.listFollowing.find(follows => follows === user))
+    }
+  }, [session, user])
+
   return (
     <Container className="p-3">
       <Head>
-        <title>InstaCrash - {userState?.name || user || 'Profil'}</title>
+        <title>InstaCrash - {userState?.name || 'Profil'}</title>
       </Head>
 
       <div className='bg-white border rounded mb-3 p-3'>
@@ -59,7 +71,16 @@ const User: NextPage = () => {
             ? (
               <div className='d-flex align-items-center'>
                 <h3 className='m-0 me-3'>{user}</h3>
-                <Button>Suivre</Button>
+                <Button
+                  variant={followsUser ? 'outline-primary' : 'primary'}
+                  onClick={() => {
+                    setFollowsUser(!followsUser)
+
+                    if (session?.user?.accessToken && typeof user === 'string') {
+                      followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken)
+                    }
+                  }}
+                >{followsUser ? 'Abonné' : 'S\'abonner'}</Button>
               </div>
             )
             : (
