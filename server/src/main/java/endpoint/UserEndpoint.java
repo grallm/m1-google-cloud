@@ -161,19 +161,14 @@ public class UserEndpoint {
      * @return
      */
     @ApiMethod(path = "user/{userToFollow}/follow", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity follow(@Named("user") String user, @Named("userToFollow") String userToFollow) throws EntityNotFoundException, UnauthorizedException {
-        Entity userChecked = null;
-
+    public Entity follow(User user, @Named("userToFollow") String userToFollow) throws EntityNotFoundException, UnauthorizedException {
         // Not connected
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        try {
-            userChecked = getUser(user);
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace();
-        }
+        // Check if user is registered
+        Entity userChecked = getUser(user.getId());
 
         if (userChecked != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
@@ -188,6 +183,7 @@ public class UserEndpoint {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             datastore.put(userChecked);
         }
+
         return userChecked;
 
 		/*
@@ -263,6 +259,4 @@ public class UserEndpoint {
 
         return results;
     }
-
-
 }
