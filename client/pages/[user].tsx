@@ -2,51 +2,81 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import { Container, Spinner } from 'react-bootstrap'
+import { Button, Container, Spinner } from 'react-bootstrap'
 import Post from '../components/Post'
 import { PostEntity } from '../entities/Post.entity'
-import { getAllPosts } from '../utils/post.api'
+import { getUserPosts, getUser } from '../utils/user.api'
+import { UserEntity } from '../entities/User.entity'
+import { useSession } from 'next-auth/client'
 
 const User: NextPage = () => {
   const router = useRouter()
   const { user } = router.query
+  const [session] = useSession()
 
   const [posts, setPosts] = useState<PostEntity[] | null>(null)
-
+  const [loadingUser, setLoadingUser] = useState(true)
+  const [userState, setUserState] = useState<UserEntity | null>(null)
   /**
    * Fetch all posts
    */
   useEffect(() => {
-    getAllPosts()
-      .then(posts => {
+    // Wait for param to be loaded
+    if (typeof user === 'string') {
+      // Load user profile
+      getUser(user)
+        .then((user) => {
+          setUserState(user)
+          setLoadingUser(false)
+        })
+        .catch(() => setLoadingUser(false))
+
+      // Load user's posts
+      getUserPosts(user).then((posts) => {
         setPosts(posts)
       })
-  }, [])
+    }
+  }, [user])
 
   return (
-    <Container className=' bg-white border p-3 rounded'>
+    <Container className="p-3">
       <Head>
-        <title>InstaCrash - {user}</title>
+        <title>InstaCrash - {userState?.name || user || 'Profil'}</title>
       </Head>
 
-      <h3 className='mb-3'>{user}</h3>
-
-      {
-        !posts
+      <div className='bg-white border rounded mb-3 p-3'>
+        {loadingUser
           ? (
-            <div className='w-100 d-flex justify-content-center mt-5'>
-              <Spinner animation="border" variant='warning' style={{ width: '50px', height: '50px' }} />
-            </div>
-          )
-          : posts.map((post, i) => (
-            <div key={i}>
-              <Post
-                owner={post.owner}
-                image={post.image}
-                description={post.body}
+            <div className="w-100 d-flex justify-content-center mt-5">
+              <Spinner
+                animation="border"
+                variant="warning"
+                style={{ width: '50px', height: '50px' }}
               />
             </div>
-          ))
+          )
+          : userState
+            ? (
+              <div className='d-flex align-items-center'>
+                <h3 className='m-0 me-3'>{user}</h3>
+                <Button>Suivre</Button>
+              </div>
+            )
+            : (
+              <div className='p-3 d-flex justify-content-center'>Cet utilisateur n'existe pas</div>
+            )
+        }
+      </div>
+
+      {posts?.map((post, i) => (
+        <div key={i}>
+          <Post
+            owner={post.owner}
+            image={post.url}
+            description={post.body}
+          />
+        </div>
+      ))
       }
     </Container>
   )

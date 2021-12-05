@@ -6,7 +6,6 @@ import { Container, Spinner } from 'react-bootstrap'
 import Post from '../components/Post'
 import { PostEntity } from '../entities/Post.entity'
 import { getAllPosts } from '../utils/post.api'
-import { SessionWithAccessToken } from './api/auth/[...nextauth]'
 
 const Home: NextPage = () => {
   const [session, loading] = useSession()
@@ -18,9 +17,7 @@ const Home: NextPage = () => {
    */
   useEffect(() => {
     if (!loading) {
-      const sessionWithAccess: SessionWithAccessToken = session as unknown as SessionWithAccessToken
-
-      getAllPosts(sessionWithAccess?.user?.accessToken || null)
+      getAllPosts(session?.user?.accessToken || null)
         .then(posts => {
           setPosts(posts)
         })
@@ -45,7 +42,7 @@ const Home: NextPage = () => {
             <div key={i}>
               <Post
                 owner={post.owner}
-                image={post.image}
+                image={post.url}
                 description={post.body}
               />
             </div>

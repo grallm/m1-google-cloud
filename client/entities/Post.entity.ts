@@ -3,5 +3,5 @@ export interface PostEntity {
   owner: string;
   date: string;
   body: string;
-  image: string;
+  url: string;
 }
