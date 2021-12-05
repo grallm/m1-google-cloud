@@ -50,7 +50,7 @@ public class UserEndpoint {
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        // Add post to Datastore
+        // Add user to Datastore
         Date now = new Date();
         Entity e = new Entity("User", user.getId());
         e.setProperty("email", user.getEmail());
