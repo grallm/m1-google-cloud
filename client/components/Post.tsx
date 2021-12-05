@@ -4,22 +4,22 @@ import Image from 'next/image'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart } from '@fortawesome/free-regular-svg-icons'
 import Link from 'next/link'
+import { PostEntity } from '../entities/Post.entity'
 
 interface Props {
-  ownerId: string
-  owner: string
-  image: string
-  description: string
+  post: PostEntity
 }
-const Post: React.FC<Props> = ({ ownerId, image, owner, description }) => {
+const Post: React.FC<Props> = ({ post }) => {
+  const { ownerId, owner, date, body, url, likes } = post
+
   return (
     <Card className="mb-4">
       <Link href={ownerId} passHref>
-        <Card.Title role='button' className="p-3 pb-2">{owner}</Card.Title>
+        <Card.Title role='button' className="p-3 pb-2 d-flex justify-content-between">{owner}<div>{date}</div></Card.Title>
       </Link>
 
       <Image
-        src={image}
+        src={url}
         alt="Image"
         layout="responsive"
         width={100}
@@ -31,11 +31,11 @@ const Post: React.FC<Props> = ({ ownerId, image, owner, description }) => {
       <Card.Body>
         <div className='d-flex mb-1'>
           <a><FontAwesomeIcon icon={faHeart} style={{ width: '25px', height: '25px' }} /></a>
-          <div className='ms-3'><b>123</b> j'aimes</div>
+          <div className='ms-3'><b>{likes}</b> j'aimes</div>
         </div>
 
         <Card.Text>
-          <Link href={owner} passHref><b role='button'>{owner}</b></Link> {description}
+          <Link href={owner} passHref><b role='button'>{owner}</b></Link> {body}
         </Card.Text>
       </Card.Body>
     </Card>

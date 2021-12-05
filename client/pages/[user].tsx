@@ -104,12 +104,7 @@ const User: NextPage = () => {
 
       {posts?.map((post, i) => (
         <div key={i}>
-          <Post
-            ownerId={post.ownerId}
-            owner={post.owner}
-            image={post.url}
-            description={post.body}
-          />
+          <Post post={post} />
         </div>
       ))
       }

@@ -8,6 +8,7 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
+import entities.ShardedCounter;
 import entities.UserTiny;
 
 import java.util.ArrayList;
@@ -259,6 +260,11 @@ public class UserEndpoint {
         PreparedQuery pq = datastore.prepare(q);
 
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
+
+        for (Entity e : results) {
+            ShardedCounter sc = new ShardedCounter(e.getKey().getName());
+            e.setProperty("likes", sc.getCount());
+        }
 
         return results;
     }
