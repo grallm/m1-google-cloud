@@ -74,7 +74,7 @@ public class UserEndpoint {
      * @return User
      */
     @ApiMethod(path = "user/{userId}")
-    public Entity getUser(@Named("userId") String userId) throws EntityNotFoundException {
+    public static Entity getUser(@Named("userId") String userId) throws EntityNotFoundException {
         Key userKey = KeyFactory.createKey("User", userId);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

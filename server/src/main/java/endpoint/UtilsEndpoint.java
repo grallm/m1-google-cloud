@@ -10,11 +10,9 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import entities.Like;
 import entities.Post;
-import entities.ShardedCounter;
 import entities.UserTiny;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -113,15 +111,12 @@ public class UtilsEndpoint {
             do {
                 a = r.nextInt(100);
             } while (a == i);
-            list.add(
-                    userEndpoint.follow(Integer.toString(i), Integer.toString(a)));
-
-
+                follow(Integer.toString(i), Integer.toString(a));
             do {
                 b = r.nextInt(100);
             } while (b == i || b == a);
 
-            list.add(userEndpoint.follow(Integer.toString(i), Integer.toString(b)));
+            follow(Integer.toString(i), Integer.toString(b));
         }
 
 
@@ -148,16 +143,32 @@ public class UtilsEndpoint {
             do {
                 a = r.nextInt(100);
             } while (a == i);
-            list.add(userEndpoint.follow(KeyFactory.createKey(Integer.toString(i), "autoGen" + i + "@mail.mail").toString(), "autoGen" + a + "@mail.mail"));
+                follow(KeyFactory.createKey(Integer.toString(i), "autoGen" + i + "@mail.mail").toString(), "autoGen" + a + "@mail.mail");
 
 
             do {
                 b = r.nextInt(100);
             } while (b == i || b == a);
 
-            list.add(userEndpoint.follow("autoGen" + i + "@mail.mail", "autoGen" + b + "@mail.mail"));
+            follow("autoGen" + i + "@mail.mail", "autoGen" + b + "@mail.mail");
         }
         return list;
     }
 
+    private Entity follow(String userId, String userToFollow) throws EntityNotFoundException {
+        Entity userChecked = UserEndpoint.getUser(userId);
+
+        ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
+
+        if (listFollowing == null || listFollowing.isEmpty()) {
+            listFollowing = new ArrayList<>();
+
+        }
+        listFollowing.add(userToFollow);
+        userChecked.setProperty("listFollowing", listFollowing);
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(userChecked);
+        return userChecked;
+    }
 }
