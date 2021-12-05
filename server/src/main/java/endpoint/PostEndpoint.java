@@ -25,7 +25,7 @@ public class PostEndpoint {
      */
     @ApiMethod(name = "getAllPosts", path = "post", httpMethod = ApiMethod.HttpMethod.GET)
     public List<Entity> getAllPosts(User user) throws EntityNotFoundException {
-        List<Entity> results;
+        List<Entity> results = new ArrayList<>();
 
         // Gets all posts if no user
         if (user == null) {
@@ -47,9 +47,34 @@ public class PostEndpoint {
 
             }
             */
-        } else {
-            results = getTimeLine(user.getId());
         }
+
+        /*else {
+            results = getTimeLine(user);
+        }*/
+
+        return results;
+    }
+
+    /**
+     * Return the 5 last post of a user
+     *
+     * @param userId
+     * @return
+     * @throws EntityNotFoundException
+     */
+    @ApiMethod(path = "post/getUserPosts", httpMethod = ApiMethod.HttpMethod.GET)
+    public List<Entity> getUserPosts(String userId) throws EntityNotFoundException {
+        List<Entity> results;
+
+        Query q = new Query("Post")
+                .setFilter(new Query.FilterPredicate("userId", Query.FilterOperator.EQUAL, userId))
+                .addSort("date", Query.SortDirection.DESCENDING);
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pq = datastore.prepare(q);
+
+        results = pq.asList(FetchOptions.Builder.withLimit(5));
 
         return results;
     }
@@ -65,8 +90,8 @@ public class PostEndpoint {
         // Add post to Datastore
         Date now = new Date();
         Entity e = new Entity("Post", post.ownerId + ":" + now.getTime());
-        e.setProperty("owner", post.owner);
         e.setProperty("ownerId", post.ownerId);
+        e.setProperty("owner", post.owner);
         e.setProperty("url", post.image);
         e.setProperty("body", post.description);
         e.setProperty("date", now);
@@ -128,12 +153,47 @@ public class PostEndpoint {
     /**
      * Get the timeline of a user
      *
-     * @param userId ID of the user
+     * @param user Connected user
      * @return Timeline posts
      */
     @ApiMethod(path = "post/timeLine/{userId}")
-    public List<Entity> getTimeLine(@Named("userId") String userId) throws EntityNotFoundException {
+    public ArrayList<Post> getTimeLine(User user) throws EntityNotFoundException {
 
+        Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user.getId()));
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pq = datastore.prepare(qFollowings);
+        List<String> listFollowing = new ArrayList<>();
+
+        //Add following accounts ids to a list
+        pq.asIterator().forEachRemaining(e -> {
+            listFollowing.add(e.getKey().toString());
+        });
+
+        //If no followings return null
+        if(listFollowing.isEmpty()) return null;
+
+        ArrayList<Post> posts = new ArrayList<>();
+        for (String i : listFollowing)
+        {
+            for(Entity e : getUserPosts(i))
+            {
+                posts.add(new Post(
+                        (String) e.getProperty("ownerId"),
+                        (String) e.getProperty("owner"),
+                        (String) e.getProperty("url"),
+                        (String) e.getProperty("body"),
+                        (Date) e.getProperty("date")
+                ));
+            }
+        }
+
+        Collections.sort(posts); // Ascending
+        Collections.reverse(posts); // Descending
+
+        return posts;
+
+
+        /* //OLD VERSION WORKS ! But scaling is questionable
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         //get all followers of user
@@ -159,6 +219,8 @@ public class PostEndpoint {
         pq = datastore.prepare(qFollowerPosts);
 
         return pq.asList(FetchOptions.Builder.withLimit(20));
+
+         */
     }
 }
 /**

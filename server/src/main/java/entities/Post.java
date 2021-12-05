@@ -1,9 +1,9 @@
 package entities;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
-public class Post {
+import java.util.Date;
+
+public class Post implements Comparable<Post> {
     public String ownerId;
 
     /**
@@ -17,11 +17,26 @@ public class Post {
     public String image;
 
     public String description;
+    public Date date;
 
-    public Post(String ownerId, String owner, String image, String description) {
+    public Post(String ownerId, String owner, String image, String description, Date date) {
         this.ownerId = ownerId;
         this.owner = owner;
         this.image = image;
         this.description = description;
+        this.date = date;
+    }
+
+    /**
+     * Allow comparison with other posts by date
+     * @param p
+     * @return
+     */
+    @Override
+    public int compareTo(Post p) {
+        if (date == null || p.date == null) {
+            return 0;
+        }
+        return date.compareTo(p.date);
     }
 }
