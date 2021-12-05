@@ -177,6 +177,11 @@ public class UserEndpoint {
 
         if (userChecked != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
+
+            if (listFollowing == null || listFollowing.isEmpty()) {
+                listFollowing = new ArrayList<>();
+
+            }
             listFollowing.add(userToFollow);
             userChecked.setProperty("listFollowing", listFollowing);
 
@@ -224,6 +229,11 @@ public class UserEndpoint {
 
         if (userChecked != null && getIsFollowing(user, userToUnfollow) != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
+
+            if (listFollowing == null || listFollowing.isEmpty()) {
+                listFollowing = new ArrayList<>();
+
+            }
             listFollowing.remove(userToUnfollow);
             userChecked.setProperty("listFollowing", listFollowing);
 

@@ -39,11 +39,10 @@ public class UtilsEndpoint {
      *
      * @return List of Entity created
      */
-    @ApiMethod(name = "populate", path="utils/populate", httpMethod = ApiMethod.HttpMethod.GET)
+    @ApiMethod(name = "populate", path = "utils/populate", httpMethod = ApiMethod.HttpMethod.GET)
     public List<Entity> populate() throws EntityNotFoundException, UnauthorizedException, BadRequestException {
 
         List<Entity> list = generateUserAndPosts(3);
-        list.addAll(generateFriends());
         return list;
 
     }
@@ -52,7 +51,7 @@ public class UtilsEndpoint {
      * @param nbPostPerUser number of post that will be generated per user
      * @return list of User and their nbPostPerUser Posts
      */
-    private List<Entity> generateUserAndPosts(int nbPostPerUser) throws UnauthorizedException, BadRequestException {
+    private List<Entity> generateUserAndPosts(int nbPostPerUser) throws UnauthorizedException, BadRequestException, EntityNotFoundException {
 
         List<Entity> list = new ArrayList<>();
         Entity e;
@@ -63,20 +62,31 @@ public class UtilsEndpoint {
         PostEndpoint postEndpoint = new PostEndpoint();
         LikeEndpoint likeEndpoint = new LikeEndpoint();
 
+        List<User> userList = new ArrayList<>();
+        List<UserTiny> tinyUserList = new ArrayList<>();
+        User user;
+        UserTiny userTiny;
+
         for (int i = 1; i < 101; i++) {
             // Add User to Datastore
+
+            user = new User(Integer.toString(i), "autoGen" + i + "@mail.mail");
+            userTiny = new UserTiny("Bob" + i);
+
+            userList.add(user);
+
             list.add(userEndpoint.addUser(
-                    new User(Integer.toString(i), "autoGen" + i + "@mail.mail"),
-                    new UserTiny("Bob" + i)
+                    user,
+                    userTiny
             ));
 
             for (int j = 0; j < nbPostPerUser; j++) {
                 // Add post to Datastore
                 Entity createdPost = postEndpoint.addPost(new Post(
-                    Integer.toString(i),
-                    "Bob" + i,
-                    "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
-                    "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil"
+                        Integer.toString(i),
+                        "Bob" + i,
+                        "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
+                        "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil"
                 ));
                 list.add(createdPost);
 
@@ -87,6 +97,31 @@ public class UtilsEndpoint {
                 )));
 
             }
+
+
+        }
+
+        Random r = new Random();
+        int a;
+        int b;
+
+        for (int i = 1; i < 100; i++) {
+
+            // Add the follow entity to datastore
+
+
+            do {
+                a = r.nextInt(100);
+            } while (a == i);
+            list.add(
+                    userEndpoint.follow(Integer.toString(i), Integer.toString(a)));
+
+
+            do {
+                b = r.nextInt(100);
+            } while (b == i || b == a);
+
+            list.add(userEndpoint.follow(Integer.toString(i), Integer.toString(b)));
         }
 
 
@@ -94,49 +129,33 @@ public class UtilsEndpoint {
     }
 
     /**
-     *
      * @return List of Entity Follow linking every auto-generated User with 2 others
      */
-    private List<Entity> generateFriends() {
+    private List<Entity> generateFriends() throws UnauthorizedException, EntityNotFoundException {
         List<Entity> list = new ArrayList<>();
-        Date now;
-        Entity e;
-        DatastoreService datastore;
-        Transaction txn;
         Random r = new Random();
         int a;
         int b;
+
+        UserEndpoint userEndpoint = new UserEndpoint();
+
+
         for (int i = 0; i < 100; i++) {
 
             // Add the follow entity to datastore
-            e = new Entity("Follow");
-            e.setProperty("user", "autoGen" + i + "@mail.mail");
+
+
             do {
                 a = r.nextInt(100);
             } while (a == i);
-            e.setProperty("following", "autoGen" + a + "@mail.mail");
+            list.add(userEndpoint.follow(KeyFactory.createKey(Integer.toString(i), "autoGen" + i + "@mail.mail").toString(), "autoGen" + a + "@mail.mail"));
 
-            datastore = DatastoreServiceFactory.getDatastoreService();
-            txn = datastore.beginTransaction();
-            datastore.put(e);
-            txn.commit();
 
-            list.add(e);
-
-            // Add the follow entity to datastore
-            e = new Entity("Follow");
-            e.setProperty("user", "autoGen" + i + "@mail.mail");
             do {
                 b = r.nextInt(100);
             } while (b == i || b == a);
-            e.setProperty("following", "autoGen" + b + "@mail.mail");
 
-            datastore = DatastoreServiceFactory.getDatastoreService();
-            txn = datastore.beginTransaction();
-            datastore.put(e);
-            txn.commit();
-
-            list.add(e);
+            list.add(userEndpoint.follow("autoGen" + i + "@mail.mail", "autoGen" + b + "@mail.mail"));
         }
         return list;
     }
