@@ -124,11 +124,10 @@ public class UtilsEndpoint {
 
             for (int k = 1; k < r.nextInt(postList.size() - 1); k++) {
 
-                list.add(likeEndpoint.likePost(new Like(
+                list.add(likeEndpoint.likePost(
                         postList.get(randomLikes.get(k)).getKey().getName(),
-                        Integer.toString(i)
-
-                )));
+                        new User(Integer.toString(i), "autoGen" + i + "@mail.mail")
+                ));
             }
         }
 

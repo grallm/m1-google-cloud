@@ -1,9 +1,11 @@
 package endpoint;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import entities.Like;
 import entities.ShardedCounter;
@@ -20,20 +22,27 @@ public class LikeEndpoint
 	 *
 	 * @return Liked Post
 	 */
-	@ApiMethod(name = "likePost", path = "like", httpMethod = ApiMethod.HttpMethod.POST)
-	public Entity likePost(Like like)
-	{
+	@ApiMethod(name = "likePost", path = "like/{postId}", httpMethod = ApiMethod.HttpMethod.POST)
+	public Entity likePost(@Named("postId") String postId, User user) throws UnauthorizedException, EntityNotFoundException {
+		if (user == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
+
+		// Check if user registered
+		UserEndpoint userEndpoint = new UserEndpoint();
+		userEndpoint.getUser(user.getId());
+
 		// Add like to Datastore
-		Entity e = new Entity("Like", like.postId + ":" + like.userId);
-		e.setProperty("postId", like.postId);
-		e.setProperty("userEmail", like.userId);
+		Entity e = new Entity("Like", postId + ":" + user.getId());
+		e.setProperty("postId", postId);
+		e.setProperty("userEmail", user.getId());
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
 		datastore.put(e);
 		txn.commit();
 
-		ShardedCounter sc = new ShardedCounter(like.postId);
+		ShardedCounter sc = new ShardedCounter(postId);
 		sc.increment();
 
 		return e;
@@ -59,5 +68,27 @@ public class LikeEndpoint
 		post.setProperty("NbLikes", sc.getCount());
 
 		return post;
+	}
+
+	/**
+	 * Check if a user likes apost
+	 * @param postId
+	 * @param user
+	 * @return
+	 * @throws EntityNotFoundException
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(path = "like/{postId}")
+	public Entity doesLike(@Named("postId") String postId, User user) throws EntityNotFoundException, UnauthorizedException {
+		UserEndpoint userEndpoint = new UserEndpoint();
+		if (user == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
+
+		//	Find corresponding Like
+		Key likeKey = KeyFactory.createKey("Like", postId + ':' + user.getId());
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		return datastore.get(likeKey);
 	}
 }
