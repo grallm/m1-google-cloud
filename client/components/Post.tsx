@@ -1,16 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card } from 'react-bootstrap'
 import Image from 'next/image'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart } from '@fortawesome/free-regular-svg-icons'
 import Link from 'next/link'
 import { PostEntity } from '../entities/Post.entity'
+import { useSession } from 'next-auth/client'
 
 interface Props {
   post: PostEntity
+  showConneSigninAlert: () => void
 }
-const Post: React.FC<Props> = ({ post }) => {
+const Post: React.FC<Props> = ({ post, showConneSigninAlert }) => {
   const { ownerId, owner, date, body, url, likes } = post
+
+  const [session] = useSession()
+
+  const likePost = () => {
+    if (!session) {
+      showConneSigninAlert()
+    } else {
+
+    }
+  }
 
   return (
     <Card className="mb-4">
@@ -30,7 +42,7 @@ const Post: React.FC<Props> = ({ post }) => {
 
       <Card.Body>
         <div className='d-flex mb-1'>
-          <a><FontAwesomeIcon icon={faHeart} style={{ width: '25px', height: '25px' }} /></a>
+          <a onClick={() => session && showConneSigninAlert()}><FontAwesomeIcon icon={faHeart} style={{ width: '25px', height: '25px' }} /></a>
           <div className='ms-3'><b>{likes}</b> j'aimes</div>
         </div>
 

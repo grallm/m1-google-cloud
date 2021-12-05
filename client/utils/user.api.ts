@@ -51,6 +51,12 @@ export const getUserPosts = async (userId: string): Promise<PostEntity[]> => {
   }
 }
 
+/**
+ * Follow a user
+ * @param userId user to follow's ID
+ * @param accessToken Google Access token of logged in user
+ * @returns
+ */
 export const followUser = async (userId: string, accessToken: string): Promise<boolean> => {
   try {
     const res = await fetch(`${apiRoute}/user/${userId}/follow?access_token=${accessToken}`, {
@@ -67,6 +73,12 @@ export const followUser = async (userId: string, accessToken: string): Promise<b
   }
 }
 
+/**
+ * Unfollow a user
+ * @param userId user to follow's ID
+ * @param accessToken Google Access token of logged in user
+ * @returns
+ */
 export const unfollowUser = async (userId: string, accessToken: string): Promise<boolean> => {
   try {
     const res = await fetch(`${apiRoute}/user/${userId}/unfollow?access_token=${accessToken}`, {

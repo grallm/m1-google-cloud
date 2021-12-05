@@ -82,7 +82,13 @@ const User: NextPage = () => {
                         setFollowsUser(!followsUser)
 
                         if (session?.user?.accessToken && typeof user === 'string') {
-                          followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken)
+                          (followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken))
+                            .then(success => {
+                              // If didn't work, rollback
+                              if (!success) {
+                                setFollowsUser(!followsUser)
+                              }
+                            })
                         }
                       } else {
                         setShowConnectAlert(true)
