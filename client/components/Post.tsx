@@ -15,7 +15,7 @@ interface Props {
 }
 const Post: React.FC<Props> = ({ post, showSigninAlert }) => {
   const postId = post.id
-  const { ownerId, owner, date, body, url } = post
+  const { ownerId, owner, date, body, image } = post
   const [nbLikes, setNbLikes] = useState(parseInt(post.likes))
 
   const [session, loadingSession] = useSession()
@@ -89,7 +89,7 @@ const Post: React.FC<Props> = ({ post, showSigninAlert }) => {
       </Link>
 
       <Image
-        src={url}
+        src={image}
         alt="Image"
         layout="responsive"
         width={100}

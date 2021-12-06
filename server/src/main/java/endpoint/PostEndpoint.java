@@ -82,7 +82,7 @@ public class PostEndpoint {
     }
 
     /**
-     * Add a Post
+     * Add a Post. Image being Base64 file
      * http://localhost:8080/_ah/api/instaCrash/v1/post
      *
      * @return Created Post
@@ -100,6 +100,14 @@ public class PostEndpoint {
         return addPost(user, post);
     }
 
+    /**
+     * Add a post
+     * Methoding taking image as an URL
+     * @param user
+     * @param post
+     * @return
+     * @throws BadRequestException
+     */
     public Entity addPost(User user, Post post) throws BadRequestException {
         ShardedCounter sc = new ShardedCounter("Post:" + user.getId());
 

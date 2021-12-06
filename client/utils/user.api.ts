@@ -13,7 +13,6 @@ export const getAllUsers = async (): Promise<UserEntity[]> => {
     if (!res.ok) throw await res.json()
 
     const users = (await res.json()) as EntityList<UserEntity>
-    console.log(users)
 
     return users?.items.map(user => ({
       ...user.properties,

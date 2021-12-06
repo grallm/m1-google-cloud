@@ -4,7 +4,7 @@ export interface PostEntity {
   owner: string
   date: string
   body: string
-  url: string
+  image: string
   likes: string
 }
 
