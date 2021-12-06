@@ -75,10 +75,15 @@ const Post: React.FC<Props> = ({ post, showSigninAlert }) => {
     }
   }, [loadingSession, postId, session?.user])
 
+  const formatDate = (timestamp: string) => {
+    const date = new Date(parseInt(timestamp))
+    return `${date.toLocaleDateString('fr')} ${date.getHours()}:${date.getMinutes()}`
+  }
+
   return (
     <Card className="mb-4">
       <Link href={ownerId} passHref>
-        <Card.Title role='button' className="p-3 pb-2 d-flex justify-content-between">{owner}<div>{date}</div></Card.Title>
+        <Card.Title role='button' className="p-3 pb-2 d-flex justify-content-between align-items-baseline">{owner}<div className=' fs-6'>{formatDate(date)}</div></Card.Title>
       </Link>
 
       <Image
