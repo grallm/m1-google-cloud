@@ -7,7 +7,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
-import entities.Like;
 import entities.ShardedCounter;
 
 @Api(name = "instaCrash", version = "v1",

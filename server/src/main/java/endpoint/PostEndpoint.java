@@ -79,6 +79,11 @@ public class PostEndpoint {
 
         results = pq.asList(FetchOptions.Builder.withLimit(5));
 
+        results.iterator().forEachRemaining(entity -> {
+            ShardedCounter sc = new ShardedCounter(entity.getKey().getName());
+            entity.setProperty("likes", sc.getCount());
+        });
+
         return results;
 
     }
@@ -99,6 +104,7 @@ public class PostEndpoint {
         e.setProperty("url", post.image);
         e.setProperty("body", post.description);
         e.setProperty("date", post.date);
+        e.setProperty("likes", 0);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Transaction txn = datastore.beginTransaction();
@@ -122,6 +128,9 @@ public class PostEndpoint {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         Entity post = datastore.get(postKey);
+
+        ShardedCounter sc = new ShardedCounter(post.getKey().getName());
+        post.setProperty("likes", sc.getCount());
 
         return post;
     }
@@ -191,7 +200,8 @@ public class PostEndpoint {
                         (String) e.getProperty("owner"),
                         (String) e.getProperty("url"),
                         (String) e.getProperty("body"),
-                        (Date) e.getProperty("date")
+                        (Date) e.getProperty("date"),
+                        (long) e.getProperty("likes")
                 ));
             }
         }
