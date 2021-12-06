@@ -5,12 +5,14 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
 import entities.Test;
 import entities.UserTiny;
+import jdk.jfr.Name;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -148,28 +150,84 @@ public class UtilsEndpoint {
         return list;
     }
 
-    @ApiMethod(name = "timeTests", path = "utils/timeTests", httpMethod = ApiMethod.HttpMethod.GET)
-    public User timeTests() throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+    @ApiMethod(name = "timeLineTests", path = "utils/timeLineTests/{nbUsers}", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity timeLineTest10(@Named("nbUsers") int nbUsers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
 //        Double testCreatePost1 = averageCreatePost(30, 10);
-//        Double testCreatePost2 = averageCreatePost(30,100);
-//        Double testCreatePost3 = averageCreatePost(30,500);
 
-        Double testGetTimeLine1 = averageGetTimeLine(30, 10);
-        Double testGetTimeLine2 = averageGetTimeLine(30,100);
-        Double testGetTimeLine3 = averageGetTimeLine(30,500);
+        Double testGetTimeLine1 = averageGetTimeLine(30, nbUsers);
+
 
         System.out.println("--Averge for 30 tests :");
 //        System.out.println("---Creating a post with 10 followers : " + testCreatePost1 + " milliseconds");
-//        System.out.println("---Creating a post with 100 followers : " + testCreatePost2 + " milliseconds");
-//        System.out.println("---Creating a post with 500 followers : " + testCreatePost3 + " milliseconds");
         System.out.println("---Getting the timeLine with 10 follows : " + testGetTimeLine1 + " milliseconds");
-        System.out.println("---Getting the timeLine with 100 follows : " + testGetTimeLine2 + " milliseconds");
-        System.out.println("---Getting the timeLine with 500 follows : " + testGetTimeLine3 + " milliseconds");
 
-        return new User("DummyTest", "testingAccount@mail.mail");
+        Entity ret = new Entity("Test");
+        ret.setProperty("Time", (testGetTimeLine1));
+
+        return ret;
 
     }
+
+    @ApiMethod(name = "howManyLikes", path = "utils/likesInSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity likesPerSecond(@Named("nbLikes") int nbLikes) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+
+        UserEndpoint userEndpoint = new UserEndpoint();
+        PostEndpoint postEndpoint = new PostEndpoint();
+        LikeEndpoint likeEndpoint = new LikeEndpoint();
+
+        //Generating tests accounts
+        List<User> usersTest10 = new ArrayList<>();
+        User user;
+        UserTiny userTiny;
+        for (int i = 0; i < nbLikes ; i++) {
+
+            user = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
+            userTiny = new UserTiny("Test" + i);
+
+            usersTest10.add(user);
+
+            userEndpoint.addUser(
+                    user,
+                    userTiny
+            );
+        }
+
+        //The user that will post
+        user = new User("TestedUser", "TestShowAccount@mail.mail");
+        userTiny = new UserTiny("TestShow");
+        Entity testedUser = userEndpoint.addUser(
+                user,
+                userTiny
+        );
+        Post post = new Post(user.getId(), userTiny.name, "http://example.org", "short desc", new Date().getTime(), 0);
+
+        Entity postEntity = postEndpoint.addPost(user, post);
+        String postId = postEntity.getKey().getName();
+
+        long startCount;
+        long stopCount;
+
+        startCount = System.currentTimeMillis();
+        for(User spam : usersTest10) {
+            likeEndpoint.likePost(postId, spam);
+        }
+        stopCount = System.currentTimeMillis();
+
+
+        System.out.println("--- Like flood (1000 likes) :" + (stopCount - startCount) + "milliseconds");
+        System.out.println("--- Number of likes in one second : " + (((stopCount - startCount)*1000) / nbLikes));
+
+        Entity ret = new Entity("Test");
+        ret.setProperty("Time_Total", (stopCount - startCount));
+        ret.setProperty("Likes_per_second", (((stopCount - startCount)*1000) / nbLikes));
+        ret.setProperty("NumberOfLikes", nbLikes);
+
+        return ret;
+
+    }
+
+
 
 
     private Long generateTests(int numberOfFollowers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
