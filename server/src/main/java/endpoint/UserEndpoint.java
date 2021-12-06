@@ -205,7 +205,7 @@ public class UserEndpoint {
         Entity userChecked = getUser(user.getId());
         Entity userToFollowEntity = getUser(userToFollow);
 
-        if (userChecked != null && getIsFollowing(user.getId(), userToFollow) != null) {
+        if (userChecked != null && getIsFollowing(user.getId(), userToFollow) != null && !userChecked.equals(userToFollowEntity)) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
             int followings = (int) userChecked.getProperty("followings");
             int followers = (int) userToFollowEntity.getProperty("followers");
@@ -266,7 +266,7 @@ public class UserEndpoint {
         Entity userChecked = getUser(user.getId());
         Entity userToUnfollowEntity = getUser(userToUnfollow);
 
-        if (userChecked != null && getIsFollowing(user.getId(), userToUnfollow) != null) {
+        if (userChecked != null && getIsFollowing(user.getId(), userToUnfollow) != null && !userChecked.equals(userToUnfollowEntity)) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
             int followings = (int) userChecked.getProperty("followings");
             int followers = (int) userChecked.getProperty("followers");
