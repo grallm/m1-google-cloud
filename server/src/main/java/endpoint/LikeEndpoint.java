@@ -60,10 +60,8 @@ public class LikeEndpoint
 		datastore.delete(likeKey);
 		txn.commit();
 
-		/**
-		 * TODO
-		 * Decrement sharded counter
-		 */
+		ShardedCounter sc = new ShardedCounter(postId);
+		sc.decrement();
 	}
 
 

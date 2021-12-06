@@ -8,16 +8,11 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
-import entities.Like;
 import entities.Post;
 import entities.Test;
 import entities.UserTiny;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Api(
         name = "instaCrash",
@@ -65,8 +60,6 @@ public class UtilsEndpoint {
 
         Random r = new Random();
 
-        java.util.Date now = new java.util.Date();
-
         List<User> userList = new ArrayList<>();
         List<Entity> postList = new ArrayList<>();
         User user;
@@ -95,7 +88,7 @@ public class UtilsEndpoint {
                             userTiny.name,
                             "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
                             "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil",
-                            now
+                            new Date()
                         )
                 );
 

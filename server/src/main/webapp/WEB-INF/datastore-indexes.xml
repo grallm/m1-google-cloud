@@ -4,4 +4,10 @@
     <property name="friends" direction="asc"/>
     <property name="age" direction="asc"/>
   </datastore-index>
+
+  <datastore-index kind="Post" ancestor="false" source="manual">
+  <property name="ownerId" direction="asc"/>
+  <property name="date" direction="desc"/>
+
+</datastore-index>
 </datastore-indexes>

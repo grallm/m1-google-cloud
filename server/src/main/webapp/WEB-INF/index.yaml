@@ -12,3 +12,11 @@ indexes:
     properties:
       - name: user
       - name: following
+
+  #get All posts from one User
+  - kind: Post
+    properties:
+      - name: userId
+        direction: asc
+      - name: date
+        direction: desc

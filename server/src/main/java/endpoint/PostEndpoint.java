@@ -67,10 +67,11 @@ public class PostEndpoint {
      */
     @ApiMethod(path = "post/getUserPosts", httpMethod = ApiMethod.HttpMethod.GET)
     public List<Entity> getUserPosts(@Named("userId") String userId) throws EntityNotFoundException {
+
         List<Entity> results;
 
         Query q = new Query("Post")
-                .setFilter(new Query.FilterPredicate("userId", Query.FilterOperator.EQUAL, userId))
+                .setFilter(new Query.FilterPredicate("ownerId", Query.FilterOperator.EQUAL, userId))
                 .addSort("date", Query.SortDirection.DESCENDING);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -79,6 +80,7 @@ public class PostEndpoint {
         results = pq.asList(FetchOptions.Builder.withLimit(5));
 
         return results;
+
     }
 
     /**
@@ -159,9 +161,11 @@ public class PostEndpoint {
      * @return Timeline posts
      */
     @ApiMethod(path = "post/timeLine/{userId}")
-    public ArrayList<Post> getTimeLine(User user) throws EntityNotFoundException {
+    public ArrayList<Post> getTimeLine(@Named("userId") String user) throws EntityNotFoundException {
+        // public ArrayList<Post> getTimeLine(User user) throws EntityNotFoundException {
 
-        Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user.getId()));
+        // Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user.getId()));
+        Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user));
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(qFollowings);
         List<String> listFollowing = new ArrayList<>();
@@ -172,13 +176,18 @@ public class PostEndpoint {
         });
 
         //If no followings return null
-        if(listFollowing.isEmpty()) return null;
+        if (listFollowing.isEmpty()) {
+            //debug
+            System.out.println("Empty followers");
+            return null;
+        }
 
         ArrayList<Post> posts = new ArrayList<>();
-        for (String i : listFollowing)
-        {
-            for(Entity e : getUserPosts(i))
-            {
+        for (String i : listFollowing) {
+            System.out.println("Check Following post : " + i);
+
+            for (Entity e : getUserPosts(i)) {
+                System.out.println("--post found");
                 posts.add(new Post(
                         (String) e.getProperty("ownerId"),
                         (String) e.getProperty("owner"),
@@ -225,6 +234,7 @@ public class PostEndpoint {
          */
     }
 }
+
 /**
  * Architecture idea:
  * Add list of follow in user

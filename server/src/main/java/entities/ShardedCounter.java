@@ -179,6 +179,21 @@ public class ShardedCounter {
     }
 
     /**
+     * Increment the value of this sharded counter.
+     */
+    public final void decrement() {
+        // Find how many shards are in this counter.
+        int numShards = getShardCount();
+
+        // Choose the shard randomly from the available shards.
+        long shardNum = generator.nextInt(numShards);
+
+        Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
+        decrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1);
+        mc.increment(kind, 1);
+    }
+
+    /**
      * Get the number of shards in this counter.
      *
      * @return shard count
@@ -218,6 +233,57 @@ public class ShardedCounter {
             try {
                 thing = DS.get(tx, key);
                 value = (Long) thing.getProperty(prop) + increment;
+            } catch (EntityNotFoundException e) {
+                thing = new Entity(key);
+                value = initialValue;
+            }
+            thing.setUnindexedProperty(prop, value);
+            DS.put(tx, thing);
+            tx.commit();
+        } catch (ConcurrentModificationException e) {
+            LOG.log(Level.WARNING,
+                    "You may need more shards. Consider adding more shards.");
+            LOG.log(Level.WARNING, e.toString(), e);
+
+            if(getShardCount() <= MAX_SHARDS){
+                LOG.log(Level.INFO,
+                        "Doubling Shade, for this process");
+                addShards(getShardCount()); //double the shade by adding the number of shade again
+            }
+
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, e.toString(), e);
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+        }
+    }
+
+    /**
+     * Decrement datastore property value inside a transaction. If the entity
+     * with the provided key does not exist, instead create an entity with the
+     * supplied initial property value.
+     *
+     * @param key
+     *            the entity key to update or create
+     * @param prop
+     *            the property name to be incremented
+     * @param decrement
+     *            the amount by which to increment
+     * @param initialValue
+     *            the value to use if the entity does not exist
+     */
+    private void decrementPropertyTx(final Key key, final String prop,
+                                     final long decrement, final long initialValue) {
+
+        Transaction tx = DS.beginTransaction();
+        Entity thing;
+        long value;
+        try {
+            try {
+                thing = DS.get(tx, key);
+                value = (Long) thing.getProperty(prop) - decrement;
             } catch (EntityNotFoundException e) {
                 thing = new Entity(key);
                 value = initialValue;
