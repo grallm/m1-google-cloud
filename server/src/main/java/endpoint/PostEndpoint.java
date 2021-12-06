@@ -90,7 +90,7 @@ public class PostEndpoint {
         Entity e = new Entity("Post", user.getId() + ":" + post.date);
         e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
-        e.setProperty("url", post.image);
+        e.setProperty("image", post.image);
         e.setProperty("body", post.description);
         e.setProperty("date", post.date);
         e.setProperty("likes", 0);
@@ -185,7 +185,7 @@ public class PostEndpoint {
                 posts.add(new Post(
                         (String) e.getProperty("ownerId"),
                         (String) e.getProperty("owner"),
-                        (String) e.getProperty("url"),
+                        (String) e.getProperty("image"),
                         (String) e.getProperty("body"),
                         (long) e.getProperty("date"),
                         (long) e.getProperty("likes")
