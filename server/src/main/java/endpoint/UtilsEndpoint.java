@@ -150,27 +150,26 @@ public class UtilsEndpoint {
 
     @ApiMethod(name = "timeTests", path = "utils/timeTests", httpMethod = ApiMethod.HttpMethod.GET)
     public User timeTests() throws UnauthorizedException, EntityNotFoundException, BadRequestException {
-
-        Double testCreatePost1 = averageCreatePost(30, 10);
-        Double testCreatePost2 = averageCreatePost(30,100);
-        Double testCreatePost3 = averageCreatePost(30,500);
-
-        Double testGetTimeLine1 = averageGetTimeLine(30, 10);
-        Double testGetTimeLine2 = averageGetTimeLine(30,100);
-        Double testGetTimeLine3 = averageGetTimeLine(30,500);
-
-        System.out.println("--Averge for 30 tests :");
-        System.out.println("---Creating a post with 10 followers : " + testCreatePost1 + " milliseconds");
-        System.out.println("---Creating a post with 100 followers : " + testCreatePost2 + " milliseconds");
-        System.out.println("---Creating a post with 500 followers : " + testCreatePost3 + " milliseconds");
-        System.out.println("---Getting the timeLine with 10 follows : " + testGetTimeLine1 + " milliseconds");
-        System.out.println("---Getting the timeLine with 100 follows : " + testGetTimeLine2 + " milliseconds");
-        System.out.println("---Getting the timeLine with 500 follows : " + testGetTimeLine3 + " milliseconds");
+        Double testGetTimeLine1 = averageGetTimeLine(1, 10);
+//        Double testCreatePost1 = averageCreatePost(30, 10);
+//        Double testCreatePost2 = averageCreatePost(30,100);
+//        Double testCreatePost3 = averageCreatePost(30,500);
+//
+//        Double testGetTimeLine1 = averageGetTimeLine(30, 10);
+//        Double testGetTimeLine2 = averageGetTimeLine(30,100);
+//        Double testGetTimeLine3 = averageGetTimeLine(30,500);
+//
+//        System.out.println("--Averge for 30 tests :");
+//        System.out.println("---Creating a post with 10 followers : " + testCreatePost1 + " milliseconds");
+//        System.out.println("---Creating a post with 100 followers : " + testCreatePost2 + " milliseconds");
+//        System.out.println("---Creating a post with 500 followers : " + testCreatePost3 + " milliseconds");
+//        System.out.println("---Getting the timeLine with 10 follows : " + testGetTimeLine1 + " milliseconds");
+//        System.out.println("---Getting the timeLine with 100 follows : " + testGetTimeLine2 + " milliseconds");
+//        System.out.println("---Getting the timeLine with 500 follows : " + testGetTimeLine3 + " milliseconds");
 
         return new User("DummyTest", "testingAccount@mail.mail");
 
     }
-
 
 
     private Long generateTests(int numberOfFollowers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
@@ -249,6 +248,7 @@ public class UtilsEndpoint {
 
 
     }
+
     private Double averageGetTimeLine(int nbTests, int nbUsers) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
 
 
@@ -277,6 +277,7 @@ public class UtilsEndpoint {
 
         //Generating tests accounts
         List<User> usersTest10 = new ArrayList<>();
+        List<UserTiny> usersTinyTest10 = new ArrayList<>();
         User user;
         UserTiny userTiny;
 
@@ -289,6 +290,7 @@ public class UtilsEndpoint {
             userTiny = new UserTiny("Test" + i);
 
             usersTest10.add(user);
+            usersTinyTest10.add(userTiny);
 
             userEndpoint.addUser(
                     user,
@@ -298,7 +300,7 @@ public class UtilsEndpoint {
 
         //The user that will post
         date = new Date();
-        user = new User("OverTestedUser"+ date.getTime(), "TestShowAccount@mail.mail");
+        user = new User("OverTestedUser" + date.getTime(), "TestShowAccount@mail.mail");
         userTiny = new UserTiny("TestShow");
         Entity testedUser = userEndpoint.addUser(
                 user,
@@ -308,19 +310,16 @@ public class UtilsEndpoint {
         //making the User follow the users that have post
         for (User user1 : usersTest10) {
             userEndpoint.follow(user, user1.getId());
+            //creating the posts
+            Post post = new Post(user1.getId(), "Test"+ usersTest10.indexOf(user1), "http://example.org", "short desc", new Date().getTime(), 0);
+
+            //starting time measure
+            postEndpoint.addPost(user1, post);
         }
+
 
         long timeRequestStart;
         long timeRequestFinish;
-
-        for(int i = 0; i< 50; i++) {
-            //creating the posts
-            Post post = new Post(user.getId(), userTiny.name, "http://example.org", "short desc", new Date().getTime(), 0);
-
-            //starting time measure
-            postEndpoint.addPost(user, post);
-        }
-
         timeRequestStart = System.currentTimeMillis();
 
         postEndpoint.getTimeLine(user);

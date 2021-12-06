@@ -107,8 +107,8 @@ public class ShardedCounter {
     /**
      * Memcache service object for Memcache access.
      */
-    private final MemcacheService mc = MemcacheServiceFactory
-            .getMemcacheService();
+//    private final MemcacheService mc = MemcacheServiceFactory
+//            .getMemcacheService();
 
     /**
      * A logger object.
@@ -147,18 +147,18 @@ public class ShardedCounter {
      * @return Summed total of all shards' counts
      */
     public final long getCount() {
-        Long value = (Long) mc.get(kind);
-        if (value != null) {
-            return value;
-        }
+//        Long value = (Long) mc.get(kind);
+//        if (value != null) {
+//            return value;
+//        }
 
         long sum = 0;
         Query query = new Query(kind);
         for (Entity shard : DS.prepare(query).asIterable()) {
             sum += (Long) shard.getProperty(CounterShard.COUNT);
         }
-        mc.put(kind, sum, Expiration.byDeltaSeconds(CACHE_PERIOD),
-                SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+//        mc.put(kind, sum, Expiration.byDeltaSeconds(CACHE_PERIOD),
+//                SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
 
         return sum;
     }
@@ -175,7 +175,7 @@ public class ShardedCounter {
 
         Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
         incrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1);
-        mc.increment(kind, 1);
+//        mc.increment(kind, 1);
     }
 
     /**
@@ -190,9 +190,9 @@ public class ShardedCounter {
 
         Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
         decrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1);
-
-        mc.put(kind, getCount(), Expiration.byDeltaSeconds(CACHE_PERIOD),
-                SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+//
+//        mc.put(kind, getCount(), Expiration.byDeltaSeconds(CACHE_PERIOD),
+//                SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
 
     }
 

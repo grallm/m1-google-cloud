@@ -169,7 +169,7 @@ public class PostEndpoint {
      * @param user Connected user
      * @return Timeline posts
      */
-    @ApiMethod(path = "post/timeLine/{userId}")
+    @ApiMethod(path = "post/timeLine")
     public ArrayList<Post> getTimeLine(User user) throws EntityNotFoundException {
 
         Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user.getId()));
