@@ -12,6 +12,7 @@ import entities.Post;
 import entities.PostForm;
 import entities.ShardedCounter;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -89,7 +90,7 @@ public class PostEndpoint {
      * @return Created Post
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity addPostFile (User user, PostForm postForm) throws BadRequestException, UnauthorizedException {
+    public Entity addPostFile (User user, PostForm postForm) throws BadRequestException, UnauthorizedException, IOException {
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
         }
@@ -99,7 +100,7 @@ public class PostEndpoint {
                 user.getId(),
                 postForm.owner,
                 // Change image string from File to URL
-                uep.uploadFile(postForm.image, user.getId() + ":" + new Date()),
+                uep.uploadFile(postForm.image, user.getId() + "/" + new Date().getTime()),
                 postForm.description,
                 new Date().getTime(),
                 0
@@ -124,7 +125,7 @@ public class PostEndpoint {
         Entity e = new Entity("Post", user.getId() + ":" + (sc.getCount() + 1));
         e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
-        e.setProperty("image", post.image);
+        e.setProperty("image", post.date);
         e.setProperty("body", post.description);
         e.setProperty("date", post.date);
         e.setProperty("likes", 0);

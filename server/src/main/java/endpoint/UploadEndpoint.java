@@ -1,19 +1,15 @@
 package endpoint;
 
-import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.config.Named;
-import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.images.Image;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.tools.cloudstorage.*;
 import com.google.cloud.storage.*;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.ByteBuffer;
 import java.util.Base64;
-import java.util.Date;
 
 
 @Api(name = "instaCrash", version = "v1",
@@ -22,22 +18,30 @@ import java.util.Date;
         namespace = @ApiNamespace(ownerDomain = "tinycrash.ew.r.appspot.com", ownerName = "tinycrash.ew.r.appspot.com", packagePath = ""))
 public class UploadEndpoint {
 
-    public String uploadFile(String content, String fileName) {
+    private final GcsService gcsService = GcsServiceFactory.createGcsService(new RetryParams.Builder()
+            .initialRetryDelayMillis(10)
+            .retryMaxAttempts(10)
+            .totalRetryPeriodMillis(15000)
+            .build());
+
+    public String uploadFile(String content, String fileName) throws IOException {
 
         String bucketName = "tinycrash.appspot.com";
-        String projectId = "tinycrash";
 
         System.out.println(content.substring(0, 100));
         byte[] decodedString = Base64.getDecoder().decode(content);
+        Image img = ImagesServiceFactory.makeImage(decodedString);
 
-        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-        BlobId blobId = BlobId.of(bucketName, fileName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
-        storage.create(blobInfo, decodedString);
+        String imageURL = "https://storage.cloud.google.com/" + bucketName + "/" + fileName + ".jpeg";
 
-        System.out.println("File " + content + " uploaded to bucket " + bucketName + " as " + fileName + " link to asset " + blobInfo.getMediaLink());
+        gcsService.createOrReplace(
+                new GcsFilename(bucketName, fileName + ".jpeg"),
+                new GcsFileOptions.Builder().mimeType("image/jpg").build(),
+                ByteBuffer.wrap(img.getImageData()));
 
-        return blobInfo.getMediaLink();
+        System.out.println("File " + content + " uploaded to bucket " + bucketName + " as " + fileName + " link to asset " + imageURL);
+
+        return imageURL;
     }
 }
 
