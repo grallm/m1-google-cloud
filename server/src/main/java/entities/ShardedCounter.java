@@ -179,7 +179,7 @@ public class ShardedCounter {
     }
 
     /**
-     * Increment the value of this sharded counter.
+     * Decrement the value of this sharded counter.
      */
     public final void decrement() {
         // Find how many shards are in this counter.
