@@ -65,7 +65,7 @@ public class PostEndpoint {
      * @return
      * @throws EntityNotFoundException
      */
-    @ApiMethod(path = "post/getUserPosts", httpMethod = ApiMethod.HttpMethod.GET)
+    @ApiMethod(path = "post/getUserPosts/{userId}", httpMethod = ApiMethod.HttpMethod.GET)
     public List<Entity> getUserPosts(@Named("userId") String userId) throws EntityNotFoundException {
 
         List<Entity> results;
@@ -161,18 +161,16 @@ public class PostEndpoint {
      * @return Timeline posts
      */
     @ApiMethod(path = "post/timeLine/{userId}")
-    public ArrayList<Post> getTimeLine(@Named("userId") String user) throws EntityNotFoundException {
-        // public ArrayList<Post> getTimeLine(User user) throws EntityNotFoundException {
+    public ArrayList<Post> getTimeLine(User user) throws EntityNotFoundException {
 
-        // Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user.getId()));
-        Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user));
+        Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user.getId()));
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(qFollowings);
         List<String> listFollowing = new ArrayList<>();
 
         //Add following accounts ids to a list
         pq.asIterator().forEachRemaining(e -> {
-            listFollowing.add(e.getKey().toString());
+            listFollowing.add(e.getKey().getName());
         });
 
         //If no followings return null
