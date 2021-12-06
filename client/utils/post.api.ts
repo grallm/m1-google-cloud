@@ -15,7 +15,7 @@ export const getAllPosts = async (token?: string | null): Promise<PostEntity[]> 
     const posts = (await res.json()) as EntityList<PostEntity>
 
     return posts?.items.map((post) => ({
-      id: post.key.id,
+      id: post.key.name,
       ...post.properties
     })) || []
   } catch (error) {
@@ -23,5 +23,49 @@ export const getAllPosts = async (token?: string | null): Promise<PostEntity[]> 
     console.error(error)
 
     return []
+  }
+}
+
+/**
+ * Like a post
+ * @param postId
+ * @param accessToken
+ * @returns
+ */
+export const likePost = async (postId: string, accessToken: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`${apiRoute}/like/${postId}?access_token=${accessToken}`, {
+      method: 'POST'
+    })
+    await res.json()
+
+    return res.ok
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error)
+
+    return false
+  }
+}
+
+/**
+ * Remove a like
+ * @param postId
+ * @param accessToken
+ * @returns
+ */
+export const unlikePost = async (postId: string, accessToken: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`${apiRoute}/like/${postId}?access_token=${accessToken}`, {
+      method: 'DELETE'
+    })
+    await res.json()
+
+    return res.ok
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error)
+
+    return false
   }
 }

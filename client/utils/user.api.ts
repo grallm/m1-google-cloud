@@ -40,7 +40,7 @@ export const getUserPosts = async (userId: string): Promise<PostEntity[]> => {
     const posts = (await res.json()) as EntityList<PostEntity>
 
     return posts?.items.map((post) => ({
-      id: post.key.id,
+      id: post.key.name,
       ...post.properties
     })) || []
   } catch (error) {

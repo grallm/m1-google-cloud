@@ -48,7 +48,7 @@ public class LikeEndpoint
 	}
 
 	@ApiMethod(path = "like/{postId}", httpMethod = ApiMethod.HttpMethod.DELETE)
-	public void unlikePost(@Named("postId") String postId, User user) throws UnauthorizedException, EntityNotFoundException {
+	public void unlikePost(@Named("postId") String postId, User user) throws UnauthorizedException {
 		if (user == null) {
 			throw new UnauthorizedException("Invalid credentials");
 		}

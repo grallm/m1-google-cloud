@@ -5,5 +5,5 @@ export interface PostEntity {
   date: string
   body: string
   url: string
-  likes: number
+  likes: string
 }

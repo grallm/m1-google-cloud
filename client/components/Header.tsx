@@ -82,7 +82,7 @@ const Header: React.FC<{}> = () => {
             variant="outline-primary"
             size='lg'
             className='my-4'
-            onClick={() => signIn('google', { callbackUrl: '/' })}
+            onClick={() => signIn('google', { callbackUrl: router.asPath })}
           ><FontAwesomeIcon icon={faGoogle} /> Connexion avec Google</Button>
         </Modal.Body>
         <Modal.Footer>

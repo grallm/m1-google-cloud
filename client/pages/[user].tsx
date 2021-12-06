@@ -16,7 +16,7 @@ const User: NextPage = () => {
   const { user } = router.query
   const [session] = useSession()
 
-  const [showConnectAlert, setShowConnectAlert] = useState(false)
+  const [showSigninAlert, setShowSigninAlert] = useState(false)
   const [posts, setPosts] = useState<PostEntity[] | null>(null)
   const [loadingUser, setLoadingUser] = useState(true)
   const [userState, setUserState] = useState<UserEntity | null>(null)
@@ -89,9 +89,10 @@ const User: NextPage = () => {
                                 setFollowsUser(!followsUser)
                               }
                             })
+                            .catch(() => setFollowsUser(!followsUser))
                         }
                       } else {
-                        setShowConnectAlert(true)
+                        setShowSigninAlert(true)
                       }
                     }}
                   >{followsUser ? 'Se désabonner' : 'S\'abonner'}</Button>
@@ -110,15 +111,18 @@ const User: NextPage = () => {
 
       {posts?.map((post, i) => (
         <div key={i}>
-          <Post post={post} />
+          <Post
+            post={post}
+            showSigninAlert={() => setShowSigninAlert(true)}
+          />
         </div>
       ))
       }
 
       {/* Auth modal */}
       <Modal
-        show={showConnectAlert}
-        onHide={() => setShowConnectAlert(false)}
+        show={showSigninAlert}
+        onHide={() => setShowSigninAlert(false)}
         backdrop="static"
         keyboard={false}
       >
@@ -134,7 +138,7 @@ const User: NextPage = () => {
           ><FontAwesomeIcon icon={faGoogle} /> Connexion avec Google</Button>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setShowConnectAlert(false)}>
+          <Button variant="outline-secondary" onClick={() => setShowSigninAlert(false)}>
             Annuler
           </Button>
         </Modal.Footer>

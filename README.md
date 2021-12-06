@@ -14,7 +14,9 @@ Create a Instagram-like app on Google Cloud and scalable
 
 ## How to create ?
 ### Using the teacher's base
-Projet created from [momo54's one (Pascal MOLLI)]()
+Projet created from [momo54's one (Pascal MOLLI)](https://github.com/momo54/webandcloud/)
+
+[Subject of the project](https://docs.google.com/document/d/1sFkj4hjT3DBQopovQNor5hylzWZQABk6DlL_HmMPW4M/edit)
 
 ### Google Cloud Endpoint
 - https://cloud.google.com/endpoints/docs/frameworks/java/about-cloud-endpoints-frameworks
