@@ -27,6 +27,28 @@ export const getAllPosts = async (token?: string | null): Promise<PostEntity[]> 
 }
 
 /**
+ * Check if likes a post
+ * @param postId
+ * @param accessToken
+ * @returns
+ */
+export const doesLike = async (postId: string, accessToken: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`${apiRoute}/like/${postId}?access_token=${accessToken}`, {
+      method: 'GET'
+    })
+    await res.json()
+
+    return res.ok
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error)
+
+    return false
+  }
+}
+
+/**
  * Like a post
  * @param postId
  * @param accessToken
