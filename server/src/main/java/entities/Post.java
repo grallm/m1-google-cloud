@@ -12,7 +12,7 @@ public class Post implements Comparable<Post> {
     public String owner;
 
     /**
-     * Image URL
+     * Image URL or Base64
      */
     public String image;
 

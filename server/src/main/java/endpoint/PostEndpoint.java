@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
 import entities.ShardedCounter;
@@ -87,10 +88,19 @@ public class PostEndpoint {
      * @return Created Post
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity addPost(User user, Post post) throws BadRequestException {
+    public Entity addPostFile (User user, Post post) throws BadRequestException, UnauthorizedException {
+        if (user == null) {
+            throw new UnauthorizedException("Invalid credentials");
+        }
 
         UploadEndpoint uep = new UploadEndpoint();
+        // Change image string from File to URL
+        post.image = uep.uploadFile(post.image, post.ownerId + ":" + post.date);
 
+        return addPost(user, post);
+    }
+
+    public Entity addPost(User user, Post post) throws BadRequestException {
         ShardedCounter sc = new ShardedCounter("Post:" + user.getId());
 
 
@@ -98,7 +108,7 @@ public class PostEndpoint {
         Entity e = new Entity("Post", user.getId() + ":" + (sc.getCount() + 1));
         e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
- //       e.setProperty("image", uep.uploadFile(post.image, post.ownerId + ":" + post.date));
+        e.setProperty("image", post.image);
         e.setProperty("body", post.description);
         e.setProperty("date", post.date);
         e.setProperty("likes", 0);

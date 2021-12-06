@@ -4,6 +4,7 @@ import { getAllUsers } from '../utils/user.api'
 import { UserEntity } from '../entities/User.entity'
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import Link from 'next/link'
+import Head from 'next/head'
 
 const Encounter: NextPage = () => {
   const [users, setUsers] = useState<UserEntity[] | null>(null)
@@ -19,6 +20,11 @@ const Encounter: NextPage = () => {
 
   return (
     <div className='pb-5'>
+      <Head>
+        <title>InstaCrash - Rencontrer</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
       <h2>Rencontrer des collègues !</h2>
 
       <Row xs={3} className='g-2'>
