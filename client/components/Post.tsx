@@ -77,7 +77,9 @@ const Post: React.FC<Props> = ({ post, showSigninAlert }) => {
 
   const formatDate = (timestamp: string) => {
     const date = new Date(parseInt(timestamp))
-    return `${date.toLocaleDateString('fr')} ${date.getHours()}:${date.getMinutes()}`
+
+    const min = date.getMinutes()
+    return `${date.toLocaleDateString('fr')} ${date.getHours()}:${min < 10 ? `0${min}` : min}`
   }
 
   return (

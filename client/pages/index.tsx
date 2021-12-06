@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react'
 import { Button, Container, Modal, Spinner } from 'react-bootstrap'
 import Post from '../components/Post'
 import { PostEntity } from '../entities/Post.entity'
-import { getAllPosts } from '../utils/post.api'
+import { getAllPosts, getTimeline } from '../utils/post.api'
 
 const Home: NextPage = () => {
   const [session, loading] = useSession()
 
   const [posts, setPosts] = useState<PostEntity[] | null>(null)
+  const [discoverPosts, setDiscoverPosts] = useState<PostEntity[] | null>(null)
   const [showSigninAlert, setShowSigninAlert] = useState(false)
 
   /**
@@ -21,10 +22,23 @@ const Home: NextPage = () => {
    */
   useEffect(() => {
     if (!loading) {
-      getAllPosts(session?.user?.accessToken || null)
+      getAllPosts()
         .then(posts => {
-          setPosts(posts)
+          // If logged in, add in discover
+          session?.user
+            ? setDiscoverPosts(posts)
+            : setPosts(posts)
         })
+
+      // Load timeline if connected
+      if (session?.user) {
+        console.log('timeline')
+        getTimeline(session.user.accessToken)
+          .then(posts => {
+            setPosts(posts)
+            console.log('end timeline')
+          })
+      }
     }
   }, [loading, session])
 
@@ -35,6 +49,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* Timeline if logged in, else all posts */}
       {
         !posts
           ? (
@@ -50,6 +65,25 @@ const Home: NextPage = () => {
               />
             </div>
           ))
+      }
+
+      {/* Discover */}
+      {
+        discoverPosts && discoverPosts.length > 0 && (
+          <div>
+            <h3 className='mb-3'>Découvrir plus</h3>
+            {
+              discoverPosts?.map((post, i) => (
+                <div key={i}>
+                  <Post
+                    post={post}
+                    showSigninAlert={() => setShowSigninAlert(true)}
+                  />
+                </div>
+              ))
+            }
+          </div>
+        )
       }
 
       {/* Auth modal */}

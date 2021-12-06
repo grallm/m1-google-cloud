@@ -19,41 +19,30 @@ import java.util.*;
 public class PostEndpoint {
     /**
      * Get all 20 last Posts
-     * If access_token given gets user's timeline
-     *
-     * @param user If access_token given
      * @return All Posts
      */
     @ApiMethod(name = "getAllPosts", path = "post", httpMethod = ApiMethod.HttpMethod.GET)
-    public List<Entity> getAllPosts(User user) throws EntityNotFoundException {
+    public List<Entity> getAllPosts() throws EntityNotFoundException {
         List<Entity> results = new ArrayList<>();
 
-        // Gets all posts if no user
-        if (user == null) {
-            Query q = new Query("Post").addSort("date", Query.SortDirection.DESCENDING);
+        // Gets all posts
+        Query q = new Query("Post").addSort("date", Query.SortDirection.DESCENDING);
 
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            PreparedQuery pq = datastore.prepare(q);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pq = datastore.prepare(q);
 
-            results = pq.asList(FetchOptions.Builder.withLimit(2000));
+        results = pq.asList(FetchOptions.Builder.withLimit(2000));
 
-            /*
-             * FOR TESTING number of likes
-             */
+        /*
+         * Number of likes
+         */
+        for (Entity e : results) {
 
-            for (Entity e : results) {
+            ShardedCounter sc = new ShardedCounter(e.getKey().getName());
 
-                ShardedCounter sc = new ShardedCounter(e.getKey().getName());
-
-                e.setProperty("likes", sc.getCount());
-
-            }
+            e.setProperty("likes", sc.getCount());
 
         }
-
-        /*else {
-            results = getTimeLine(user);
-        }*/
 
         return results;
     }
