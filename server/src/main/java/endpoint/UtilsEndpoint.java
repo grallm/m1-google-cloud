@@ -72,7 +72,7 @@ public class UtilsEndpoint {
             // Add User to Datastore
 
             user = new User(Integer.toString(i), "autoGen" + i + "@mail.mail");
-            userTiny = new UserTiny("Bob" + i, 0);
+            userTiny = new UserTiny("Bob" + i);
 
             userList.add(user);
 
@@ -189,7 +189,7 @@ public class UtilsEndpoint {
         for (int i = 0; i < numberOfFollowers; i++) {
 
             user = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
-            userTiny = new UserTiny("Test" + i, 0);
+            userTiny = new UserTiny("Test" + i);
 
             usersTest10.add(user);
 
@@ -201,7 +201,7 @@ public class UtilsEndpoint {
 
         //The user that will post
         user = new User("TestedUser", "TestShowAccount@mail.mail");
-        userTiny = new UserTiny("TestShow", 0);
+        userTiny = new UserTiny("TestShow");
         Entity testedUser = userEndpoint.addUser(
                 user,
                 userTiny
@@ -287,7 +287,7 @@ public class UtilsEndpoint {
 
             date = new Date();
             user = new User(Integer.toString(i) + date.getTime(), "testingAccountAgain" + i + "@mail.mail");
-            userTiny = new UserTiny("Test" + i, 0);
+            userTiny = new UserTiny("Test" + i);
 
             usersTest10.add(user);
             usersTinyTest10.add(userTiny);
@@ -301,7 +301,7 @@ public class UtilsEndpoint {
         //The user that will post
         date = new Date();
         user = new User("OverTestedUser" + date.getTime(), "TestShowAccount@mail.mail");
-        userTiny = new UserTiny("TestShow", 0);
+        userTiny = new UserTiny("TestShow");
         Entity testedUser = userEndpoint.addUser(
                 user,
                 userTiny

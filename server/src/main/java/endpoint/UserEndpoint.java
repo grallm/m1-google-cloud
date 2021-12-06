@@ -62,6 +62,7 @@ public class UserEndpoint {
             e.setProperty("name", userTiny.name);
             e.setProperty("listFollowing", new ArrayList<String>());
             e.setProperty("followings", 0);
+            e.setProperty("followers", 0);
         }
 
         Date now = new Date();
@@ -112,7 +113,7 @@ public class UserEndpoint {
 
 
     /**
-     * Get the number of follo
+     * Get the number of follow
      * http://localhost:8080/_ah/api/instaCrash/v1/user/name/ArKeid0s
      *
      * @param userId id of the User we want information of
@@ -195,7 +196,6 @@ public class UserEndpoint {
     @ApiMethod(path = "user/{userToFollow}/follow", httpMethod = ApiMethod.HttpMethod.POST)
     public Entity follow(User user, @Named("userToFollow") String userToFollow) throws EntityNotFoundException, UnauthorizedException {
 
-
         // Not connected
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
@@ -203,21 +203,30 @@ public class UserEndpoint {
 
         // Check if user is registered
         Entity userChecked = getUser(user.getId());
+        Entity userToFollowEntity = getUser(userToFollow);
 
         if (userChecked != null && getIsFollowing(user.getId(), userToFollow) != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
             int followings = (int) userChecked.getProperty("followings");
+            int followers = (int) userToFollowEntity.getProperty("followers");
 
             if (listFollowing == null || listFollowing.isEmpty()) {
                 listFollowing = new ArrayList<>();
 
             }
             listFollowing.add(userToFollow);
+
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            Transaction txn = datastore.beginTransaction();
+
             userChecked.setProperty("listFollowing", listFollowing);
             userChecked.setProperty("followings", followings + 1);
 
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            userToFollowEntity.setProperty("followers", followers + 1);
+
             datastore.put(userChecked);
+            datastore.put(userToFollowEntity);
+            txn.commit();
         }
 
         return userChecked;
@@ -255,21 +264,29 @@ public class UserEndpoint {
 
         // Check if user is registered
         Entity userChecked = getUser(user.getId());
+        Entity userToUnfollowEntity = getUser(userToUnfollow);
 
         if (userChecked != null && getIsFollowing(user.getId(), userToUnfollow) != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
             int followings = (int) userChecked.getProperty("followings");
+            int followers = (int) userChecked.getProperty("followers");
 
             if (listFollowing == null || listFollowing.isEmpty()) {
                 listFollowing = new ArrayList<>();
 
             }
             listFollowing.remove(userToUnfollow);
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            Transaction txn = datastore.beginTransaction();
+
             userChecked.setProperty("listFollowing", listFollowing);
             userChecked.setProperty("followings", followings - 1);
 
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            userToUnfollowEntity.setProperty("followers", followers - 1);
+
             datastore.put(userChecked);
+            datastore.put(userToUnfollowEntity);
+            txn.commit();
         }
 
         return userChecked;
