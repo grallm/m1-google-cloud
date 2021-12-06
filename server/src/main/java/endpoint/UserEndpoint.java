@@ -62,7 +62,6 @@ public class UserEndpoint {
             e.setProperty("name", userTiny.name);
             e.setProperty("listFollowing", new ArrayList<String>());
             e.setProperty("followings", 0);
-            e.setProperty("followers", 0);
         }
 
         Date now = new Date();
@@ -205,10 +204,9 @@ public class UserEndpoint {
         Entity userChecked = getUser(user.getId());
         Entity userToFollowEntity = getUser(userToFollow);
 
-        if (userChecked != null && getIsFollowing(user.getId(), userToFollow) != null && !userChecked.equals(userToFollowEntity)) {
+        if (userChecked != null && getIsFollowing(user.getId(), userToFollow) != null && userChecked != userToFollowEntity) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
-            int followings = (int) userChecked.getProperty("followings");
-            int followers = (int) userToFollowEntity.getProperty("followers");
+
 
             if (listFollowing == null || listFollowing.isEmpty()) {
                 listFollowing = new ArrayList<>();
@@ -220,9 +218,7 @@ public class UserEndpoint {
             Transaction txn = datastore.beginTransaction();
 
             userChecked.setProperty("listFollowing", listFollowing);
-            userChecked.setProperty("followings", followings + 1);
-
-            userToFollowEntity.setProperty("followers", followers + 1);
+            userChecked.setProperty("followings", listFollowing.size());
 
             datastore.put(userChecked);
             datastore.put(userToFollowEntity);
@@ -266,10 +262,8 @@ public class UserEndpoint {
         Entity userChecked = getUser(user.getId());
         Entity userToUnfollowEntity = getUser(userToUnfollow);
 
-        if (userChecked != null && getIsFollowing(user.getId(), userToUnfollow) != null && !userChecked.equals(userToUnfollowEntity)) {
+        if (userChecked != null && getIsFollowing(user.getId(), userToUnfollow) != null && userChecked != userToUnfollowEntity) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
-            int followings = (int) userChecked.getProperty("followings");
-            int followers = (int) userChecked.getProperty("followers");
 
             if (listFollowing == null || listFollowing.isEmpty()) {
                 listFollowing = new ArrayList<>();
@@ -280,9 +274,7 @@ public class UserEndpoint {
             Transaction txn = datastore.beginTransaction();
 
             userChecked.setProperty("listFollowing", listFollowing);
-            userChecked.setProperty("followings", followings - 1);
-
-            userToUnfollowEntity.setProperty("followers", followers - 1);
+            userChecked.setProperty("followings",  listFollowing.size());
 
             datastore.put(userChecked);
             datastore.put(userToUnfollowEntity);
