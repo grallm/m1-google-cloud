@@ -26,8 +26,8 @@ const Home: NextPage = () => {
         .then(posts => {
           // If logged in, add in discover
           session?.user
-            ? setDiscoverPosts(posts)
-            : setPosts(posts)
+            ? setDiscoverPosts(posts.slice(0, 20))
+            : setPosts(posts.slice(0, 20))
         })
 
       // Load timeline if connected
