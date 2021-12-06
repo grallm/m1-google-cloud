@@ -9,8 +9,10 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.cloud.storage.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Date;
 
 
@@ -19,42 +21,23 @@ import java.util.Date;
         clientIds = "616939906371-cnpc0ocrc71ae3hbann3glgiktfgregk.apps.googleusercontent.com",
         namespace = @ApiNamespace(ownerDomain = "tinycrash.ew.r.appspot.com", ownerName = "tinycrash.ew.r.appspot.com", packagePath = ""))
 public class UploadEndpoint {
-    @ApiMethod(
-            name = "uploadFile",
-            path = "upload_file",
-            httpMethod = ApiMethod.HttpMethod.POST
-    )
-    public String uploadFile(User user, @Named("filePath") String filePath) throws IOException, UnauthorizedException {
-        if (user == null) {
-            throw new UnauthorizedException("Invalid credentials");
-        }
+
+    public String uploadFile(String content, String fileName) {
 
         String bucketName = "tinycrash.appspot.com";
         String projectId = "tinycrash";
         Date date = new Date();
-        final String finalFileName = user.getId() + date.getTime();
 
-        checkFileExtension(filePath);
+        byte[] decodedString = Base64.getDecoder().decode(content.getBytes(StandardCharsets.UTF_8));
 
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-        BlobId blobId = BlobId.of(bucketName, finalFileName);
+        BlobId blobId = BlobId.of(bucketName, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
-        storage.create(blobInfo, Files.readAllBytes(Paths.get(filePath)));
+        storage.create(blobInfo, decodedString);
 
-        System.out.println("File " + filePath + " uploaded to bucket " + bucketName + " as " + finalFileName + " link to asset " + blobInfo.getMediaLink());
+        System.out.println("File " + content + " uploaded to bucket " + bucketName + " as " + fileName + " link to asset " + blobInfo.getMediaLink());
 
         return blobInfo.getMediaLink();
-    }
-
-    private void checkFileExtension(String fileName) {
-        if (fileName != null && fileName.contains(".")) {
-            String[] allowedExt = {".jpg", ".jpeg", ".png", ".gif"};
-            for (String ext : allowedExt) {
-                if (fileName.endsWith(ext)) {
-                    return;
-                }
-            }
-        }
     }
 }
 

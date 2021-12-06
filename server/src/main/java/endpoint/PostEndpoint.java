@@ -6,10 +6,12 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
 import entities.ShardedCounter;
 
+import java.io.IOException;
 import java.util.*;
 
 @Api(name = "instaCrash", version = "v1",
@@ -85,12 +87,12 @@ public class PostEndpoint {
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
     public Entity addPost(User user, Post post) throws BadRequestException {
-
+        UploadEndpoint uep = new UploadEndpoint();
         // Add post to Datastore
         Entity e = new Entity("Post", user.getId() + ":" + post.date);
         e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
-        e.setProperty("image", post.image);
+        e.setProperty("image", uep.uploadFile(post.image, post.ownerId + ":" + post.date));
         e.setProperty("body", post.description);
         e.setProperty("date", post.date);
         e.setProperty("likes", 0);
