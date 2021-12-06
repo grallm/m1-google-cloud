@@ -61,6 +61,7 @@ public class UserEndpoint {
             e.setProperty("email", user.getEmail());
             e.setProperty("name", userTiny.name);
             e.setProperty("listFollowing", new ArrayList<String>());
+            e.setProperty("followings", 0);
         }
 
         Date now = new Date();
@@ -203,8 +204,9 @@ public class UserEndpoint {
         // Check if user is registered
         Entity userChecked = getUser(user.getId());
 
-        if (userChecked != null) {
+        if (userChecked != null && getIsFollowing(user.getId(), userToFollow) != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
+            int followings = (int) userChecked.getProperty("followings");
 
             if (listFollowing == null || listFollowing.isEmpty()) {
                 listFollowing = new ArrayList<>();
@@ -212,6 +214,7 @@ public class UserEndpoint {
             }
             listFollowing.add(userToFollow);
             userChecked.setProperty("listFollowing", listFollowing);
+            userChecked.setProperty("followings", followings + 1);
 
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             datastore.put(userChecked);
@@ -255,6 +258,7 @@ public class UserEndpoint {
 
         if (userChecked != null && getIsFollowing(user.getId(), userToUnfollow) != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
+            int followings = (int) userChecked.getProperty("followings");
 
             if (listFollowing == null || listFollowing.isEmpty()) {
                 listFollowing = new ArrayList<>();
@@ -262,6 +266,7 @@ public class UserEndpoint {
             }
             listFollowing.remove(userToUnfollow);
             userChecked.setProperty("listFollowing", listFollowing);
+            userChecked.setProperty("followings", followings - 1);
 
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             datastore.put(userChecked);

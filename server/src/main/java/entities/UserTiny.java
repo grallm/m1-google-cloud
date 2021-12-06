@@ -6,11 +6,13 @@ import java.util.List;
 
 public class UserTiny {
     public String name;
-    public List<String> following;
+    public List<String> listFollowings;
+    public int followings;
 
-    public UserTiny(String name) {
+    public UserTiny(String name, int followings) {
         this.name = name;
-        this.following = new ArrayList<>();
+        this.listFollowings = new ArrayList<>();
+        this.followings = followings;
     }
     public UserTiny() {};
 }
