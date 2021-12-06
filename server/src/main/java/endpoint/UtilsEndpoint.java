@@ -307,7 +307,7 @@ public class UtilsEndpoint {
                 userTiny
         );
 
-        //making the User follow the users that have post
+        //Making the users follow our TestUser, and posting one post
         for (User user1 : usersTest10) {
             userEndpoint.follow(user, user1.getId());
             //creating the posts

@@ -6,12 +6,12 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
 import entities.ShardedCounter;
 
-import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Api(name = "instaCrash", version = "v1",
@@ -21,6 +21,7 @@ import java.util.*;
 public class PostEndpoint {
     /**
      * Get all 20 last Posts
+     *
      * @return All Posts
      */
     @ApiMethod(name = "getAllPosts", path = "post", httpMethod = ApiMethod.HttpMethod.GET)
@@ -87,9 +88,14 @@ public class PostEndpoint {
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
     public Entity addPost(User user, Post post) throws BadRequestException {
+
         UploadEndpoint uep = new UploadEndpoint();
+
+        ShardedCounter sc = new ShardedCounter("Post:" + user.getId());
+
+
         // Add post to Datastore
-        Entity e = new Entity("Post", user.getId() + ":" + post.date);
+        Entity e = new Entity("Post", user.getId() + ":" + (sc.getCount() + 1));
         e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
         e.setProperty("image", uep.uploadFile(post.image, post.ownerId + ":" + post.date));
@@ -101,6 +107,9 @@ public class PostEndpoint {
         Transaction txn = datastore.beginTransaction();
         datastore.put(e);
         txn.commit();
+
+        sc.increment();
+
 
         return e;
     }
@@ -161,7 +170,7 @@ public class PostEndpoint {
      * @return Timeline posts
      */
     @ApiMethod(path = "post/timeLine")
-    public List<Post> getTimeLine(User user) throws EntityNotFoundException {
+    public List<Entity> getTimeLine(User user) throws EntityNotFoundException {
 
 //        System.out.println("--- " + KeyFactory.createKey("User", user.getId().toString()).getName());
 //        System.out.println("--- " + user.getId());
@@ -175,30 +184,100 @@ public class PostEndpoint {
         if (listFollowing.isEmpty()) {
             //debug
             System.out.println("Empty followers");
-            return null;
+            return new ArrayList<>();
         }
 
-        ArrayList<Post> posts = new ArrayList<>();
-        for (String i : listFollowing) {
-         //   System.out.println("Check Following post : " + i);
+        Key key;
+        ShardedCounter sc;
+        Entity e = null;
+        List<Entity> result = new ArrayList<>();
 
-            for (Entity e : getUserPosts(i)) {
-//                System.out.println("--post found");
-                posts.add(new Post(
-                        (String) e.getProperty("ownerId"),
-                        (String) e.getProperty("owner"),
-                        (String) e.getProperty("image"),
-                        (String) e.getProperty("body"),
-                        (long) e.getProperty("date"),
-                        (long) e.getProperty("likes")
-                ));
+        Date date;
+        Instant now = Instant.now();
+        // ajoute le dernier post de chaque personne follow à la liste
+        boolean flag;
+        for (String needYourPosts : listFollowing) {
+            flag = true;
+            sc = new ShardedCounter("Post:" + needYourPosts);
+            long i = sc.getCount();
+
+            while (flag && i > 0) {
+
+                key = KeyFactory.createKey("Post", needYourPosts + ":" + i);
+
+                i--;
+
+                try {
+
+                    e = datastore.get(key);
+                    date =  new Date((long) e.getProperty("date"));
+
+                    if (date.toInstant().isAfter(now.minus(1, ChronoUnit.DAYS))) {
+
+                        result.add(e);
+
+                    } else {
+                        flag = false;
+                    }
+                } catch (EntityNotFoundException exception) {
+                    //TODO : Handle this
+                    System.out.println("---- Not found : " + key.getName());
+                    flag = false;
+                }
             }
+
         }
 
-        Collections.sort(posts, Comparator.comparingLong(Post::getDate)); // Ascending
-        Collections.reverse(posts); // Descending
 
-        return posts;
+        //This cost a LOT, need to improve
+        result.sort(Comparator.comparing(entity -> (new Date((long)entity.getProperty("date")))));
+
+        List<Entity> toReturn = new ArrayList<>();
+        if (result.size() > 20)
+            toReturn = result.subList(0, 19);
+        else if (result.size() > 0)
+            toReturn = result.subList(0, result.size() - 1);
+        else System.out.println("------ AUCUNE TL");
+
+        System.out.println(result.size());
+
+        return toReturn;
+
+        //Post Key("Post", userId + i);
+        // i = postNumber
+        //each time a post is added : Add with a number
+/*
+        Query qPosts = new Query("Post")
+                .setFilter(new Query.FilterPredicate("ownerId", Query.FilterOperator.IN, listFollowing))
+                .addSort("date", Query.SortDirection.DESCENDING);
+        PreparedQuery pq = datastore.prepare(qPosts);
+
+        return pq.asList(FetchOptions.Builder.withLimit(20));
+
+
+ */
+
+//
+//        for (String i : listFollowing) {
+//            //   System.out.println("Check Following post : " + i);
+//
+//            for (Entity e : getUserPosts(i)) {
+////                System.out.println("--post found");
+//                posts.add(new Post(
+//                        (String) e.getProperty("ownerId"),
+//                        (String) e.getProperty("owner"),
+//                        (String) e.getProperty("image"),
+//                        (String) e.getProperty("body"),
+//                        (long) e.getProperty("date"),
+//                        (long) e.getProperty("likes")
+//                ));
+//            }
+//        }
+//
+//        posts.sort(Comparator.comparingLong(Post::getDate)); // Ascending
+//        Collections.reverse(posts); // Descending
+//
+//        return posts;
 
 /*
          //OLD VERSION WORKS ! But scaling is questionable
@@ -213,7 +292,7 @@ public class PostEndpoint {
         pq.asIterator().forEachRemaining(entity ->
         {
             followList.add(entity.getProperty("following"));
-            System.out.println("Value :" + entity.getProperty("following"));
+           // System.out.println("Value :" + entity.getProperty("following"));
         });
 
         // If follows nobody, return null
@@ -230,6 +309,7 @@ public class PostEndpoint {
 */
 
     }
+
 }
 
 /**
