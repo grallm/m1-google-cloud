@@ -17,6 +17,7 @@ export default NextAuth({
       // https://blog.srij.dev/nextauth-google-access-token
       if (account?.accessToken) {
         token.accessToken = account.accessToken
+        token.userId = account.id
 
         // Register user on Java Server
         if (user) {
@@ -36,6 +37,7 @@ export default NextAuth({
       if (session.user && userOrToken.accessToken) {
         // Adding accessToken from JWT into Session
         session.user.accessToken = userOrToken.accessToken as string
+        session.user.userId = userOrToken.userId as string
 
         // Add useful User data to session
         const res = await fetch(`${apiRoute}/user/fromToken?access_token=${userOrToken.accessToken}`)

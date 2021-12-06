@@ -74,28 +74,34 @@ const User: NextPage = () => {
               <div className='d-flex align-items-center justify-content-between'>
                 <div className='d-flex align-items-center'>
                   <h3 className='m-0 me-3'>{userState.name}</h3>
-                  <Button
-                    variant={followsUser ? 'outline-primary' : 'primary'}
-                    onClick={() => {
-                      // Connected
-                      if (session) {
-                        setFollowsUser(!followsUser)
+                  {
+                    userState.id === session?.user?.userId
+                      ? <div className='text-black-50'>(Vous)</div>
+                      : (
+                        <Button
+                          variant={followsUser ? 'outline-primary' : 'primary'}
+                          onClick={() => {
+                            // Connected
+                            if (session) {
+                              setFollowsUser(!followsUser)
 
-                        if (session?.user?.accessToken && typeof user === 'string') {
-                          (followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken))
-                            .then(success => {
-                              // If didn't work, rollback
-                              if (!success) {
-                                setFollowsUser(!followsUser)
+                              if (session?.user?.accessToken && typeof user === 'string') {
+                                (followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken))
+                                  .then(success => {
+                                    // If didn't work, rollback
+                                    if (!success) {
+                                      setFollowsUser(!followsUser)
+                                    }
+                                  })
+                                  .catch(() => setFollowsUser(!followsUser))
                               }
-                            })
-                            .catch(() => setFollowsUser(!followsUser))
-                        }
-                      } else {
-                        setShowSigninAlert(true)
-                      }
-                    }}
-                  >{followsUser ? 'Se désabonner' : 'S\'abonner'}</Button>
+                            } else {
+                              setShowSigninAlert(true)
+                            }
+                          }}
+                        >{followsUser ? 'Se désabonner' : 'S\'abonner'}</Button>
+                      )
+                  }
                 </div>
 
                 <div>

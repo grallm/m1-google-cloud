@@ -26,9 +26,9 @@ public class UploadEndpoint {
 
         String bucketName = "tinycrash.appspot.com";
         String projectId = "tinycrash";
-        Date date = new Date();
 
-        byte[] decodedString = Base64.getDecoder().decode(content.getBytes(StandardCharsets.UTF_8));
+        System.out.println(content.substring(0, 100));
+        byte[] decodedString = Base64.getDecoder().decode(content);
 
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
         BlobId blobId = BlobId.of(bucketName, fileName);

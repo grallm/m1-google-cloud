@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
+import entities.PostForm;
 import entities.ShardedCounter;
 
 import java.time.Instant;
@@ -88,14 +89,21 @@ public class PostEndpoint {
      * @return Created Post
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity addPostFile (User user, Post post) throws BadRequestException, UnauthorizedException {
+    public Entity addPostFile (User user, PostForm postForm) throws BadRequestException, UnauthorizedException {
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
         }
 
         UploadEndpoint uep = new UploadEndpoint();
-        // Change image string from File to URL
-        post.image = uep.uploadFile(post.image, post.ownerId + ":" + post.date);
+        Post post = new Post(
+                user.getId(),
+                postForm.owner,
+                // Change image string from File to URL
+                uep.uploadFile(postForm.image, user.getId() + ":" + new Date()),
+                postForm.description,
+                new Date().getTime(),
+                0
+        );
 
         return addPost(user, post);
     }

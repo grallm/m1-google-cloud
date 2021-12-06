@@ -22,7 +22,6 @@ public class Post implements Comparable<Post> {
     public long likes;
 
     public Post(String ownerId, String owner, String image, String description, long date, long likes) {
-        Date d = new Date();
         this.ownerId = ownerId;
         this.owner = owner;
         this.image = image;
