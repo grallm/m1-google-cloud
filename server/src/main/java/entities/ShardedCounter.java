@@ -190,7 +190,10 @@ public class ShardedCounter {
 
         Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
         decrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1);
-        mc.increment(kind, 1);
+
+        mc.put(kind, getCount(), Expiration.byDeltaSeconds(CACHE_PERIOD),
+                SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+
     }
 
     /**
@@ -268,9 +271,9 @@ public class ShardedCounter {
      * @param key
      *            the entity key to update or create
      * @param prop
-     *            the property name to be incremented
+     *            the property name to be decremented
      * @param decrement
-     *            the amount by which to increment
+     *            the amount by which to decrement
      * @param initialValue
      *            the value to use if the entity does not exist
      */
