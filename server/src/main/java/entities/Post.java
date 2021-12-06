@@ -17,11 +17,12 @@ public class Post implements Comparable<Post> {
     public String image;
 
     public String description;
-    public Date date;
+    public long date;
 
     public long likes;
 
-    public Post(String ownerId, String owner, String image, String description, Date date, long likes) {
+    public Post(String ownerId, String owner, String image, String description, long date, long likes) {
+        Date d = new Date();
         this.ownerId = ownerId;
         this.owner = owner;
         this.image = image;
@@ -30,16 +31,12 @@ public class Post implements Comparable<Post> {
         this.likes = likes;
     }
 
-    /**
-     * Allow comparison with other posts by date
-     * @param p
-     * @return
-     */
+    public long getDate(){
+        return date;
+    }
+
     @Override
-    public int compareTo(Post p) {
-        if (date == null || p.date == null) {
-            return 0;
-        }
-        return date.compareTo(p.date);
+    public int compareTo(Post o) {
+        return 0;
     }
 }

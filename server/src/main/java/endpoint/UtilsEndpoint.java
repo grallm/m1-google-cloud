@@ -88,7 +88,7 @@ public class UtilsEndpoint {
                             userTiny.name,
                             "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
                             "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil",
-                            new Date(), 0
+                            new Date().getTime(), 0
                         )
                 );
 

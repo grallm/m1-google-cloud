@@ -200,13 +200,13 @@ public class PostEndpoint {
                         (String) e.getProperty("owner"),
                         (String) e.getProperty("url"),
                         (String) e.getProperty("body"),
-                        (Date) e.getProperty("date"),
+                        (long) e.getProperty("date"),
                         (long) e.getProperty("likes")
                 ));
             }
         }
 
-        Collections.sort(posts); // Ascending
+        Collections.sort(posts, Comparator.comparingLong(Post::getDate)); // Ascending
         Collections.reverse(posts); // Descending
 
         return posts;
