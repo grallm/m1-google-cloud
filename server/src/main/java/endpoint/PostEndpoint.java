@@ -159,17 +159,15 @@ public class PostEndpoint {
      * @return Timeline posts
      */
     @ApiMethod(path = "post/timeLine")
-    public ArrayList<Post> getTimeLine(User user) throws EntityNotFoundException {
+    public List<Post> getTimeLine(User user) throws EntityNotFoundException {
 
-        Query qFollowings = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.EQUAL, user.getId()));
+//        System.out.println("--- " + KeyFactory.createKey("User", user.getId().toString()).getName());
+//        System.out.println("--- " + user.getId());
+
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery pq = datastore.prepare(qFollowings);
-        List<String> listFollowing = new ArrayList<>();
 
-        //Add following accounts ids to a list
-        pq.asIterator().forEachRemaining(e -> {
-            listFollowing.add(e.getKey().getName());
-        });
+        Entity userEntity = datastore.get(KeyFactory.createKey("User", user.getId()));
+        List<String> listFollowing = (List<String>) userEntity.getProperty("listFollowing");
 
         //If no followings return null
         if (listFollowing.isEmpty()) {
@@ -180,10 +178,10 @@ public class PostEndpoint {
 
         ArrayList<Post> posts = new ArrayList<>();
         for (String i : listFollowing) {
-            System.out.println("Check Following post : " + i);
+         //   System.out.println("Check Following post : " + i);
 
             for (Entity e : getUserPosts(i)) {
-                System.out.println("--post found");
+//                System.out.println("--post found");
                 posts.add(new Post(
                         (String) e.getProperty("ownerId"),
                         (String) e.getProperty("owner"),
@@ -200,20 +198,20 @@ public class PostEndpoint {
 
         return posts;
 
-
-        /* //OLD VERSION WORKS ! But scaling is questionable
+/*
+         //OLD VERSION WORKS ! But scaling is questionable
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         //get all followers of user
-        Query qFollowers = new Query("Follow").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.EQUAL, userId));
+        Query qFollowers = new Query("Follow").setFilter(new Query.FilterPredicate("user", Query.FilterOperator.EQUAL, user.getId()));
 
         PreparedQuery pq = datastore.prepare(qFollowers);
         List<Object> followList = new ArrayList<>();
 
         pq.asIterator().forEachRemaining(entity ->
         {
-            followList.add(entity.getProperty("user"));
-            System.out.println("Value :" + entity.getProperty("user"));
+            followList.add(entity.getProperty("following"));
+            System.out.println("Value :" + entity.getProperty("following"));
         });
 
         // If follows nobody, return null
@@ -222,13 +220,13 @@ public class PostEndpoint {
             return null;
         }
 
-        Query qFollowerPosts = new Query("Post").setFilter(new Query.FilterPredicate("owner", Query.FilterOperator.IN, followList));
+        Query qFollowerPosts = new Query("Post").setFilter(new Query.FilterPredicate("ownerId", Query.FilterOperator.IN, followList));
 
         pq = datastore.prepare(qFollowerPosts);
 
         return pq.asList(FetchOptions.Builder.withLimit(20));
+*/
 
-         */
     }
 }
 

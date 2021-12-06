@@ -150,22 +150,22 @@ public class UtilsEndpoint {
 
     @ApiMethod(name = "timeTests", path = "utils/timeTests", httpMethod = ApiMethod.HttpMethod.GET)
     public User timeTests() throws UnauthorizedException, EntityNotFoundException, BadRequestException {
-        Double testGetTimeLine1 = averageGetTimeLine(1, 10);
+
 //        Double testCreatePost1 = averageCreatePost(30, 10);
 //        Double testCreatePost2 = averageCreatePost(30,100);
 //        Double testCreatePost3 = averageCreatePost(30,500);
-//
-//        Double testGetTimeLine1 = averageGetTimeLine(30, 10);
-//        Double testGetTimeLine2 = averageGetTimeLine(30,100);
-//        Double testGetTimeLine3 = averageGetTimeLine(30,500);
-//
-//        System.out.println("--Averge for 30 tests :");
+
+        Double testGetTimeLine1 = averageGetTimeLine(30, 10);
+        Double testGetTimeLine2 = averageGetTimeLine(30,100);
+        Double testGetTimeLine3 = averageGetTimeLine(30,500);
+
+        System.out.println("--Averge for 30 tests :");
 //        System.out.println("---Creating a post with 10 followers : " + testCreatePost1 + " milliseconds");
 //        System.out.println("---Creating a post with 100 followers : " + testCreatePost2 + " milliseconds");
 //        System.out.println("---Creating a post with 500 followers : " + testCreatePost3 + " milliseconds");
-//        System.out.println("---Getting the timeLine with 10 follows : " + testGetTimeLine1 + " milliseconds");
-//        System.out.println("---Getting the timeLine with 100 follows : " + testGetTimeLine2 + " milliseconds");
-//        System.out.println("---Getting the timeLine with 500 follows : " + testGetTimeLine3 + " milliseconds");
+        System.out.println("---Getting the timeLine with 10 follows : " + testGetTimeLine1 + " milliseconds");
+        System.out.println("---Getting the timeLine with 100 follows : " + testGetTimeLine2 + " milliseconds");
+        System.out.println("---Getting the timeLine with 500 follows : " + testGetTimeLine3 + " milliseconds");
 
         return new User("DummyTest", "testingAccount@mail.mail");
 

@@ -143,6 +143,7 @@ public class UserEndpoint {
      */
     @ApiMethod(path = "user/{userFollowing}/follow", httpMethod = ApiMethod.HttpMethod.GET)
     public Entity getIsFollowing(@Named("userId") String user, @Named("userFollowing") String userFollowing) throws UnauthorizedException {
+
         Entity userChecked = null;
 
         // Not connected
@@ -192,6 +193,8 @@ public class UserEndpoint {
      */
     @ApiMethod(path = "user/{userToFollow}/follow", httpMethod = ApiMethod.HttpMethod.POST)
     public Entity follow(User user, @Named("userToFollow") String userToFollow) throws EntityNotFoundException, UnauthorizedException {
+
+
         // Not connected
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
@@ -216,10 +219,10 @@ public class UserEndpoint {
 
         return userChecked;
 
-		/*
+/*
 		// Add the follow entity to datastore
 		Entity e = new Entity("Follow");
-		e.setProperty("user", user);
+		e.setProperty("user", user.getId());
 		e.setProperty("following", userToFollow);
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -227,7 +230,9 @@ public class UserEndpoint {
 		datastore.put(e);
 		txn.commit();
 
-		 */
+		return e;
+*/
+
     }
 
     /**
