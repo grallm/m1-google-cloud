@@ -134,11 +134,11 @@ public class UtilsEndpoint {
 
             // Add the follow entity to datastore
             intList = new ArrayList<>();
-            for (int k = 0; k < r.nextInt(50); k++) {
+            for (int k = 1; k < r.nextInt(50)+1; k++) {
 
                 do {
-                    a = r.nextInt(100);
-                } while (a == i && !intList.contains(a));
+                    a = r.nextInt(99)+1;
+                } while (a == i && intList.contains(a));
                 intList.add(a);
 
                 userEndpoint.follow(userList.get(i), Integer.toString(a));

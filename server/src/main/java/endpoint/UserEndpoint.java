@@ -161,7 +161,7 @@ public class UserEndpoint {
 
         if (userChecked != null) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
-            if (listFollowing.contains(userFollowing)) {
+            if ( listFollowing != null && listFollowing.contains(userFollowing)) {
                 return userChecked;
             } else {
                 return null;

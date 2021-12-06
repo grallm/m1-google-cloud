@@ -98,7 +98,7 @@ public class PostEndpoint {
         Entity e = new Entity("Post", user.getId() + ":" + (sc.getCount() + 1));
         e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
-        e.setProperty("image", uep.uploadFile(post.image, post.ownerId + ":" + post.date));
+ //       e.setProperty("image", uep.uploadFile(post.image, post.ownerId + ":" + post.date));
         e.setProperty("body", post.description);
         e.setProperty("date", post.date);
         e.setProperty("likes", 0);
@@ -181,7 +181,7 @@ public class PostEndpoint {
         List<String> listFollowing = (List<String>) userEntity.getProperty("listFollowing");
 
         //If no followings return null
-        if (listFollowing.isEmpty()) {
+        if (listFollowing == null || listFollowing.isEmpty()) {
             //debug
             System.out.println("Empty followers");
             return new ArrayList<>();
