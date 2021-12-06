@@ -109,6 +109,28 @@ public class UserEndpoint {
         return results;
     }
 
+
+    /**
+     * Get the number of follo
+     * http://localhost:8080/_ah/api/instaCrash/v1/user/name/ArKeid0s
+     *
+     * @param userId id of the User we want information of
+     * @return User
+     */
+    @ApiMethod(path = "user/followersCount")
+    public Entity getFollowersCount(@Named("userId") String userId) throws EntityNotFoundException {
+        Query q = new Query("User").setFilter(new Query.FilterPredicate("listFollowing", Query.FilterOperator.IN, userId));
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Entity e = datastore.prepare(q).asSingleEntity();
+        Long totalFollowers = (Long) e.getProperty("count");
+
+        Entity user = datastore.get(KeyFactory.createKey("User", userId));
+        user.setProperty("followersCount", totalFollowers);
+
+        return user;
+    }
+
     //region FOLLOWS
 
     /**
