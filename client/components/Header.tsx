@@ -1,4 +1,4 @@
-import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faChild, faHome, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
@@ -44,6 +44,12 @@ const Header: React.FC<{}> = () => {
                 </Link>
               )
             }
+
+            <Link href='/encounter' passHref>
+              <Nav.Link active={router.pathname === '/encounter'}>
+                <FontAwesomeIcon icon={faChild} /> Rencontrer
+              </Nav.Link>
+            </Link>
           </Nav>
 
           {/* Right */}

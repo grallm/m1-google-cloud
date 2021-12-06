@@ -3,9 +3,34 @@ import { UserEntity } from '../entities/User.entity'
 import { ApiEntity, apiRoute, EntityList } from './common.api'
 
 /**
- * Fetch all user's posts
+ * Fetch all user's
+ * @returns
+ */
+export const getAllUsers = async (): Promise<UserEntity[]> => {
+  try {
+    const res = await fetch(`${apiRoute}/user`)
+
+    if (!res.ok) throw await res.json()
+
+    const users = (await res.json()) as EntityList<UserEntity>
+    console.log(users)
+
+    return users?.items.map(user => ({
+      ...user.properties,
+      id: user.key.name
+    })) || []
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error)
+
+    return []
+  }
+}
+
+/**
+ * Get data of a specific User
  * @param userId
- * @returns Formatted Posts
+ * @returns
  */
 export const getUser = async (userId: string): Promise<UserEntity | null> => {
   try {

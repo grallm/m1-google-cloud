@@ -32,11 +32,9 @@ const Home: NextPage = () => {
 
       // Load timeline if connected
       if (session?.user) {
-        console.log('timeline')
         getTimeline(session.user.accessToken)
           .then(posts => {
             setPosts(posts)
-            console.log('end timeline')
           })
       }
     }
@@ -70,7 +68,7 @@ const Home: NextPage = () => {
       {/* Discover */}
       {
         discoverPosts && discoverPosts.length > 0 && (
-          <div>
+          <div className='mt-5'>
             <h3 className='mb-3'>Découvrir plus</h3>
             {
               discoverPosts?.map((post, i) => (
