@@ -40,7 +40,7 @@ public class LikeEndpoint {
         // Add like to Datastore
         Entity e = new Entity("Like", postId + ":" + user.getId());
         e.setProperty("postId", postId);
-        e.setProperty("userEmail", user.getId());
+        e.setUnindexedProperty("userEmail", user.getId());
 
 //        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
