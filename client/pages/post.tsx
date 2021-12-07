@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/client'
 import Login from '../components/Login'
 import { ChangeEvent, FormEvent, useState } from 'react'
 import { apiRoute } from '../utils/common.api'
+import { useRouter } from 'next/router'
 
 const getBase64 = (file: File) => {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,7 @@ const getBase64 = (file: File) => {
 
 const PostPage: NextPage = () => {
   const [session] = useSession()
+  const router = useRouter()
 
   const [descInput, setDescInput] = useState('')
   const [fileInput, setFileInput] = useState<File | null>(null)
@@ -34,15 +36,25 @@ const PostPage: NextPage = () => {
         if (session?.user) {
           const fileBase64 = await getBase64(fileInput)
 
-          await fetch(`${apiRoute}/post?access_token=${session.user.accessToken}`, {
-            method: 'POST',
-            body: JSON.stringify({
-              owner: session.user.name || 'NAME',
-              image: fileBase64,
-              description: descInput
+          try {
+            const res = await fetch(`${apiRoute}/post?access_token=${session.user.accessToken}`, {
+              method: 'POST',
+              body: JSON.stringify({
+                owner: session.user.name || 'NAME',
+                image: fileBase64,
+                description: descInput
+              })
             })
-          })
-          setSubmitting(false)
+
+            if (!res.ok) throw new Error()
+
+            // Success, redirect to profile
+            router.push(session.user.userId || '/')
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(error)
+            setSubmitting(false)
+          }
         }
       }
 
