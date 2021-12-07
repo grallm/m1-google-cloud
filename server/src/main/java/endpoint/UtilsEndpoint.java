@@ -1,6 +1,5 @@
 package endpoint;
 
-
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -12,7 +11,6 @@ import com.google.appengine.api.datastore.*;
 import entities.Post;
 import entities.Test;
 import entities.UserTiny;
-import jdk.jfr.Name;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -124,7 +122,7 @@ public class UtilsEndpoint {
 
                 list.add(likeEndpoint.likePost(
                         postList.get(randomLikes.get(k)).getKey().getName(),
-                        new User(Integer.toString(k), "autoGen" + i + "@mail.mail")
+                        userList.get(i)
                 ));
             }
         }
@@ -136,10 +134,10 @@ public class UtilsEndpoint {
 
             // Add the follow entity to datastore
             intList = new ArrayList<>();
-            for (int k = 1; k < r.nextInt(50)+1; k++) {
+            for (int k = 1; k < r.nextInt(50) + 1; k++) {
 
                 do {
-                    a = r.nextInt(99)+1;
+                    a = r.nextInt(99) + 1;
                 } while (a == i && intList.contains(a));
                 intList.add(a);
 
@@ -149,6 +147,59 @@ public class UtilsEndpoint {
         }
         return list;
     }
+
+
+    @ApiMethod(path = "utils/deleteallUser", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity delete() {
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+
+        Query mydeleteq = new Query("User");
+        PreparedQuery pq = datastore.prepare(mydeleteq);
+        for (
+                Entity result : pq.asIterable()) {
+            datastore.delete(result.getKey());
+        }
+
+        return new Entity("test");
+
+    }
+
+    @ApiMethod(path = "utils/deleteallPost", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity deletePost() {
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+
+        Query mydeleteq = new Query("Post");
+        PreparedQuery pq = datastore.prepare(mydeleteq);
+        for (
+                Entity result : pq.asIterable()) {
+            datastore.delete(result.getKey());
+        }
+
+        return new Entity("test");
+
+    }
+
+    @ApiMethod(path = "utils/deleteallLikes", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity deleteLikes() {
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+
+        Query mydeleteq = new Query("Like");
+        PreparedQuery pq = datastore.prepare(mydeleteq);
+        for (
+                Entity result : pq.asIterable()) {
+            datastore.delete(result.getKey());
+        }
+
+        return new Entity("test");
+
+    }
+
 
     @ApiMethod(name = "timeLineTests", path = "utils/timeLineTests/{nbUsers}", httpMethod = ApiMethod.HttpMethod.GET)
     public Entity timeLineTest10(@Named("nbUsers") int nbUsers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
@@ -160,7 +211,7 @@ public class UtilsEndpoint {
 
         System.out.println("--Averge for 30 tests :");
 //        System.out.println("---Creating a post with 10 followers : " + testCreatePost1 + " milliseconds");
-        System.out.println("---Getting the timeLine with 10 follows : " + testGetTimeLine1 + " milliseconds");
+        System.out.println("---Getting the timeLine with " + nbUsers +" follows : " + testGetTimeLine1 + " milliseconds");
 
         Entity ret = new Entity("Test");
         ret.setProperty("Time", (testGetTimeLine1));
@@ -169,8 +220,9 @@ public class UtilsEndpoint {
 
     }
 
-    @ApiMethod(name = "howManyLikes", path = "utils/likesInSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
-    public Entity likesPerSecond(@Named("nbLikes") int nbLikes) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+
+    @ApiMethod(name = "populateForLikes", path = "utils/populateForLikes/{start}/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
+    public User populateForTimeTests(@Named("nbLikes") int nbLikes, @Named("start") int start) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
         UserEndpoint userEndpoint = new UserEndpoint();
         PostEndpoint postEndpoint = new PostEndpoint();
@@ -178,20 +230,64 @@ public class UtilsEndpoint {
 
         //Generating tests accounts
         List<User> usersTest10 = new ArrayList<>();
-        User user;
+        User user = new User(Integer.toString(0), "testingAccount" + 0 + "@mail.mail");
         UserTiny userTiny;
-        for (int i = 0; i < nbLikes ; i++) {
+        for (int i = start; i < nbLikes; i++) {
 
             user = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
             userTiny = new UserTiny("Test" + i);
 
-            usersTest10.add(user);
 
-            userEndpoint.addUser(
-                    user,
-                    userTiny
-            );
+            try {
+                userEndpoint.addUser(
+                        user,
+                        userTiny
+                );
+
+                usersTest10.add(user);
+
+            } catch (DatastoreTimeoutException exception) {
+
+                System.out.println("Timeout error, skipping this one");
+
+            }
         }
+        return user;
+
+    }
+
+
+    @ApiMethod(name = "howManyLikes", path = "utils/likesInSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity likesPerSecond(@Named("nbLikes") int nbLikes) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+
+        UserEndpoint userEndpoint = new UserEndpoint();
+        PostEndpoint postEndpoint = new PostEndpoint();
+        LikeEndpoint likeEndpoint = new LikeEndpoint();
+
+//        //Generating tests accounts
+//        List<User> usersTest10 = new ArrayList<>();
+        User user;
+        UserTiny userTiny;
+//        for (int i = 0; i < nbLikes; i++) {
+//
+//            user = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
+//            userTiny = new UserTiny("Test" + i);
+//
+//
+//            try {
+//                userEndpoint.addUser(
+//                        user,
+//                        userTiny
+//                );
+//
+//                usersTest10.add(user);
+//
+//            } catch (DatastoreTimeoutException exception) {
+//
+//                System.out.println("Timeout error, skipping this one");
+//
+//            }
+//        }
 
         //The user that will post
         user = new User("TestedUser", "TestShowAccount@mail.mail");
@@ -200,34 +296,38 @@ public class UtilsEndpoint {
                 user,
                 userTiny
         );
-        Post post = new Post(user.getId(), userTiny.name, "http://example.org", "short desc", new Date().getTime(), 0);
 
-        Entity postEntity = postEndpoint.addPost(user, post);
-        String postId = postEntity.getKey().getName();
+        Post tmp;
+
+        tmp = new Post(user.getId(), userTiny.name, "http://example.org", "short desc", new Date().getTime(), 0);
+        String postId = (postEndpoint.addPost(user, tmp).getKey().getName());
+
 
         long startCount;
         long stopCount;
+        User spam;
+
 
         startCount = System.currentTimeMillis();
-        for(User spam : usersTest10) {
+        for (int i = 0; i < nbLikes; i++) {
+            spam = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
             likeEndpoint.likePost(postId, spam);
         }
         stopCount = System.currentTimeMillis();
 
 
-        System.out.println("--- Like flood (1000 likes) :" + (stopCount - startCount) + "milliseconds");
-        System.out.println("--- Number of likes in one second : " + (((stopCount - startCount)*1000) / nbLikes));
+        System.out.println("--- Like flood :" + (stopCount - startCount) + "milliseconds");
+        System.out.println("--- Number of likes in one second : " + (( nbLikes * 1000) / (stopCount - startCount)));
 
         Entity ret = new Entity("Test");
         ret.setProperty("Time_Total", (stopCount - startCount));
-        ret.setProperty("Likes_per_second", (((stopCount - startCount)*1000) / nbLikes));
+        ret.setProperty("Likes_per_second", ((nbLikes * 1000) / (stopCount - startCount)));
         ret.setProperty("NumberOfLikes", nbLikes);
+
 
         return ret;
 
     }
-
-
 
 
     private Long generateTests(int numberOfFollowers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
@@ -369,7 +469,7 @@ public class UtilsEndpoint {
         for (User user1 : usersTest10) {
             userEndpoint.follow(user, user1.getId());
             //creating the posts
-            Post post = new Post(user1.getId(), "Test"+ usersTest10.indexOf(user1), "http://example.org", "short desc", new Date().getTime(), 0);
+            Post post = new Post(user1.getId(), "Test" + usersTest10.indexOf(user1), "http://example.org", "short desc", new Date().getTime(), 0);
 
             //starting time measure
             postEndpoint.addPost(user1, post);
