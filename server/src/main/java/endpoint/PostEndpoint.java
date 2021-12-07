@@ -233,31 +233,21 @@ public class PostEndpoint {
             long i = sc.getCount();
 
             while (flag && i > 0) {
-
                 key = KeyFactory.createKey("Post", needYourPosts + ":" + i);
-
                 i--;
-
                 try {
-
                     e = datastore.get(key);
                     date =  new Date((long) e.getProperty("date"));
-
                     if (date.toInstant().isAfter(now.minus(1, ChronoUnit.DAYS))) {
-
                         result.add(e);
-
                     } else {
                         flag = false;
                     }
                 } catch (EntityNotFoundException exception) {
                     //TODO : Handle this
                     System.out.println("---- Not found : " + key.getName());
-
                 }
-
             }
-
         }
 
         //This cost a LOT, need to improve
@@ -272,6 +262,14 @@ public class PostEndpoint {
         else System.out.println("------ AUCUNE TL");
 
         System.out.println(result.size());
+
+        ShardedCounter sc2;
+        for(Entity entity : toReturn) {
+
+             sc2 = new ShardedCounter(entity.getKey().getName());
+            entity.setProperty("likes", sc2.getCount());
+        }
+
 
         return toReturn;
 

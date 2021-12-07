@@ -41,13 +41,18 @@ public class LikeEndpoint {
         e.setProperty("postId", postId);
         e.setUnindexedProperty("userEmail", user.getId());
 
-//        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        try {
+            //Check if post is already like
+            datastore.get(KeyFactory.createKey("Like", postId + ":" + user.getId()));
 
-        ShardedCounter sc = new ShardedCounter(postId);
-        TransactionOptions options = TransactionOptions.Builder.withXG(true);
-        Transaction txn = datastore.beginTransaction(options);
-        datastore.put(txn,e);
-        sc.increment(txn, datastore);
+        } catch (EntityNotFoundException exception) {
+//        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            ShardedCounter sc = new ShardedCounter(postId);
+            TransactionOptions options = TransactionOptions.Builder.withXG(true);
+            Transaction txn = datastore.beginTransaction(options);
+            datastore.put(txn, e);
+            sc.increment(txn, datastore);
+        }
 
         return e;
     }
