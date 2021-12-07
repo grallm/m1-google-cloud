@@ -54,32 +54,39 @@ Nous avons aussi remarqué que sans comprendre pourquoi, le déploiement effectu
 Dû à notre utilisation de l'App Engine ainsi que de Google Endpoint la gestion des images a ete plus complexe que prévu. 
 
 Pour la gestion des images nous avons utilisé Google Cloud Storage. À partir du front nous envoyons un string contenant
-l'image en Base64 que nous récupérons en back pour la parser puis la convertir en image à l'aide du service google ```ImageServiceFactory.makeImage(byte[])```.
+l'image en Base64 que nous récupérons en back pour la parser puis la convertir en image à l'aide du service google `ImageServiceFactory.makeImage(byte[])`.
 
-Ensuite nous créons un ```Blob``` qui va contenir notre image ainsi qu'un nom et enfin on le publie sur le Cloud Storage 
-et on récupère le lien du blob pour le mettre dans notre entity ```Post``` et y avoir acces en front.
-
-En front le framework ```NextJS``` ....
+Ensuite nous créons un `Blob` qui va contenir notre image ainsi qu'un nom et enfin on le publie sur le Cloud Storage 
+et on récupère le lien du blob pour le mettre dans notre entity `Post` et y avoir acces en front.
 
 ### Like scalables 
-Pour développer nos likes nous avons utiliser des ```Entity``` ainsi que des ```ShardedCounters``` 
+Pour développer nos likes nous avons utiliser des `Entity` ainsi que des `ShardedCounters` et transaction expliquer 
+pourquoi c'est safe et avantage mais aussi desavantages
 
 ### Timeline
 Afin d'obtenir une timeline efficace, nous avons dû itérer plusieurs fois. 
 
 - Dans un premier temps nous avions une premiere requete qui récupérais les entités follow liées au User puis les ajoutais 
 a une liste et enfin nous récupérions tous les posts des utilisateurs dans la liste de followings.
-Mais le ```Query.FilterOperator.IN``` est limite à 30 sous requetes donc nous ne récupérions que 30 posts. 
+Mais le `Query.FilterOperator.IN` est limite à 30 sous requetes donc nous ne récupérions que 30 posts. 
 
-- Dans un second temps nous nous sommes débarrassé de l'entité ```Follow``` pour n'utiliser que des listes et des objets java 
+- Dans un second temps nous nous sommes débarrassé de l'entité `Follow` pour n'utiliser que des listes et des objets java 
 accompagnés d'un comparator pour les trier. Mais cette solution a tres vite vu ses limites puisque la manipulation de liste 
 d'objets en java est tres couteuse en temps.
-De plus pour le front ne plus utiliser d'entités ```Post``` et seulement des listes d'objets Java nous pénalisais.
+De plus pour le front ne plus utiliser d'entités `Post` et seulement des listes d'objets Java nous pénalisais.
 
 - Enfin nous avons fait un mix des deux. Notre User a une liste de followings que l'on va récupérer pour obtenir les posts
 vieux de maximum 1 jour afin d'avoir une timeline "intelligente" enfin nous récupérons la date des posts que nous trions avec notre
-comparator afin d'avoir le post le plus récent en premier. En plus de ca a la fin des posts de notre timeline nous affichons une 
+comparator afin d'avoir le post le plus récent en premier. En plus de ça a la fin des posts de notre timeline nous affichons une 
 série de posts afin que l'utilisateur ai quelque chose à voir.
 
 
 ## Améliorations
+Nous avons plusieurs idees d'améliorations :
+- Une recherche d'utilisateur plus poussée qui nous permettrait de suggérer des utilisateurs a chaque caracteres rentre dans la barre de
+recherche. Actuellement la recherche est case sensitive et nous devons appuyer sur entree pour effectuer la recherche mais elle nous suggere 
+des utilisateurs qui commence par la chaine de caractere entree.
+- Une liste des personnes qui ont like un post.
+- Une liste de nos abonnes et de nos abonnements.
+- Ajouter des commentaires a un post.
+- Actuellement notre timeline est limitee a 20 posts, il faudrais donc une pagination pour afficher davantage de posts.
