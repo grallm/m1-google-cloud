@@ -34,8 +34,8 @@ public class LikeEndpoint {
         }
 
         // Check if user registered
- //       UserEndpoint userEndpoint = new UserEndpoint();
- //       userEndpoint.getUser(user.getId());
+        //       UserEndpoint userEndpoint = new UserEndpoint();
+        //       userEndpoint.getUser(user.getId());
         // Add like to Datastore
         Entity e = new Entity("Like", postId + ":" + user.getId());
         e.setProperty("postId", postId);
@@ -58,6 +58,27 @@ public class LikeEndpoint {
         return e;
     }
 
+    /**
+     * Like a Post
+     * http://localhost:8080/_ah/api/instaCrash/v1/like
+     *
+     * @return Liked Post
+     */
+    @ApiMethod(name = "likePostWithKind", path = "likeKind/{postId}", httpMethod = ApiMethod.HttpMethod.POST)
+    public Entity likeKindPost(@Named("postId") String postId, User user) throws UnauthorizedException, EntityNotFoundException {
+
+        if (user == null) {
+            throw new UnauthorizedException("Invalid credentials");
+        }
+
+        Entity e = new Entity("Like", postId + ":" + user.getId());
+        e.setProperty("postId", postId);
+        e.setUnindexedProperty("userEmail", user.getId());
+        datastore.put(e);
+
+        return e;
+    }
+
     @ApiMethod(path = "like/{postId}", httpMethod = ApiMethod.HttpMethod.DELETE)
     public void unlikePost(@Named("postId") String postId, User user) throws UnauthorizedException {
         if (user == null) {
@@ -65,7 +86,7 @@ public class LikeEndpoint {
         }
 
         Key likeKey = KeyFactory.createKey("Like", postId + ':' + user.getId());
- //       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        //       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 //		Transaction txn = datastore.beginTransaction();
         datastore.delete(likeKey);
 //		txn.commit();
@@ -86,7 +107,7 @@ public class LikeEndpoint {
     public Entity getLikesCount(@Named("id") String id) throws EntityNotFoundException {
         Key postKey = KeyFactory.createKey("Post", id);
 
- //       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        //       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         Entity post = datastore.get(postKey);
 
@@ -114,7 +135,7 @@ public class LikeEndpoint {
 
         //	Find corresponding Like
         Key likeKey = KeyFactory.createKey("Like", postId + ':' + user.getId());
-    //    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        //    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         return datastore.get(likeKey);
     }
