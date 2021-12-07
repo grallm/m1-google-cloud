@@ -204,7 +204,6 @@ public class UtilsEndpoint {
     @ApiMethod(name = "timeLineTests", path = "utils/timeLineTests/{nbUsers}", httpMethod = ApiMethod.HttpMethod.GET)
     public Entity timeLineTest10(@Named("nbUsers") int nbUsers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
-
         Double testGetTimeLine1 = averageGetTimeLine(1, nbUsers);
 
         System.out.println("--1 test :");

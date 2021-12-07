@@ -202,9 +202,6 @@ public class PostEndpoint {
     @ApiMethod(path = "post/timeLine")
     public List<Entity> getTimeLine(User user) throws EntityNotFoundException {
 
-//        System.out.println("--- " + KeyFactory.createKey("User", user.getId().toString()).getName());
-//        System.out.println("--- " + user.getId());
-
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         Entity userEntity = datastore.get(KeyFactory.createKey("User", user.getId()));
@@ -226,7 +223,6 @@ public class PostEndpoint {
         Instant now = Instant.now();
         // ajoute le dernier post de chaque personne follow à la liste
         boolean flag;
-
 
         for (String needYourPosts : listFollowing) {
             flag = true;
