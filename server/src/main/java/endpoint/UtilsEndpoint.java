@@ -419,19 +419,22 @@ public class UtilsEndpoint {
 
     }
 
-    private Double averageCreatePost(int nbTests, int nbUsers) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
 
+    @ApiMethod(name = "createPost", path = "utils/createPostAverage/{nbTests}/{nbUsers}", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity averageCreatePost(@Named("nbTests") int nbTests, @Named("nbUsers") int nbUsers) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
 
         List<Long> averageTestPost = new ArrayList<>();
 
-
         for (int i = 0; i < nbTests; i++) {
-
             averageTestPost.add(generateTests(nbUsers));
         }
 
-        return averageTestPost.stream().mapToLong(val -> val).average().getAsDouble();
+        Entity e = new Entity("Test");
+        e.setProperty("nbTests", nbTests);
+        e.setProperty("nbUsers", nbUsers);
+        e.setProperty("createPostAverage", averageTestPost.stream().mapToLong(val -> val).average().getAsDouble());
 
+        return e;
 
     }
 
