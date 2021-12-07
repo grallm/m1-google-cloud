@@ -66,13 +66,22 @@ public class LikeEndpoint {
         }
 
         Key likeKey = KeyFactory.createKey("Like", postId + ':' + user.getId());
-        //       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-//		Transaction txn = datastore.beginTransaction();
-        datastore.delete(likeKey);
-//		txn.commit();
 
-        ShardedCounter sc = new ShardedCounter(postId);
-        sc.decrement();
+
+        try {
+            //Check if post is already like
+            datastore.get(KeyFactory.createKey("Like", postId + ":" + user.getId()));
+
+        } catch (EntityNotFoundException exception) {
+            //
+        } finally {
+            TransactionOptions options = TransactionOptions.Builder.withXG(true);
+            Transaction txn = datastore.beginTransaction(options);
+            datastore.delete(txn, likeKey);
+
+            ShardedCounter sc = new ShardedCounter(postId);
+            sc.decrement(txn, datastore);
+        }
     }
 
 

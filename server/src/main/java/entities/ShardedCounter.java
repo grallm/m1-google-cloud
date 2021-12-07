@@ -219,7 +219,7 @@ public class ShardedCounter {
     /**
      * Decrement the value of this sharded counter.
      */
-    public final void decrement() {
+    public final void decrement(Transaction tc, DatastoreService datastoreService) {
         // Find how many shards are in this counter.
         int numShards = getShardCount();
 
@@ -227,7 +227,7 @@ public class ShardedCounter {
         long shardNum = generator.nextInt(numShards);
 
         Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
-        decrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1);
+        decrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1, tc, datastoreService);
 //
 //        mc.put(kind, getCount(), Expiration.byDeltaSeconds(CACHE_PERIOD),
 //                SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
@@ -369,21 +369,20 @@ public class ShardedCounter {
      *            the value to use if the entity does not exist
      */
     private void decrementPropertyTx(final Key key, final String prop,
-                                     final long decrement, final long initialValue) {
+                                     final long decrement, final long initialValue,Transaction tx, DatastoreService datastoreService) {
 
-        Transaction tx = DS.beginTransaction();
         Entity thing;
         long value;
         try {
             try {
-                thing = DS.get(tx, key);
+                thing = datastoreService.get(tx, key);
                 value = (Long) thing.getProperty(prop) - decrement;
             } catch (EntityNotFoundException e) {
                 thing = new Entity(key);
                 value = 0;
             }
             thing.setUnindexedProperty(prop, value);
-            DS.put(tx, thing);
+            datastoreService.put(tx, thing);
             tx.commit();
         } catch (ConcurrentModificationException e) {
             LOG.log(Level.WARNING,
