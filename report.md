@@ -29,11 +29,22 @@ Cherchant à fournir la meilleure expérience pour nos utilisateurs, nous avons 
 
 Ce choix fut fait par notre connaissance de React et des outils associés, mais aussi pour les performances que propose `NextJS`.
 
-
-## Problemes
+### Problemes et Solutions
 ### Google Endpoint / App Engine
+
+
 ### Gestion des images
+Du a notre utilisation de l'App Engine ainsi que de Google Endpoint la gestion des images a ete plus complexe que prevu. 
+
+Pour la gestion des images nous avons utiliser Google Cloud Storage. A partir du front nous envoyons une string contenant
+l'image en Base64 que nous recuperons en back pour la parser puis la convertir en image a l'aide du service google ```ImageServiceFactory.makeImage(byte[])```.
+
+Ensuite nous creeons un ```Blob``` qui va contenir notre image ainsi qu'un nom et enfin on le publie sur le Cloud Storage 
+et on recupere le lien du blob pour le mettre dans notre entity ```Post``` et y avoir acces en front.
+
 ### Like scalables 
+Pour developper nos likes nous avons utiliser des ```Entity``` ainsi que des ```ShardedCounters``` 
+
 ### Timeline
 Afin d'obtenir une timeline efficace, nous avons du iterer plusieurs fois. 
 - Dans un premier temps nous avions une premiere requete qui recuperais les entites follow liees au user puis les ajoutais 
