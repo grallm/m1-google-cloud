@@ -34,6 +34,19 @@ Malo GRALL, Mathis ROCHER, Guillaume POIGNANT
 
 ## Benchmark - Performances
 
+Temps pour poster (Moyenne sur 30 tests) :
+10 Followers : 86ms
+100 Followers : 91ms
+500 Followers : 96ms
+
+Temps pour afficher la timeline :
+10 Followers : 310ms
+100 Followers : 1920ms
+500 Followers : Timeout
+
+Combiens de likes en une seconde, méthode sécurisée : 17/s
+Combiens de likes en une seconde, méthode non sécurisée : 50/s
+
 
 ## Commentaires
 ### Frontend
