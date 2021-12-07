@@ -307,14 +307,14 @@ public class UtilsEndpoint {
 
         List<Thread> threadsLikes = new ArrayList<>();
 
-        startCount = System.currentTimeMillis();
         for (int i = 0; i < nbLikes; i++) {
-            threadsLikes.add(ThreadManager.createThreadForCurrentRequest(new Runnable() {
+            Thread thread = ThreadManager.createThreadForCurrentRequest(new Runnable() {
                 @Override
                 public void run() {
                     User spam;
                     Random rand = new Random();
                     int userId = rand.nextInt();
+                    System.out.println(userId);
 
                     spam = new User(Integer.toString(userId), "testingAccount" + userId + "@mail.mail");
                     try {
@@ -323,7 +323,17 @@ public class UtilsEndpoint {
                         e.printStackTrace();
                     }
                 }
-            }));
+            });
+
+            threadsLikes.add(thread);
+
+            thread.start();
+        }
+
+        startCount = System.currentTimeMillis();
+
+        for (Thread thread : threadsLikes) {
+            thread.start();
         }
 
         for (Thread thread : threadsLikes) {
