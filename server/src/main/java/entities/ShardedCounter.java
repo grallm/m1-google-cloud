@@ -359,7 +359,7 @@ public class ShardedCounter {
                 value = (Long) thing.getProperty(prop) - decrement;
             } catch (EntityNotFoundException e) {
                 thing = new Entity(key);
-                value = initialValue;
+                value = 0;
             }
             thing.setUnindexedProperty(prop, value);
             DS.put(tx, thing);
