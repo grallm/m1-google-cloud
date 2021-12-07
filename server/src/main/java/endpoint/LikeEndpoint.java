@@ -36,7 +36,6 @@ public class LikeEndpoint {
         // Check if user registered
  //       UserEndpoint userEndpoint = new UserEndpoint();
  //       userEndpoint.getUser(user.getId());
-
         // Add like to Datastore
         Entity e = new Entity("Like", postId + ":" + user.getId());
         e.setProperty("postId", postId);

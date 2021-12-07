@@ -19,6 +19,18 @@ Malo GRALL, Mathis ROCHER, Guillaume POIGNANT
 
 
 ## Kinds
+### User
+![User](./img-report/user.png)
+
+### Post
+![Post](./img-report/post.png)
+
+### Like
+![Like](./img-report/like.png)
+
+### Sharded Counter
+![Sharded Counter](./img-report/sharded-counter.png)
+
 
 ## Benchmark - Performances
 
