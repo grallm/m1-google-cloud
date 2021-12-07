@@ -171,6 +171,8 @@ public class PostEndpoint {
      */
     @ApiMethod(path = "post/{id}/likes")
     public List<Entity> getListUserLike(@Named("id") String id) {
+
+
         Query q = new Query("Like").setFilter(new Query.FilterPredicate("postId", Query.FilterOperator.EQUAL, id));
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

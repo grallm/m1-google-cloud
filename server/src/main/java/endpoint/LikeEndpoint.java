@@ -43,7 +43,6 @@ public class LikeEndpoint {
 
 //        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-
         ShardedCounter sc = new ShardedCounter(postId);
         TransactionOptions options = TransactionOptions.Builder.withXG(true);
         Transaction txn = datastore.beginTransaction(options);
