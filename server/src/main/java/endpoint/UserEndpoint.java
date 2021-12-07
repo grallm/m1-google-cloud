@@ -212,13 +212,12 @@ public class UserEndpoint {
         Entity userChecked = getUser(user.getId());
         Entity userToFollowEntity = getUser(userToFollow);
 
-        if (userChecked != null && getIsFollowing(user.getId(), userToFollow) != null && userChecked != userToFollowEntity) {
+        if (userChecked != null && getIsFollowing(user.getId(), userToFollow) == null && userChecked != userToFollowEntity) {
             ArrayList<String> listFollowing = (ArrayList<String>) userChecked.getProperty("listFollowing");
 
 
-            if (listFollowing == null || listFollowing.isEmpty()) {
+            if (listFollowing == null) {
                 listFollowing = new ArrayList<>();
-
             }
             listFollowing.add(userToFollow);
 
@@ -229,7 +228,6 @@ public class UserEndpoint {
             userChecked.setProperty("followings", listFollowing.size());
 
             datastore.put(userChecked);
-            datastore.put(userToFollowEntity);
             txn.commit();
         }
 
@@ -285,7 +283,6 @@ public class UserEndpoint {
             userChecked.setProperty("followings",  listFollowing.size());
 
             datastore.put(userChecked);
-            datastore.put(userToUnfollowEntity);
             txn.commit();
         }
 
