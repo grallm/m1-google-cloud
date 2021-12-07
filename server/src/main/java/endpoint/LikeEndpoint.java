@@ -43,12 +43,11 @@ public class LikeEndpoint {
         e.setProperty("userEmail", user.getId());
 
 //        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Transaction txn = datastore.beginTransaction();
-        datastore.put(e);
-        txn.commit();
-
         ShardedCounter sc = new ShardedCounter(postId);
-        sc.increment();
+        TransactionOptions options = TransactionOptions.Builder.withXG(true);
+        Transaction txn = datastore.beginTransaction(options);
+        datastore.put(txn,e);
+        sc.increment(txn, datastore);
 
         return e;
     }

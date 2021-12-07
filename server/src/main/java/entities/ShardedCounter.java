@@ -179,6 +179,23 @@ public class ShardedCounter {
     }
 
     /**
+     * Increment the value of this sharded counter.
+     */
+    public final void increment(Transaction tc, DatastoreService datastoreService) {
+        // Find how many shards are in this counter.
+        int numShards = getShardCount();
+
+        // Choose the shard randomly from the available shards.
+        long shardNum = generator.nextInt(numShards);
+
+        Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
+        incrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1, tc, datastoreService);
+//        mc.increment(kind, 1);
+    }
+
+
+
+    /**
      * Decrement the value of this sharded counter.
      */
     public final void decrement() {
@@ -262,6 +279,58 @@ public class ShardedCounter {
             }
         }
     }
+
+    /**
+     * Increment datastore property value inside a transaction. If the entity
+     * with the provided key does not exist, instead create an entity with the
+     * supplied initial property value.
+     *
+     * @param key
+     *            the entity key to update or create
+     * @param prop
+     *            the property name to be incremented
+     * @param increment
+     *            the amount by which to increment
+     * @param initialValue
+     *            the value to use if the entity does not exist
+     */
+    private void incrementPropertyTx(final Key key, final String prop,
+                                     final long increment, final long initialValue, Transaction tc, DatastoreService datastoreService) {
+
+        Entity thing;
+        long value;
+        try {
+            try {
+                thing = DS.get(tc, key);
+                value = (Long) thing.getProperty(prop) + increment;
+            } catch (EntityNotFoundException e) {
+                thing = new Entity(key);
+                value = initialValue;
+            }
+            thing.setUnindexedProperty(prop, value);
+            datastoreService.put(tc, thing);
+            tc.commit();
+        } catch (ConcurrentModificationException e) {
+            LOG.log(Level.WARNING,
+                    "You may need more shards. Consider adding more shards.");
+            LOG.log(Level.WARNING, e.toString(), e);
+
+            if(getShardCount() <= MAX_SHARDS){
+                LOG.log(Level.INFO,
+                        "Doubling Shade, for this process");
+                addShards(getShardCount()); //double the shade by adding the number of shade again
+            }
+
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, e.toString(), e);
+        } finally {
+            if (tc.isActive()) {
+                tc.rollback();
+            }
+        }
+    }
+
+
 
     /**
      * Decrement datastore property value inside a transaction. If the entity

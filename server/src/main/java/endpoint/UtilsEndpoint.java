@@ -180,7 +180,6 @@ public class UtilsEndpoint {
         }
 
         return new Entity("test");
-
     }
 
     @ApiMethod(path = "utils/deleteallLikes", httpMethod = ApiMethod.HttpMethod.GET)
@@ -253,7 +252,6 @@ public class UtilsEndpoint {
             }
         }
         return user;
-
     }
 
 
