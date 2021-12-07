@@ -225,6 +225,8 @@ public class PostEndpoint {
         Instant now = Instant.now();
         // ajoute le dernier post de chaque personne follow à la liste
         boolean flag;
+
+
         for (String needYourPosts : listFollowing) {
             flag = true;
             sc = new ShardedCounter("Post:" + needYourPosts);
@@ -251,7 +253,7 @@ public class PostEndpoint {
                 } catch (EntityNotFoundException exception) {
                     //TODO : Handle this
                     System.out.println("---- Not found : " + key.getName());
-                    flag = false;
+
                 }
 
             }

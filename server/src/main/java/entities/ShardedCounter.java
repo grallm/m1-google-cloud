@@ -162,6 +162,27 @@ public class ShardedCounter {
 
         return sum;
     }
+    /**
+     * Retrieve the value of this sharded counter.
+     *
+     * @return Summed total of all shards' counts
+     */
+    public final long getCount(DatastoreService datastoreService) {
+//        Long value = (Long) mc.get(kind);
+//        if (value != null) {
+//            return value;
+//        }
+
+        long sum = 0;
+        Query query = new Query(kind);
+        for (Entity shard : datastoreService.prepare(query).asIterable()) {
+            sum += (Long) shard.getProperty(CounterShard.COUNT);
+        }
+//        mc.put(kind, sum, Expiration.byDeltaSeconds(CACHE_PERIOD),
+//                SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+
+        return sum;
+    }
 
     /**
      * Increment the value of this sharded counter.
@@ -302,7 +323,7 @@ public class ShardedCounter {
         long value;
         try {
             try {
-                thing = DS.get(key);
+                thing = datastoreService.get(key);
                 value = (Long) thing.getProperty(prop) + increment;
             } catch (EntityNotFoundException e) {
                 thing = new Entity(key);
