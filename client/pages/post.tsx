@@ -52,7 +52,7 @@ const PostPage: NextPage = () => {
   }
 
   return (
-    <Container className='bg-white border p-3 rounded'>
+    <Container className='bg-white border p-3 rounded' style={{ maxWidth: '768px' }}>
       <Head>
         <title>InstaCrash - Poster</title>
       </Head>
