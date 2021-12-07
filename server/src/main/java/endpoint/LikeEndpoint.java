@@ -42,7 +42,7 @@ public class LikeEndpoint {
         e.setProperty("postId", postId);
         e.setProperty("userEmail", user.getId());
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+//        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Transaction txn = datastore.beginTransaction();
         datastore.put(e);
         txn.commit();
