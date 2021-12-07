@@ -34,8 +34,8 @@ public class LikeEndpoint {
         }
 
         // Check if user registered
-        UserEndpoint userEndpoint = new UserEndpoint();
-        userEndpoint.getUser(user.getId());
+ //       UserEndpoint userEndpoint = new UserEndpoint();
+ //       userEndpoint.getUser(user.getId());
 
         // Add like to Datastore
         Entity e = new Entity("Like", postId + ":" + user.getId());
@@ -43,6 +43,8 @@ public class LikeEndpoint {
         e.setProperty("userEmail", user.getId());
 
 //        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+
         ShardedCounter sc = new ShardedCounter(postId);
         TransactionOptions options = TransactionOptions.Builder.withXG(true);
         Transaction txn = datastore.beginTransaction(options);

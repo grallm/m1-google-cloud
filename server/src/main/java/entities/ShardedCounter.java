@@ -301,7 +301,7 @@ public class ShardedCounter {
         long value;
         try {
             try {
-                thing = DS.get(tc, key);
+                thing = datastoreService.get(key);
                 value = (Long) thing.getProperty(prop) + increment;
             } catch (EntityNotFoundException e) {
                 thing = new Entity(key);
