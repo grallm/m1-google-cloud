@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { getAllUsers } from '../utils/user.api'
 import { UserEntity } from '../entities/User.entity'
-import { Button, Card, Col, Form, FormControl, Row } from 'react-bootstrap'
+import { Button, Card, Col, Container, Form, FormControl, Row } from 'react-bootstrap'
 import Link from 'next/link'
 import Head from 'next/head'
 
@@ -21,7 +21,7 @@ const Encounter: NextPage = () => {
   }, [userInput])
 
   return (
-    <div className='pb-5'>
+    <Container className='pb-5'>
       <Head>
         <title>InstaCrash - Rencontrer</title>
         <link rel="icon" href="/favicon.ico" />
@@ -41,7 +41,7 @@ const Encounter: NextPage = () => {
         </Form>
       </div>
 
-      <Row xs={3} className='g-2'>
+      <Row md={3} className='g-2'>
         {
           !users
             ? 'Loading'
@@ -60,7 +60,7 @@ const Encounter: NextPage = () => {
             ))
         }
       </Row>
-    </div>
+    </Container>
   )
 }
 

@@ -52,62 +52,77 @@ const PostPage: NextPage = () => {
   }
 
   return (
-    <Container className='bg-white border p-3 rounded' style={{ maxWidth: '768px' }}>
-      <Head>
-        <title>InstaCrash - Poster</title>
-      </Head>
+    <div className='px-3'>
+      <Container className='bg-white border p-3 rounded' style={{ maxWidth: '768px' }}>
+        <Head>
+          <title>InstaCrash - Poster</title>
+        </Head>
 
-      <h3 className='mb-3'>Ajouter un poste</h3>
-      {
-        !session
-          ? (
-            <div>
-              <div className='mb-2'>
-              Vous devez être connecté pour continuer :
+        <h3 className='mb-3'>Ajouter un poste</h3>
+        {
+          !session
+            ? (
+              <div>
+                <div className='mb-2'>
+                Vous devez être connecté pour continuer :
+                </div>
+                <Login callbackUrl='/post' />
               </div>
-              <Login callbackUrl='/post' />
-            </div>
-          )
-          : (
-            <Form onSubmit={submitPost}>
-              <Form.Group controlId="formFileLg" className="mb-3">
-                <Form.Label>Photo</Form.Label>
-                <Form.Control
-                  type="file"
-                  size="lg"
-                  placeholder='test'
-                  accept='image/gif, image/jpeg, image/png'
-                  onChange={(e) => {
-                    const inputEvent = e as ChangeEvent<HTMLInputElement>
-                    if (inputEvent.target.files) {
-                      setFileInput(inputEvent.target.files[0])
-                    }
-                  }}
-                />
-              </Form.Group>
+            )
+            : (
+              <Form onSubmit={submitPost}>
+                <Form.Group controlId="formFileLg" className="mb-3">
+                  <Form.Label>Photo</Form.Label>
+                  <Form.Control
+                    className='d-none d-sm-block'
+                    type="file"
+                    size="lg"
+                    placeholder='test'
+                    accept='image/gif, image/jpeg, image/png'
+                    onChange={(e) => {
+                      const inputEvent = e as ChangeEvent<HTMLInputElement>
+                      if (inputEvent.target.files) {
+                        setFileInput(inputEvent.target.files[0])
+                      }
+                    }}
+                  />
+                  <Form.Control
+                    className='d-sm-none d-block'
+                    type="file"
+                    placeholder='test'
+                    accept='image/gif, image/jpeg, image/png'
+                    onChange={(e) => {
+                      const inputEvent = e as ChangeEvent<HTMLInputElement>
+                      if (inputEvent.target.files) {
+                        setFileInput(inputEvent.target.files[0])
+                      }
+                    }}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  placeholder='Comment se passe votre vie ?'
-                  as="textarea"
-                  rows={3}
-                  value={descInput}
-                  onChange={(e) => setDescInput(e.target.value)}
-                />
-              </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    placeholder='Comment se passe votre vie ?'
+                    as="textarea"
+                    rows={3}
+                    value={descInput}
+                    onChange={(e) => setDescInput(e.target.value)}
+                  />
+                </Form.Group>
 
-              <Form.Group className='d-flex justify-content-end mt-4'>
-                <Button
-                  type="submit"
-                  size='lg'
-                  disabled={submitting}
-                >Partager</Button>
-              </Form.Group>
-            </Form>
-          )
-      }
-    </Container>
+                <Form.Group className='d-flex justify-content-end mt-4'>
+                  <Button
+                    type="submit"
+                    size='lg'
+                    disabled={submitting}
+                  >Partager</Button>
+                </Form.Group>
+              </Form>
+            )
+        }
+      </Container>
+    </div>
   )
 }
 
