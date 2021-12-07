@@ -204,14 +204,12 @@ public class UtilsEndpoint {
     @ApiMethod(name = "timeLineTests", path = "utils/timeLineTests/{nbUsers}", httpMethod = ApiMethod.HttpMethod.GET)
     public Entity timeLineTest10(@Named("nbUsers") int nbUsers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
-//        Double testCreatePost1 = averageCreatePost(30, 10);
 
-        Double testGetTimeLine1 = averageGetTimeLine(30, nbUsers);
+        Double testGetTimeLine1 = averageGetTimeLine(5, nbUsers);
 
+        System.out.println("--Averge for 5 tests :");
 
-        System.out.println("--Averge for 30 tests :");
-//        System.out.println("---Creating a post with 10 followers : " + testCreatePost1 + " milliseconds");
-        System.out.println("---Getting the timeLine with " + nbUsers +" follows : " + testGetTimeLine1 + " milliseconds");
+        System.out.println("---Getting the timeLine with " + nbUsers + " follows : " + testGetTimeLine1 + " milliseconds");
 
         Entity ret = new Entity("Test");
         ret.setProperty("Time", (testGetTimeLine1));
@@ -316,7 +314,62 @@ public class UtilsEndpoint {
 
 
         System.out.println("--- Like flood :" + (stopCount - startCount) + "milliseconds");
-        System.out.println("--- Number of likes in one second : " + (( nbLikes * 1000) / (stopCount - startCount)));
+        System.out.println("--- Number of likes in one second : " + ((nbLikes * 1000) / (stopCount - startCount)));
+
+        Entity ret = new Entity("Test");
+        ret.setProperty("Time_Total", (stopCount - startCount));
+        ret.setProperty("Likes_per_second", ((nbLikes * 1000) / (stopCount - startCount)));
+        ret.setProperty("NumberOfLikes", nbLikes);
+
+
+        return ret;
+
+    }
+
+    @ApiMethod(name = "fakeLikesPerSeconds", path = "utils/fakeLikesPerSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity faleLikes(@Named("nbLikes") int nbLikes) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+
+        UserEndpoint userEndpoint = new UserEndpoint();
+        PostEndpoint postEndpoint = new PostEndpoint();
+
+        User user;
+        UserTiny userTiny;
+
+        //The user that will post
+        user = new User("TestedUser", "TestShowAccount@mail.mail");
+        userTiny = new UserTiny("TestShow");
+        Entity testedUser = userEndpoint.addUser(
+                user,
+                userTiny
+        );
+
+        Post tmp;
+
+        tmp = new Post(user.getId(), userTiny.name, "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg", "short desc", new Date().getTime(), 0);
+        String postId = (postEndpoint.addPost(user, tmp).getKey().getName());
+
+
+        long startCount;
+        long stopCount;
+        User spam;
+        Entity e;
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+        startCount = System.currentTimeMillis();
+        for (int i = 0; i < nbLikes; i++) {
+            spam = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
+            e = new Entity("Like", postId + ":" + spam.getId());
+            e.setProperty("postId", postId);
+            e.setUnindexedProperty("userEmail", user.getId());
+            datastore.put(e);
+
+        }
+        stopCount = System.currentTimeMillis();
+
+
+        System.out.println("--- Like flood :" + (stopCount - startCount) + "milliseconds");
+        System.out.println("--- Number of likes in one second : " + ((nbLikes * 1000) / (stopCount - startCount)));
 
         Entity ret = new Entity("Test");
         ret.setProperty("Time_Total", (stopCount - startCount));

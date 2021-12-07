@@ -90,7 +90,7 @@ public class PostEndpoint {
      * @return Created Post
      */
     @ApiMethod(name = "addPost", path = "post", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity addPostFile (User user, PostForm postForm) throws BadRequestException, UnauthorizedException, IOException {
+    public Entity addPostFile(User user, PostForm postForm) throws BadRequestException, UnauthorizedException, IOException {
         if (user == null) {
             throw new UnauthorizedException("Invalid credentials");
         }
@@ -112,6 +112,7 @@ public class PostEndpoint {
     /**
      * Add a post
      * Methoding taking image as an URL
+     *
      * @param user
      * @param post
      * @return
@@ -237,7 +238,7 @@ public class PostEndpoint {
                 i--;
                 try {
                     e = datastore.get(key);
-                    date =  new Date((long) e.getProperty("date"));
+                    date = new Date((long) e.getProperty("date"));
                     if (date.toInstant().isAfter(now.minus(1, ChronoUnit.DAYS))) {
                         result.add(e);
                     } else {
@@ -251,7 +252,7 @@ public class PostEndpoint {
         }
 
         //This cost a LOT, need to improve
-        result.sort(Comparator.comparing(entity -> (new Date((long)entity.getProperty("date")))));
+        result.sort(Comparator.comparing(entity -> (new Date((long) entity.getProperty("date")))));
         Collections.reverse(result);
 
         List<Entity> toReturn = new ArrayList<>();
@@ -264,9 +265,9 @@ public class PostEndpoint {
         System.out.println(result.size());
 
         ShardedCounter sc2;
-        for(Entity entity : toReturn) {
+        for (Entity entity : toReturn) {
 
-             sc2 = new ShardedCounter(entity.getKey().getName());
+            sc2 = new ShardedCounter(entity.getKey().getName());
             entity.setProperty("likes", sc2.getCount());
         }
 

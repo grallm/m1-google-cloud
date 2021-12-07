@@ -58,26 +58,6 @@ public class LikeEndpoint {
         return e;
     }
 
-    /**
-     * Like a Post
-     * http://localhost:8080/_ah/api/instaCrash/v1/like
-     *
-     * @return Liked Post
-     */
-    @ApiMethod(name = "likePostWithKind", path = "likeKind/{postId}", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity likeKindPost(@Named("postId") String postId, User user) throws UnauthorizedException, EntityNotFoundException {
-
-        if (user == null) {
-            throw new UnauthorizedException("Invalid credentials");
-        }
-
-        Entity e = new Entity("Like", postId + ":" + user.getId());
-        e.setProperty("postId", postId);
-        e.setUnindexedProperty("userEmail", user.getId());
-        datastore.put(e);
-
-        return e;
-    }
 
     @ApiMethod(path = "like/{postId}", httpMethod = ApiMethod.HttpMethod.DELETE)
     public void unlikePost(@Named("postId") String postId, User user) throws UnauthorizedException {
