@@ -304,44 +304,13 @@ public class UtilsEndpoint {
 
         long startCount;
         long stopCount;
+        User spam;
 
-        List<Thread> threadsLikes = new ArrayList<>();
-
-        for (int i = 0; i < nbLikes; i++) {
-            Thread thread = ThreadManager.createThreadForCurrentRequest(new Runnable() {
-                @Override
-                public void run() {
-                    User spam;
-                    Random rand = new Random();
-                    int userId = rand.nextInt();
-                    System.out.println(userId);
-
-                    spam = new User(Integer.toString(userId), "testingAccount" + userId + "@mail.mail");
-                    try {
-                        likeEndpoint.likePost(postId, spam);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            threadsLikes.add(thread);
-
-            thread.start();
-        }
 
         startCount = System.currentTimeMillis();
-
-        for (Thread thread : threadsLikes) {
-            thread.start();
-        }
-
-        for (Thread thread : threadsLikes) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        for (int i = 0; i < nbLikes; i++) {
+            spam = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
+            likeEndpoint.likePost(postId, spam);
         }
         stopCount = System.currentTimeMillis();
 
