@@ -21,7 +21,7 @@ import java.util.List;
         namespace = @ApiNamespace(ownerDomain = "tinycrash.ew.r.appspot.com", ownerName = "tinycrash.ew.r.appspot.com", packagePath = ""))
 public class UserEndpoint {
     /**
-     * Get all Users
+     * Get all 200 first Users
      * http://localhost:8080/_ah/api/instaCrash/v1/user
      *
      * @return All users
@@ -92,7 +92,7 @@ public class UserEndpoint {
     }
 
     /**
-     * Get all the users with specified name
+     * Search for users with name close to `name`
      * http://localhost:8080/_ah/api/instaCrash/v1/user/name/ArKeid0s
      *
      * @param name name of the User
@@ -100,7 +100,15 @@ public class UserEndpoint {
      */
     @ApiMethod(path = "user/name/{name}")
     public List<Entity> getUsersByName(@Named("name") String name) {
-        Query q = new Query("User").setFilter(new Query.FilterPredicate("name", Query.FilterOperator.EQUAL, name));
+        Query q = new Query("User").setFilter(Query.CompositeFilterOperator.and(
+                new Query.FilterPredicate(
+                    "name", Query.FilterOperator.GREATER_THAN_OR_EQUAL, name
+                ),
+                new Query.FilterPredicate(
+                    // Last Unicode character
+                    "name", Query.FilterOperator.LESS_THAN_OR_EQUAL, name + "~"
+                )
+        ));
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(q);

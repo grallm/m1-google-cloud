@@ -2,21 +2,23 @@ import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { getAllUsers } from '../utils/user.api'
 import { UserEntity } from '../entities/User.entity'
-import { Button, Card, Col, Row } from 'react-bootstrap'
+import { Button, Card, Col, Form, FormControl, Row } from 'react-bootstrap'
 import Link from 'next/link'
 import Head from 'next/head'
 
 const Encounter: NextPage = () => {
   const [users, setUsers] = useState<UserEntity[] | null>(null)
 
+  const [userInput, setUserInput] = useState('')
+
   /**
-   * Fetch all users
+   * Fetch all users corresponding to name
    */
   useEffect(() => {
-    getAllUsers()
+    getAllUsers(userInput)
       .then(users => setUsers(users))
       .catch(() => setUsers([]))
-  }, [])
+  }, [userInput])
 
   return (
     <div className='pb-5'>
@@ -25,7 +27,19 @@ const Encounter: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h2>Rencontrer des collègues !</h2>
+      <div className='d-flex justify-content-between align-items-center mb-2'>
+        <h2>Rencontrer des collègues !</h2>
+
+        <Form className="d-none d-lg-flex">
+          <FormControl
+            type="search"
+            placeholder="Chercher"
+            aria-label="Chercher"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+          />
+        </Form>
+      </div>
 
       <Row xs={3} className='g-2'>
         {

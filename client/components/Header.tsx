@@ -14,7 +14,7 @@ const Header: React.FC<{}> = () => {
   const [show, setShow] = useState(false)
 
   return (
-    <Navbar className="border-bottom fixed-top bg-white">
+    <Navbar className="border-bottom fixed-top bg-white" expand="lg">
       <Container>
         <Link href='/' passHref>
           <Navbar.Brand>
@@ -22,10 +22,8 @@ const Header: React.FC<{}> = () => {
           </Navbar.Brand>
         </Link>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="navbar-collapse collapse">
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {/* Feed */}
             <Link href='/' passHref>
@@ -53,24 +51,22 @@ const Header: React.FC<{}> = () => {
           </Nav>
 
           {/* Right */}
-          <div className='justify-content-end'>
-            <Navbar.Text>
-              {
-                session?.user?.name
-                  ? (
-                    <NavDropdown title={session.user.name}>
-                      <NavDropdown.Item href={session.user.userId || '/'}>Mon Profil</NavDropdown.Item>
-                      <NavDropdown.Divider />
-                      <NavDropdown.Item>
-                        <Button variant="outline-danger" onClick={() => signOut()}>Se déconnecter</Button>
-                      </NavDropdown.Item>
-                    </NavDropdown>
-                  )
-                  : <Button variant="outline-primary" onClick={() => setShow(true)}>Connexion</Button>
-              }
-            </Navbar.Text>
-          </div>
-        </div>
+          <Navbar.Text className='p-0'>
+            {
+              session?.user?.name
+                ? (
+                  <NavDropdown title={session.user.name}>
+                    <NavDropdown.Item href={session.user.userId || '/'}>Mon Profil</NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item>
+                      <Button variant="outline-danger" onClick={() => signOut()}>Se déconnecter</Button>
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                )
+                : <Button variant="outline-primary" onClick={() => setShow(true)}>Connexion</Button>
+            }
+          </Navbar.Text>
+        </Navbar.Collapse>
       </Container>
 
       {/* Auth modal */}

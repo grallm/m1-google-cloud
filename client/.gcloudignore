@@ -15,4 +15,7 @@
 
 # Node.js dependencies:
 node_modules/
-pages/
+./pages/
+./components/
+./entities/
+./utils/

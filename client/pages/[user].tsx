@@ -140,7 +140,7 @@ const User: NextPage = () => {
             variant="outline-primary"
             size='lg'
             className='my-4'
-            onClick={() => signIn('google', { callbackUrl: 'http://localhost:3000/' + router.asPath })}
+            onClick={() => signIn('google', { callbackUrl: process.env.NEXT_PUBLIC_HOST + router.asPath })}
           ><FontAwesomeIcon icon={faGoogle} /> Connexion avec Google</Button>
         </Modal.Body>
         <Modal.Footer>

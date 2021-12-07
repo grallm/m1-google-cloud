@@ -23,7 +23,7 @@ import java.util.*;
         namespace = @ApiNamespace(ownerDomain = "tinycrash.ew.r.appspot.com", ownerName = "tinycrash.ew.r.appspot.com", packagePath = ""))
 public class PostEndpoint {
     /**
-     * Get all 20 last Posts
+     * Get all 200 last Posts
      *
      * @return All Posts
      */
@@ -37,7 +37,7 @@ public class PostEndpoint {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = datastore.prepare(q);
 
-        results = pq.asList(FetchOptions.Builder.withLimit(2000));
+        results = pq.asList(FetchOptions.Builder.withLimit(200));
 
         /*
          * Number of likes
@@ -125,7 +125,7 @@ public class PostEndpoint {
         Entity e = new Entity("Post", user.getId() + ":" + (sc.getCount() + 1));
         e.setProperty("ownerId", user.getId());
         e.setProperty("owner", post.owner);
-        e.setProperty("image", post.date);
+        e.setProperty("image", post.image);
         e.setProperty("body", post.description);
         e.setProperty("date", post.date);
         e.setProperty("likes", 0);

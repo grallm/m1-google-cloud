@@ -3,12 +3,12 @@ import { UserEntity } from '../entities/User.entity'
 import { ApiEntity, apiRoute, EntityList } from './common.api'
 
 /**
- * Fetch all user's
+ * Fetch all user's if no name given
  * @returns
  */
-export const getAllUsers = async (): Promise<UserEntity[]> => {
+export const getAllUsers = async (name?: string): Promise<UserEntity[]> => {
   try {
-    const res = await fetch(`${apiRoute}/user`)
+    const res = await fetch(`${apiRoute}/user${name ? `/name/${name}` : ''}`)
 
     if (!res.ok) throw await res.json()
 
