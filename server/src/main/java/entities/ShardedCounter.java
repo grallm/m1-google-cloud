@@ -246,6 +246,7 @@ public class ShardedCounter {
     private void incrementPropertyTx(final Key key, final String prop,
                                      final long increment, final long initialValue) {
 
+
         Transaction tx = DS.beginTransaction();
         Entity thing;
         long value;
