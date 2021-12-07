@@ -251,13 +251,14 @@ public class PostEndpoint {
                     System.out.println("---- Not found : " + key.getName());
                     flag = false;
                 }
+
             }
 
         }
 
-
         //This cost a LOT, need to improve
         result.sort(Comparator.comparing(entity -> (new Date((long)entity.getProperty("date")))));
+        Collections.reverse(result);
 
         List<Entity> toReturn = new ArrayList<>();
         if (result.size() > 20)
