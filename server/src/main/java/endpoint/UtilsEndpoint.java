@@ -7,6 +7,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.ThreadManager;
 import com.google.appengine.api.datastore.*;
 import entities.Post;
 import entities.Test;
@@ -303,13 +304,34 @@ public class UtilsEndpoint {
 
         long startCount;
         long stopCount;
-        User spam;
 
+        List<Thread> threadsLikes = new ArrayList<>();
 
         startCount = System.currentTimeMillis();
         for (int i = 0; i < nbLikes; i++) {
-            spam = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
-            likeEndpoint.likePost(postId, spam);
+            threadsLikes.add(ThreadManager.createThreadForCurrentRequest(new Runnable() {
+                @Override
+                public void run() {
+                    User spam;
+                    Random rand = new Random();
+                    int userId = rand.nextInt();
+
+                    spam = new User(Integer.toString(userId), "testingAccount" + userId + "@mail.mail");
+                    try {
+                        likeEndpoint.likePost(postId, spam);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }));
+        }
+
+        for (Thread thread : threadsLikes) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         stopCount = System.currentTimeMillis();
 
