@@ -216,7 +216,7 @@ public class PostEndpoint {
 
         Key key;
         ShardedCounter sc;
-        Entity e = null;
+        Entity e;
         List<Entity> result = new ArrayList<>();
 
         Date date;
