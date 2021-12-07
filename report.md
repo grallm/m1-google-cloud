@@ -29,7 +29,14 @@ Cherchant à fournir la meilleure expérience pour nos utilisateurs, nous avons 
 
 Ce choix fut fait par notre connaissance de React et des outils associés, mais aussi pour les performances que propose `NextJS`.
 
-### Problemes et Solutions
+### Difficultés et Solutions
+### Frontend
+NextJS nécessitant un serveur NodeJS, n'étant pas statique, il nous fallait hébérger le serveur frontend autre part.
+
+Les solutions idéales auraient été `Cloud Run` ou encore `Compute Engine`, mais malheureusement ces solutions ne proposant qu'une IP et aucun DNS, `API Credentials` n'autorisait pas ces URL pour la connexion avec Google.
+
+Nous avons aussi remarqué que sans comprendre pourquoi, le déploiement effectué sur `App Engine` fournissait une application web non fonctionnelle.
+
 ### Google Endpoint / App Engine
 
 
@@ -60,7 +67,5 @@ vieux de maximum 1 jour afin d'avoir une timeline "intelligente" enfin nous recu
 comparator afin d'avoir le post le plus recent en premier. En plus de ca a la fin des posts de notre timeline nous affichons une 
 serie de posts afin que l'utiisateur ai quelque chose a voir. 
 
-## Solutions
 
-
-## Ameliorations
+## Améliorations

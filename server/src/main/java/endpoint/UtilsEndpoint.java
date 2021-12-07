@@ -297,7 +297,7 @@ public class UtilsEndpoint {
 
         Post tmp;
 
-        tmp = new Post(user.getId(), userTiny.name, "http://example.org", "short desc", new Date().getTime(), 0);
+        tmp = new Post(user.getId(), userTiny.name, "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg", "short desc", new Date().getTime(), 0);
         String postId = (postEndpoint.addPost(user, tmp).getKey().getName());
 
 
@@ -370,7 +370,7 @@ public class UtilsEndpoint {
         }
 
         //creating the post
-        Post post = new Post(user.getId(), userTiny.name, "http://example.org", "short desc", new Date().getTime(), 0);
+        Post post = new Post(user.getId(), userTiny.name, "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg", "short desc", new Date().getTime(), 0);
 
         long timeRequestStart;
         long timeRequestFinish;
@@ -467,7 +467,7 @@ public class UtilsEndpoint {
         for (User user1 : usersTest10) {
             userEndpoint.follow(user, user1.getId());
             //creating the posts
-            Post post = new Post(user1.getId(), "Test" + usersTest10.indexOf(user1), "http://example.org", "short desc", new Date().getTime(), 0);
+            Post post = new Post(user1.getId(), "Test" + usersTest10.indexOf(user1), "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg", "short desc", new Date().getTime(), 0);
 
             //starting time measure
             postEndpoint.addPost(user1, post);
