@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type { NextPage } from 'next'
 import { signIn, useSession } from 'next-auth/client'
 import Head from 'next/head'
-import router from 'next/router'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Button, Container, Modal, Spinner } from 'react-bootstrap'
 import Post from '../components/Post'
@@ -12,6 +12,7 @@ import { getAllPosts, getTimeline } from '../utils/post.api'
 
 const Home: NextPage = () => {
   const [session, loading] = useSession()
+  const router = useRouter()
 
   const [posts, setPosts] = useState<PostEntity[] | null>(null)
   const [discoverPosts, setDiscoverPosts] = useState<PostEntity[] | null>(null)
