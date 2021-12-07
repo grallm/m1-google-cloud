@@ -29,7 +29,7 @@ Cherchant à fournir la meilleure expérience pour nos utilisateurs, nous avons 
 
 Ce choix fut fait par notre connaissance de React et des outils associés, mais aussi pour les performances que propose `NextJS`.
 
-### Difficultés et Solutions
+## Difficultés et Solutions
 ### Frontend
 NextJS nécessitant un serveur NodeJS, n'étant pas statique, il nous fallait hébérger le serveur frontend autre part.
 
