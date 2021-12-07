@@ -57,8 +57,12 @@
     </dependencies>
   </dependencyManagement>
 
-
   <dependencies>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+    </dependency>
+
     <!-- Compile/runtime dependencies -->
     <dependency>
       <groupId>com.google.endpoints</groupId>
@@ -73,22 +77,17 @@
     </dependency>
     <!-- [END api_management] -->
 
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-api-1.0-sdk</artifactId>
-      <version>1.9.79</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.google.appengine</groupId>-->
+<!--      <artifactId>appengine-api-1.0-sdk</artifactId>-->
+<!--      <version>1.9.79</version>-->
+<!--    </dependency>-->
 
-    <dependency>
-      <groupId>com.google.appengine.tools</groupId>
-      <artifactId>appengine-gcs-client</artifactId>
-      <version>0.7</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-storage</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.google.appengine.tools</groupId>-->
+<!--      <artifactId>appengine-gcs-client</artifactId>-->
+<!--      <version>0.7</version>-->
+<!--    </dependency>-->
 
   </dependencies>
 

@@ -4,12 +4,22 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.appengine.tools.cloudstorage.*;
+import com.google.auth.oauth2.AccessToken;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.*;
+import org.apache.commons.io.input.ReaderInputStream;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.net.URI;
+import java.nio.file.Paths;
+import java.security.PrivateKey;
 import java.util.Base64;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 @Api(name = "instaCrash", version = "v1",
@@ -18,30 +28,53 @@ import java.util.Base64;
         namespace = @ApiNamespace(ownerDomain = "tinycrash.ew.r.appspot.com", ownerName = "tinycrash.ew.r.appspot.com", packagePath = ""))
 public class UploadEndpoint {
 
-    private final GcsService gcsService = GcsServiceFactory.createGcsService(new RetryParams.Builder()
-            .initialRetryDelayMillis(10)
-            .retryMaxAttempts(10)
-            .totalRetryPeriodMillis(15000)
-            .build());
+//    private final GcsService gcsService = GcsServiceFactory.createGcsService(new RetryParams.Builder()
+//            .initialRetryDelayMillis(10)
+//            .retryMaxAttempts(10)
+//            .totalRetryPeriodMillis(15000)
+//            .build());
 
     public String uploadFile(String content, String fileName) throws IOException {
+        String bucketName = "tinycrash-img";
+        String projectId = "tinycrash";
+        String jsonPath = "endpoint/tinycrash-0a72d5e26ea0.json";
+        File jsonFile = new File(jsonPath);
 
-        String bucketName = "tinycrash.appspot.com";
+        StorageOptions storageOptions = StorageOptions.newBuilder()
+                .setProjectId(projectId)
+                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(jsonFile.getAbsolutePath())))
+                .build();
+        Storage storage = storageOptions.getService();
 
-        System.out.println(content.substring(0, 100));
-        byte[] decodedString = Base64.getDecoder().decode(content);
-        Image img = ImagesServiceFactory.makeImage(decodedString);
+        byte[] decodedImg = new byte[0];
+        String encodedImg = "";
+        System.out.println("CONTENT SUB : " + content.substring(0, 100));
 
-        String imageURL = "https://storage.cloud.google.com/" + bucketName + "/" + fileName + ".jpeg";
 
-        gcsService.createOrReplace(
-                new GcsFilename(bucketName, fileName + ".jpeg"),
-                new GcsFileOptions.Builder().mimeType("image/jpg").build(),
-                ByteBuffer.wrap(img.getImageData()));
+        String partSeparator = ",";
+        if (content.contains(partSeparator)) {
+            encodedImg = content.split(partSeparator)[1];
+            decodedImg = Base64.getDecoder().decode(encodedImg.getBytes(UTF_8));
+        }
 
-        System.out.println("File " + content + " uploaded to bucket " + bucketName + " as " + fileName + " link to asset " + imageURL);
+        Image img = ImagesServiceFactory.makeImage(decodedImg);
 
-        return imageURL;
+        //String imageURL = "https://storage.cloud.google.com/" + bucketName + "/" + fileName + ".jpeg";
+
+        //storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+        BlobId blobId = BlobId.of(bucketName, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
+        Blob blob = storage.create(blobInfo, img.getImageData());
+
+
+//        gcsService.createOrReplace(
+//                new GcsFilename(bucketName, fileName + ".jpeg"),
+//                new GcsFileOptions.Builder().mimeType("image/jpg").build(),
+//                ByteBuffer.wrap(img.getImageData()));
+
+        System.out.println("File uploaded to bucket " + bucketName + " as " + fileName + " link to asset " + blob.getMediaLink());
+
+        return blob.getMediaLink();
     }
 }
 
