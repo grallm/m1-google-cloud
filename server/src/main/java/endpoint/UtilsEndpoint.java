@@ -85,7 +85,6 @@ public class UtilsEndpoint {
 
             for (int j = 0; j < nbPostPerUser; j++) {
                 // Add post to Datastore
-
                 Entity createdPost = postEndpoint.addPost(
                         user,
                         new Post(
@@ -93,7 +92,8 @@ public class UtilsEndpoint {
                                 userTiny.name,
                                 "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg",
                                 "Dans mon post numéro " + j + " je vais vous présenter ce super accident n=" + i + " sur fond de couché de soleil",
-                                new Date().getTime(), 0
+                                // Adding minutes to time to have multiple dates
+                                new Date().getTime() + (long) i * j * 60 * 1000, 0
                         )
                 );
 

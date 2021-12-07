@@ -1,4 +1,4 @@
-import { PostEntity, PostTimelineList } from '../entities/Post.entity'
+import { PostEntity } from '../entities/Post.entity'
 import { apiRoute, EntityList } from './common.api'
 
 /**
@@ -37,13 +37,11 @@ export const getTimeline = async (token: string): Promise<PostEntity[]> => {
       `${apiRoute}/post/timeLine` + (token ? `?access_token=${token}` : '')
     )
 
-    const posts = (await res.json()) as PostTimelineList
+    const posts = (await res.json()) as EntityList<PostEntity>
 
     return posts?.items.map((post) => ({
-      id: 'post',
-      body: 'body',
-      url: post.image,
-      ...post
+      id: post.key.name,
+      ...post.properties
     })) || []
   } catch (error) {
     // eslint-disable-next-line no-console

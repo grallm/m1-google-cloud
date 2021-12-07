@@ -35,6 +35,7 @@ const Home: NextPage = () => {
       if (session?.user) {
         getTimeline(session.user.accessToken)
           .then(posts => {
+            console.log(posts)
             setPosts(posts)
           })
       }

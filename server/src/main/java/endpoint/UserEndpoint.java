@@ -291,7 +291,7 @@ public class UserEndpoint {
     //endregion
 
     /**
-     * Return user list of posts
+     * Return user's 20 last posts
      * http://localhost:8080/_ah/api/instaCrash/v1/user/matproz.gaming@gmail.com/posts
      *
      * @param userId
@@ -302,7 +302,9 @@ public class UserEndpoint {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         // Get all posts
-        Query q = new Query("Post").setFilter(new Query.FilterPredicate("ownerId", Query.FilterOperator.EQUAL, userId));
+        Query q = new Query("Post")
+                .setFilter(new Query.FilterPredicate("ownerId", Query.FilterOperator.EQUAL, userId))
+                .addSort("date", Query.SortDirection.DESCENDING);
         PreparedQuery pq = datastore.prepare(q);
 
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(20));
