@@ -37,12 +37,12 @@ public class UploadEndpoint {
     public String uploadFile(String content, String fileName) throws IOException {
         String bucketName = "tinycrash-img";
         String projectId = "tinycrash";
-        String jsonPath = "endpoint/tinycrash-0a72d5e26ea0.json";
+        String jsonPath = "src/main/java/endpoint/tinycrash-0a72d5e26ea0.json";
         File jsonFile = new File(jsonPath);
 
         StorageOptions storageOptions = StorageOptions.newBuilder()
                 .setProjectId(projectId)
-                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(jsonFile.getAbsolutePath())))
+                .setCredentials(GoogleCredentials.getApplicationDefault())
                 .build();
         Storage storage = storageOptions.getService();
 
