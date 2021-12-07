@@ -205,9 +205,9 @@ public class UtilsEndpoint {
     public Entity timeLineTest10(@Named("nbUsers") int nbUsers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
 
-        Double testGetTimeLine1 = averageGetTimeLine(5, nbUsers);
+        Double testGetTimeLine1 = averageGetTimeLine(1, nbUsers);
 
-        System.out.println("--Averge for 5 tests :");
+        System.out.println("--1 test :");
 
         System.out.println("---Getting the timeLine with " + nbUsers + " follows : " + testGetTimeLine1 + " milliseconds");
 
@@ -223,8 +223,6 @@ public class UtilsEndpoint {
     public User populateForTimeTests(@Named("nbLikes") int nbLikes, @Named("start") int start) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
         UserEndpoint userEndpoint = new UserEndpoint();
-        PostEndpoint postEndpoint = new PostEndpoint();
-        LikeEndpoint likeEndpoint = new LikeEndpoint();
 
         //Generating tests accounts
         List<User> usersTest10 = new ArrayList<>();
@@ -261,30 +259,8 @@ public class UtilsEndpoint {
         PostEndpoint postEndpoint = new PostEndpoint();
         LikeEndpoint likeEndpoint = new LikeEndpoint();
 
-//        //Generating tests accounts
-//        List<User> usersTest10 = new ArrayList<>();
         User user;
         UserTiny userTiny;
-//        for (int i = 0; i < nbLikes; i++) {
-//
-//            user = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
-//            userTiny = new UserTiny("Test" + i);
-//
-//
-//            try {
-//                userEndpoint.addUser(
-//                        user,
-//                        userTiny
-//                );
-//
-//                usersTest10.add(user);
-//
-//            } catch (DatastoreTimeoutException exception) {
-//
-//                System.out.println("Timeout error, skipping this one");
-//
-//            }
-//        }
 
         //The user that will post
         user = new User("TestedUser", "TestShowAccount@mail.mail");
@@ -474,6 +450,8 @@ public class UtilsEndpoint {
 
 
     }
+
+
 
     private Long testTimeLine(int numberOfFollowers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
