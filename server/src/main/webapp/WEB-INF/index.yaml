@@ -1,22 +1,22 @@
 
 indexes:
-  # Own a Post
-  - kind: Post
-    properties:
-      - name: owner
-      - name: date
-        direction: desc
+# Own a Post
+- kind: Post
+  properties:
+  - name: ownerId
+  - name: date
+    direction: desc
 
-  # Followings
-  - kind: Follow
-    properties:
-      - name: user
-      - name: following
+# Followings
+- kind: Follow
+  properties:
+  - name: user
+  - name: following
 
-  #get All posts from one User
-  - kind: Post
-    properties:
-      - name: userId
-        direction: asc
-      - name: date
-        direction: desc
+#get All posts from one User
+- kind: Post
+  properties:
+  - name: userId
+    direction: asc
+  - name: date
+    direction: desc

@@ -109,7 +109,7 @@ const Post: React.FC<Props> = ({ post, showSigninAlert }) => {
         </div>
 
         <Card.Text>
-          <Link href={owner} passHref><b role='button'>{owner}</b></Link> {body}
+          <Link href={ownerId} passHref><b role='button'>{owner}</b></Link> {body}
         </Card.Text>
       </Card.Body>
     </Card>

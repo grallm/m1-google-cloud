@@ -24,12 +24,17 @@ Malo GRALL, Mathis ROCHER, Guillaume POIGNANT
 
 
 ## Commentaires
+### Frontend
+Cherchant à fournir la meilleure expérience pour nos utilisateurs, nous avons décidé d'utiliser le framework `NextJS`, basé sur `ReactJS`.
 
-### Problemes 
-#### Google Endpoint / App Engine
-#### Gestion des images
-#### Like scalables 
-#### Timeline
+Ce choix fut fait par notre connaissance de React et des outils associés, mais aussi pour les performances que propose `NextJS`.
+
+
+## Problemes
+### Google Endpoint / App Engine
+### Gestion des images
+### Like scalables 
+### Timeline
 Afin d'obtenir une timeline efficace, nous avons du iterer plusieurs fois. 
 - Dans un premier temps nous avions une premiere requete qui recuperais les entites follow liees au user puis les ajoutais 
 a une liste et enfin nous recuperions tous les posts des utilisateurs dans la liste de followers.
@@ -44,7 +49,7 @@ vieux de maximum 1 jour afin d'avoir une timeline "intelligente" enfin nous recu
 comparator afin d'avoir le post le plus recent en premier. En plus de ca a la fin des posts de notre timeline nous affichons une 
 serie de posts afin que l'utiisateur ai quelque chose a voir. 
 
-### Solutions
+## Solutions
 
 
-### Ameliorations
+## Ameliorations

@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "deploy": "next build && gcloud app deploy --project univ-cloud",
     "start": "next start -p 8080",
     "lint": "next lint",
     "lint:fix": "next lint --fix"

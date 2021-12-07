@@ -219,3 +219,5 @@ hs_err_pid*
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,visualstudiocode,eclipse
+
+tinycrash-*.json
