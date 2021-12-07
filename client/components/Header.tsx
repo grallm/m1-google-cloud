@@ -17,7 +17,7 @@ const Header: React.FC<{}> = () => {
     <Navbar className="border-bottom fixed-top bg-white" expand="sm">
       <Container>
         <Link href='/' passHref>
-          <Navbar.Brand>
+          <Navbar.Brand className='fw-normal' style={{ fontFamily: "'Pacifico', var(--bs-body-font-family)" }}>
             InstaCrash
           </Navbar.Brand>
         </Link>
