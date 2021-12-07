@@ -10,6 +10,7 @@ import { UserEntity } from '../entities/User.entity'
 import { signIn, useSession } from 'next-auth/client'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PostsList from '../components/PostsList'
 
 const User: NextPage = () => {
   const router = useRouter()
@@ -115,15 +116,7 @@ const User: NextPage = () => {
         }
       </div>
 
-      {posts?.map((post, i) => (
-        <div key={i}>
-          <Post
-            post={post}
-            showSigninAlert={() => setShowSigninAlert(true)}
-          />
-        </div>
-      ))
-      }
+      <PostsList showSigninAlert={() => setShowSigninAlert(true)} posts={posts} />
 
       {/* Auth modal */}
       <Modal

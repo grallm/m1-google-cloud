@@ -14,7 +14,7 @@ const Header: React.FC<{}> = () => {
   const [show, setShow] = useState(false)
 
   return (
-    <Navbar className="border-bottom fixed-top bg-white" expand="lg">
+    <Navbar className="border-bottom fixed-top bg-white" expand="sm">
       <Container>
         <Link href='/' passHref>
           <Navbar.Brand>

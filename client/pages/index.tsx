@@ -5,8 +5,8 @@ import { signIn, useSession } from 'next-auth/client'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Button, Container, Modal, Spinner } from 'react-bootstrap'
-import Post from '../components/Post'
+import { Button, Container, Modal } from 'react-bootstrap'
+import PostsList from '../components/PostsList'
 import { PostEntity } from '../entities/Post.entity'
 import { getAllPosts, getTimeline } from '../utils/post.api'
 
@@ -49,38 +49,15 @@ const Home: NextPage = () => {
       </Head>
 
       {/* Timeline if logged in, else all posts */}
-      {
-        !posts
-          ? (
-            <div className='w-100 d-flex justify-content-center mt-5'>
-              <Spinner animation="border" variant='warning' style={{ width: '50px', height: '50px' }} />
-            </div>
-          )
-          : posts.map((post, i) => (
-            <div key={i}>
-              <Post
-                post={post}
-                showSigninAlert={() => setShowSigninAlert(true)}
-              />
-            </div>
-          ))
-      }
+      <PostsList showSigninAlert={() => setShowSigninAlert(true)} posts={posts} />
 
       {/* Discover */}
       {
         discoverPosts && discoverPosts.length > 0 && (
           <div className='mt-5'>
             <h3 className='mb-3'>Découvrir plus</h3>
-            {
-              discoverPosts?.map((post, i) => (
-                <div key={i}>
-                  <Post
-                    post={post}
-                    showSigninAlert={() => setShowSigninAlert(true)}
-                  />
-                </div>
-              ))
-            }
+
+            <PostsList showSigninAlert={() => setShowSigninAlert(true)} posts={discoverPosts} />
           </div>
         )
       }

@@ -17,7 +17,7 @@ function MyApp ({ Component, pageProps }: AppProps) {
       <Header/>
 
       <div className='bg-light' style={{ minHeight: '100vh', paddingTop: '57px' }}>
-        <main className='pt-3 mx-auto' style={{ maxWidth: '720px' }}>
+        <main className='pt-3 mx-auto' style={{ maxWidth: '992px' }}>
           <Component {...pageProps} />
         </main>
       </div>
