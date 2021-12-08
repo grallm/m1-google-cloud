@@ -3,7 +3,8 @@ Malo GRALL, Mathis ROCHER, Guillaume POIGNANT
 
 ## Applications
 - [Application web](http://univ-cloud.ew.r.appspot.com/)
-- REST API : https://endpointsportal.tinycrash.cloud.goog/
+- REST API : https://tinycrash.ew.r.appspot.com/_ah/api/instaCrash/v1/
+  - Endpoints AP Portal : https://endpointsportal.tinycrash.cloud.goog/
 - [Github](https://github.com/grallm/m1-google-cloud/)
   - [README](https://github.com/grallm/m1-google-cloud/blob/main/README.md)
 
@@ -30,23 +31,8 @@ Malo GRALL, Mathis ROCHER, Guillaume POIGNANT
 
 ### Sharded Counter
 ![Sharded Counter](./img-report/sharded-counter.png)
-
-
-## Benchmark - Performances
-
-Temps pour poster (Moyenne sur 30 tests) :
-10 Followers : 86ms
-100 Followers : 91ms
-500 Followers : 96ms
-
-Temps pour afficher la timeline :
-10 Followers : 310ms
-100 Followers : 1920ms
-500 Followers : Timeout
-
-Combiens de likes en une seconde, méthode sécurisée : 17/s
-Combiens de likes en une seconde, méthode non sécurisée : 50/s
-
+Afin d'optimiser au maximum les likes, et éviter la contention, nous utilisons des "sharded counters", "compteurs fragmentés". 1 groupe d'entités est créé par poste, et des compteurs (entités) sont crées en fonction des besoins.
+ 
 
 ## Commentaires
 ### Frontend
@@ -85,8 +71,18 @@ Ensuite nous créons un `Blob` qui va contenir notre image ainsi qu'un nom et en
 et on récupère le lien du blob pour le mettre dans notre entity `Post` et y avoir accès en front.
 
 ### Like scalables 
-Pour développer nos likes nous avons utilisé des `Entity` ainsi que des `ShardedCounters` et transaction expliquer 
-pourquoi c'est safe et avantage, mais aussi désavantages
+Pour développer nos likes nous avons utilisé des entités `Like` ainsi que des `ShardedCounters`. 
+
+L'**entité** permet de stocker si un certain user aime un certain poste. Utiliser une entité permet aussi de facilement récupérer toutes les personnes aimant un certian poste.
+
+Quant au **compteur fragmenté** il permet d'éviter la contention pour le compteur de likes d'un certain poste. Rappelons qu'il n'y a pas de contention pour la création des entités `Like`.
+
+À travers cette association de solutions nous voulions mettre en avant la sécurité des likes. C'est pourquoi nous avons auss utilisé une transaction entourant le suppression/création de l'entité avec la modification du compteur, sans cela il est facilement possible de se retrouver avec une incohérence entre le nombre d'entités et le compteur. Nous tenons aussi à vérifier que l'utilisateur a liké ou non le post en fonction de s'il faut ajouter/supprimer un like.
+
+Il est ainsi possible de remarquer la différence d'efficacité entre notre like sécurisé et un autre sans toutes ces sécurités, qui peut être plus rapide comme nous l'avons testé. Sans compteur fragmenté il est possible de se trouver avec de la contention, on encore des problèmes de mémoire ram pour compter le nombre d'entités associées à un poste.
+
+Finalement, nous avons aussi tenu à utiliser la véritable méthode appelée lors d'un like venant de l'application, pas une méthode simplifiant le like et ainsi réduisant son temps.
+
 
 ### Timeline
 Afin d'obtenir une timeline efficace, nous avons dû itérer plusieurs fois.
@@ -104,6 +100,23 @@ De plus pour le front ne plus utiliser d'entités `Post` et seulement des listes
 vieux de maximum 1 jour afin d'avoir une timeline "intelligente" enfin nous récupérons la date des posts que nous trions avec notre
 comparator afin d'avoir le post le plus récent en premier. En plus de ça a la fin des posts de notre timeline nous affichons une 
 série de posts afin que l'utilisateur ai quelque chose à voir.
+
+Le temps de publication est constant, car une entité `Post` est créée. Nous avons donc fait le choix d'avoir une génération de timeline plus longue car même si on suit souvent plusieurs utilisateurs, voire plus que ce que nous avons comme abonnés, les plus gros nombres d'abonnements sont toujours inférieurs aux plus gros nombres d'abonnés. Notre Timeline est générée assez difficilement par le fait de récupérer tous nos abonnements, puis leurs posts. Mais le problème aurait été encore moins efficace, et plus compliqué si on décidait de dupliquer la publication dans tous nos abonnés.
+
+
+## Benchmark - Performances
+Temps pour poster (Moyenne sur 30 tests) :
+10 Followers : 86ms
+100 Followers : 91ms
+500 Followers : 96ms
+
+Temps pour afficher la timeline :
+10 Followers : 310ms
+100 Followers : 1920ms
+500 Followers : Timeout
+
+Combiens de likes en une seconde, méthode sécurisée : 17/s
+Combiens de likes en une seconde, méthode non sécurisée : 50/s
 
 
 ## Améliorations
