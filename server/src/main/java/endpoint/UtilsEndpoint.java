@@ -311,14 +311,26 @@ public class UtilsEndpoint {
             Thread thread = ThreadManager.createThreadForCurrentRequest(new Runnable() {
                 @Override
                 public void run() {
-                    User spam;
-                    Random rand = new Random();
-                    int userId = rand.nextInt();
-                    System.out.println(userId);
-
-                    spam = new User(Integer.toString(userId), "testingAccount" + userId + "@mail.mail");
                     try {
-                        likeEndpoint.likePost(postId, spam);
+                        long currentTimeMillis = System.currentTimeMillis();
+                        // 1 second duration
+                        long endTime = System.currentTimeMillis() + 1000;
+
+                        // Run likes during 1s
+                        while (currentTimeMillis <= endTime) {
+                            User spam;
+                            Random rand = new Random();
+                            int userId = rand.nextInt();
+
+                            spam = new User(Integer.toString(userId), "testingAccount" + userId + "@mail.mail");
+                            try {
+                                likeEndpoint.likePost(postId, spam);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            currentTimeMillis = System.currentTimeMillis();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -333,10 +345,6 @@ public class UtilsEndpoint {
         startCount = System.currentTimeMillis();
 
         for (Thread thread : threadsLikes) {
-            thread.start();
-        }
-
-        for (Thread thread : threadsLikes) {
             try {
                 thread.join();
             } catch (InterruptedException e) {
@@ -344,6 +352,10 @@ public class UtilsEndpoint {
             }
         }
         stopCount = System.currentTimeMillis();
+
+        // Nb Likes end
+        int startNbLikes = Integer.parseInt(likeEndpoint.getLikesCount(postId).getProperty("NbLikes").toString());
+        System.out.println("End likes: " + startNbLikes);
 
 
         System.out.println("--- Like flood :" + (stopCount - startCount) + "milliseconds");

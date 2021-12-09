@@ -247,6 +247,9 @@ public class ShardedCounter {
             return shardCount.intValue();
         } catch (EntityNotFoundException ignore) {
             return INITIAL_SHARDS;
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, e.toString());
+            return INITIAL_SHARDS;
         }
     }
 
@@ -321,6 +324,8 @@ public class ShardedCounter {
 
         Entity thing;
         long value;
+        Random ramd = new Random();
+        int txnId = ramd.nextInt();
         try {
             try {
                 thing = datastoreService.get(key);
@@ -331,21 +336,26 @@ public class ShardedCounter {
             }
             thing.setUnindexedProperty(prop, value);
             datastoreService.put(tc, thing);
+            System.out.println("Commit  txnId : " + txnId);
             tc.commit();
+            System.out.println("After Commit  txnId : " + txnId);
+            // Block finally block
+            return;
         } catch (ConcurrentModificationException e) {
             LOG.log(Level.WARNING,
-                    "You may need more shards. Consider adding more shards.");
+                    "You may need more shards. Consider adding more shards." + " txnId : " + txnId);
             LOG.log(Level.WARNING, e.toString(), e);
 
             if(getShardCount() <= MAX_SHARDS){
                 LOG.log(Level.INFO,
                         "Doubling Shade, for this process");
-                addShards(getShardCount()); //double the shade by adding the number of shade again
+                addShards(getShardCount()); //double the shade by adding the number of shards again
             }
 
         } catch (Exception e) {
-            LOG.log(Level.WARNING, e.toString(), e);
+            LOG.log(Level.WARNING, " txnId : " + txnId, e);
         } finally {
+            System.out.println("Rollback txnId : " + txnId + ", count " + getShardCount());
             if (tc.isActive()) {
                 tc.rollback();
             }
