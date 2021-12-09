@@ -364,7 +364,7 @@ public class UtilsEndpoint {
         Entity ret = new Entity("Test");
         ret.setProperty("Time_Total", (stopCount - startCount));
         ret.setProperty("Likes_per_second", ((nbLikes * 1000) / (stopCount - startCount)));
-        ret.setProperty("NumberOfLikes", nbLikes);
+        ret.setProperty("NumberOfLikes", startNbLikes);
 
 
         return ret;

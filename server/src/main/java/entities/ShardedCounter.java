@@ -74,7 +74,7 @@ public class ShardedCounter {
     /**
      * Default number of shards.
      */
-    private static final int INITIAL_SHARDS = 15;
+    private static final int INITIAL_SHARDS = 5;
 
     /**
      * this holds the possible number of shards that can be created dynamically
@@ -82,7 +82,7 @@ public class ShardedCounter {
      * need many shards incase the problem of splitting occurs, so we don't have
      * many dublicates
      */
-    private static final int MAX_SHARDS = 30;
+    private static final int MAX_SHARDS = 15;
 
     /**
      * Cache duration for memcache.
@@ -208,7 +208,6 @@ public class ShardedCounter {
 
         // Choose the shard randomly from the available shards.
         long shardNum = generator.nextInt(numShards);
-        System.out.println("shardNum " + shardNum);
 
         Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
         incrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1, tc, datastoreService);
@@ -247,9 +246,6 @@ public class ShardedCounter {
             Long shardCount = (Long) counter.getProperty(Counter.SHARD_COUNT);
             return shardCount.intValue();
         } catch (EntityNotFoundException ignore) {
-            return INITIAL_SHARDS;
-        } catch (Exception e) {
-            LOG.log(Level.WARNING, e.toString());
             return INITIAL_SHARDS;
         }
     }
@@ -293,8 +289,8 @@ public class ShardedCounter {
 
             if(getShardCount() <= MAX_SHARDS){
                 LOG.log(Level.INFO,
-                        "Adding shards, for this process");
-                addShards(5); //double the shade by adding the number of shade again
+                        "Doubling Shade, for this process");
+                addShards(getShardCount()); //double the shade by adding the number of shade again
             }
 
         } catch (Exception e) {
@@ -325,8 +321,6 @@ public class ShardedCounter {
 
         Entity thing;
         long value;
-        Random ramd = new Random();
-        int txnId = ramd.nextInt();
         try {
             try {
                 thing = datastoreService.get(key);
@@ -337,24 +331,21 @@ public class ShardedCounter {
             }
             thing.setUnindexedProperty(prop, value);
             datastoreService.put(tc, thing);
-            System.out.println("Commit  txnId : " + txnId);
             tc.commit();
-            System.out.println("After Commit  txnId : " + txnId);
-            // Block finally block
-            return ;
         } catch (ConcurrentModificationException e) {
-            LOG.log(Level.WARNING, "You may need more shards. Consider adding more shards." + " txnId : " + txnId);
+            LOG.log(Level.WARNING,
+                    "You may need more shards. Consider adding more shards.");
             LOG.log(Level.WARNING, e.toString(), e);
 
             if(getShardCount() <= MAX_SHARDS){
-                LOG.log(Level.INFO, "Doubling Shade, for this process");
-                addShards(5); //double the shade by adding the number of shards again
+                LOG.log(Level.INFO,
+                        "Doubling Shade, for this process");
+                addShards(getShardCount()); //double the shade by adding the number of shade again
             }
 
         } catch (Exception e) {
-            LOG.log(Level.WARNING, " txnId : " + txnId, e);
+            LOG.log(Level.WARNING, e.toString(), e);
         } finally {
-            System.out.println("Rollback txnId : " + txnId + ", count " + getShardCount());
             if (tc.isActive()) {
                 tc.rollback();
             }
