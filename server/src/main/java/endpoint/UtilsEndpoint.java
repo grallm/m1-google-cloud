@@ -362,9 +362,9 @@ public class UtilsEndpoint {
         System.out.println("--- Number of likes in one second : " + (( nbLikes * 1000) / (stopCount - startCount)));
 
         Entity ret = new Entity("Test");
+        // Time to start instance, threads, and join
         ret.setProperty("Time_Total", (stopCount - startCount));
-        ret.setProperty("Likes_per_second", ((nbLikes * 1000) / (stopCount - startCount)));
-        ret.setProperty("NumberOfLikes", startNbLikes);
+        ret.setProperty("Likes_per_second", startNbLikes);
 
 
         return ret;
