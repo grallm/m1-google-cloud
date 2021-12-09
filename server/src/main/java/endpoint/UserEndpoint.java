@@ -298,7 +298,7 @@ public class UserEndpoint {
      * @return
      */
     @ApiMethod(path = "user/{userId}/posts")
-    public List<Entity> getUserPosts(@Named("userId") String userId) {
+    public List<Entity> getUserIdPosts(@Named("userId") String userId) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         // Get all posts
