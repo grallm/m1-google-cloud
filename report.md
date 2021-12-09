@@ -5,6 +5,7 @@ Malo GRALL, Mathis ROCHER, Guillaume POIGNANT
 - [Application web](http://univ-cloud.ew.r.appspot.com/)
 - REST API : https://tinycrash.ew.r.appspot.com/_ah/api/instaCrash/v1/
   - Endpoints AP Portal : https://endpointsportal.tinycrash.cloud.goog/
+  _(Le mail momo54@gmail.com a été ajouté en lecteur, si ce n'est pas vous merci de nous le signaler pour que vous aillez accès au Endpoint)_
 - [Github](https://github.com/grallm/m1-google-cloud/)
   - [README](https://github.com/grallm/m1-google-cloud/blob/main/README.md)
 
