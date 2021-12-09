@@ -282,27 +282,71 @@ public class UtilsEndpoint {
 
         startCount = System.currentTimeMillis();
         for (int i = 0; i < nbLikes; i++) {
-            spam = new User(Integer.toString(i), "testingAccount" + i + "@mail.mail");
-            likeEndpoint.likePost(postId, spam);
+            Thread thread = ThreadManager.createThreadForCurrentRequest(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        long currentTimeMillis = System.currentTimeMillis();
+                        // 1 second duration
+                        long endTime = System.currentTimeMillis() + 1000;
+
+                        // Run likes during 1s
+                        while (currentTimeMillis <= endTime) {
+                            User spam;
+                            Random rand = new Random();
+                            int userId = rand.nextInt();
+
+                            spam = new User(Integer.toString(userId), "testingAccount" + userId + "@mail.mail");
+                            try {
+                                likeEndpoint.likePost(postId, spam);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            currentTimeMillis = System.currentTimeMillis();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            threadsLikes.add(thread);
+
+            thread.start();
         }
         stopCount = System.currentTimeMillis();
+
+
+        for (Thread thread : threadsLikes) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        stopCount = System.currentTimeMillis();
+
+        // Nb Likes end
+        int startNbLikes = Integer.parseInt(likeEndpoint.getLikesCount(postId).getProperty("NbLikes").toString());
+        System.out.println("End likes: " + startNbLikes);
 
 
         System.out.println("--- Like flood :" + (stopCount - startCount) + "milliseconds");
         System.out.println("--- Number of likes in one second : " + ((nbLikes * 1000) / (stopCount - startCount)));
 
         Entity ret = new Entity("Test");
+        // Time to start instance, threads, and join
         ret.setProperty("Time_Total", (stopCount - startCount));
-        ret.setProperty("Likes_per_second", ((nbLikes * 1000) / (stopCount - startCount)));
-        ret.setProperty("NumberOfLikes", nbLikes);
+        ret.setProperty("Likes_per_second", startNbLikes);
 
 
         return ret;
 
     }
 
-    @ApiMethod(name = "fakeLikesPerSeconds", path = "utils/fakeLikesPerSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
-    public Entity faleLikes(@Named("nbLikes") int nbLikes) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+    ApiMethod(name = "fakeLikesPerSeconds", path = "utils/fakeLikesPerSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity fakeLikes(@Named("nbLikes") int nbLikes) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
         UserEndpoint userEndpoint = new UserEndpoint();
         PostEndpoint postEndpoint = new PostEndpoint();
@@ -355,7 +399,6 @@ public class UtilsEndpoint {
         return ret;
 
     }
-
 
     private Long generateTests(int numberOfFollowers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 

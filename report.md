@@ -115,8 +115,7 @@ Temps pour afficher la timeline :
 100 Followers : 1920ms
 500 Followers : Timeout
 
-Combiens de likes en une seconde, méthode sécurisée : 17/s
-Combiens de likes en une seconde, méthode non sécurisée : 50/s
+Combiens de likes en une seconde, méthode sécurisée : 162/s
 
 
 ## Améliorations
