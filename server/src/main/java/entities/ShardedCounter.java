@@ -74,7 +74,7 @@ public class ShardedCounter {
     /**
      * Default number of shards.
      */
-    private static final int INITIAL_SHARDS = 5;
+    private static final int INITIAL_SHARDS = 15;
 
     /**
      * this holds the possible number of shards that can be created dynamically
@@ -82,7 +82,7 @@ public class ShardedCounter {
      * need many shards incase the problem of splitting occurs, so we don't have
      * many dublicates
      */
-    private static final int MAX_SHARDS = 15;
+    private static final int MAX_SHARDS = 30;
 
     /**
      * Cache duration for memcache.
@@ -208,6 +208,7 @@ public class ShardedCounter {
 
         // Choose the shard randomly from the available shards.
         long shardNum = generator.nextInt(numShards);
+        System.out.println("shardNum " + shardNum);
 
         Key shardKey = KeyFactory.createKey(kind, Long.toString(shardNum));
         incrementPropertyTx(shardKey, CounterShard.COUNT, 1, 1, tc, datastoreService);
@@ -292,8 +293,8 @@ public class ShardedCounter {
 
             if(getShardCount() <= MAX_SHARDS){
                 LOG.log(Level.INFO,
-                        "Doubling Shade, for this process");
-                addShards(getShardCount()); //double the shade by adding the number of shade again
+                        "Adding shards, for this process");
+                addShards(5); //double the shade by adding the number of shade again
             }
 
         } catch (Exception e) {
@@ -340,16 +341,14 @@ public class ShardedCounter {
             tc.commit();
             System.out.println("After Commit  txnId : " + txnId);
             // Block finally block
-            return;
+            return ;
         } catch (ConcurrentModificationException e) {
-            LOG.log(Level.WARNING,
-                    "You may need more shards. Consider adding more shards." + " txnId : " + txnId);
+            LOG.log(Level.WARNING, "You may need more shards. Consider adding more shards." + " txnId : " + txnId);
             LOG.log(Level.WARNING, e.toString(), e);
 
             if(getShardCount() <= MAX_SHARDS){
-                LOG.log(Level.INFO,
-                        "Doubling Shade, for this process");
-                addShards(getShardCount()); //double the shade by adding the number of shards again
+                LOG.log(Level.INFO, "Doubling Shade, for this process");
+                addShards(5); //double the shade by adding the number of shards again
             }
 
         } catch (Exception e) {
