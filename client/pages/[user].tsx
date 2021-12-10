@@ -22,6 +22,29 @@ const User: NextPage = () => {
   const [userState, setUserState] = useState<UserEntity | null>(null)
   const [followsUser, setFollowsUser] = useState(false)
 
+  const followUserClick = () => {
+    // Connected
+    if (session) {
+      setFollowsUser(!followsUser)
+
+      if (session?.user?.accessToken && typeof user === 'string') {
+        (followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken))
+          .then(success => {
+            // If didn't work, rollback
+            if (!success) {
+              setFollowsUser(!followsUser)
+            } else {
+              // If worked, reload to reload session
+              router.reload()
+            }
+          })
+          .catch(() => setFollowsUser(!followsUser))
+      }
+    } else {
+      setShowSigninAlert(true)
+    }
+  }
+
   /**
    * Fetch all posts
    */
@@ -80,25 +103,7 @@ const User: NextPage = () => {
                       : (
                         <Button
                           variant={followsUser ? 'outline-primary' : 'primary'}
-                          onClick={() => {
-                            // Connected
-                            if (session) {
-                              setFollowsUser(!followsUser)
-
-                              if (session?.user?.accessToken && typeof user === 'string') {
-                                (followsUser ? unfollowUser(user, session.user.accessToken) : followUser(user, session.user.accessToken))
-                                  .then(success => {
-                                    // If didn't work, rollback
-                                    if (!success) {
-                                      setFollowsUser(!followsUser)
-                                    }
-                                  })
-                                  .catch(() => setFollowsUser(!followsUser))
-                              }
-                            } else {
-                              setShowSigninAlert(true)
-                            }
-                          }}
+                          onClick={followUserClick}
                         >{followsUser ? 'Se désabonner' : 'S\'abonner'}</Button>
                       )
                   }
