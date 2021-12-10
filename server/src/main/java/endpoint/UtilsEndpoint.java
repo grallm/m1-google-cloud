@@ -210,7 +210,7 @@ public class UtilsEndpoint {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Entity user = datastore.get(KeyFactory.createKey("User", userId));
 
-        System.out.println("---Getting the timeLine with " + ((List) user.getProperty("listFollowings")).size() + " : " + testGetTimeLine1 + " milliseconds");
+        System.out.println("---Getting the timeLine with " + ((List) user.getProperty("listFollowing")).size() + " : " + testGetTimeLine1 + " milliseconds");
 
         Entity ret = new Entity("Test");
         ret.setProperty("Time", (testGetTimeLine1));
@@ -314,20 +314,20 @@ public class UtilsEndpoint {
                 }
             });
 
-            threadsLikes.add(thread);
+            //threadsLikes.add(thread);
 
             thread.start();
         }
         stopCount = System.currentTimeMillis();
 
 
-        for (Thread thread : threadsLikes) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        for (Thread thread : threadsLikes) {
+//            try {
+//                thread.join();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
         stopCount = System.currentTimeMillis();
 
         // Nb Likes end
@@ -507,7 +507,7 @@ public class UtilsEndpoint {
      * @return
      */
     @ApiMethod(name = "populateTimeline", path = "utils/populateTimeline/{nbUsers}/{followerId}", httpMethod = ApiMethod.HttpMethod.GET)
-    private void populateTimeline(@Named("nbUsers") int nbUsers, @Named("followerId") String followerId) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
+    public void populateTimeline(@Named("nbUsers") int nbUsers, @Named("followerId") String followerId) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
         UserEndpoint userEndpoint = new UserEndpoint();
         PostEndpoint postEndpoint = new PostEndpoint();
 
