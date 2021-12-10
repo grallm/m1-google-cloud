@@ -110,6 +110,8 @@ Le temps de publication est constant, car une entité `Post` est créée. Nous a
 
 
 ## Benchmark - Performances
+Pour voir les différentes fonctionnalitées vous devez chercher dans l'onglet `Rencontrer` les User ArKeid0s et Malo (/!\ case sensitive /!\)
+
 Temps pour poster (Moyenne sur 30 tests) : <br/>
 10 Followers : 86ms <br/>
 100 Followers : 91ms <br/>
@@ -118,15 +120,14 @@ Temps pour poster (Moyenne sur 30 tests) : <br/>
 Temps pour afficher la timeline : <br/>
 10 Followings : 310ms <br/>
 100 Followings : 1920ms <br/>
-500 Followings : Timeout  (À cause de la génération des entités)<br/>
+500 Followings : 12127ms <br/>
 
 Combien de likes en une seconde : 121/s
 
 ## Améliorations
-Nous avons plusieurs idees d'améliorations :
-- Une recherche d'utilisateur plus poussée qui nous permettrait de suggérer des utilisateurs à chaque caractère rentre dans la barre de
-recherche. Actuellement la recherche est case sensitive et nous devons appuyer sur entree pour effectuer la recherche, mais elle nous suggère 
-des utilisateurs qui commence par la chaine de caractère entré.
+Nous avons plusieurs idées d'améliorations :
+- Une recherche d'utilisateur plus poussée qui nous permettrait de suggérer des utilisateurs à chaque caractère rentré dans la barre de
+recherche. Actuellement la recherche est case sensitive, mais elle nous suggère des utilisateurs qui commence par la chaine de caractère entrée.
 - Une liste des personnes qui ont like un post.
 - Une liste de nos abonnés et de nos abonnements.
 - Ajouter des commentaires a un post.
