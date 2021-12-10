@@ -29,7 +29,7 @@ public class PostEndpoint {
      */
     @ApiMethod(name = "getAllPosts", path = "post", httpMethod = ApiMethod.HttpMethod.GET)
     public List<Entity> getAllPosts() throws EntityNotFoundException {
-        List<Entity> results = new ArrayList<>();
+        List<Entity> results;
 
         // Gets all posts
         Query q = new Query("Post").addSort("date", Query.SortDirection.DESCENDING);
@@ -200,17 +200,17 @@ public class PostEndpoint {
      * @return Timeline posts
      */
     @ApiMethod(path = "post/timeLine")
-    public List<Entity> getTimeLine(User user) throws EntityNotFoundException {
-
+    public List<Entity> getTimeLine(User user) throws EntityNotFoundException
+    {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         Entity userEntity = datastore.get(KeyFactory.createKey("User", user.getId()));
         List<String> listFollowing = (List<String>) userEntity.getProperty("listFollowing");
 
         //If no followings return null
-        if (listFollowing == null || listFollowing.isEmpty()) {
-            //debug
-            System.out.println("Empty followers");
+        if (listFollowing == null)
+        {
+            System.out.println("Empty followings");
             return new ArrayList<>();
         }
 
@@ -224,30 +224,37 @@ public class PostEndpoint {
         // ajoute le dernier post de chaque personne follow à la liste
         boolean flag;
 
-        for (String needYourPosts : listFollowing) {
+        for (String needYourPosts : listFollowing)
+        {
             flag = true;
             sc = new ShardedCounter("Post:" + needYourPosts);
             long i = sc.getCount();
 
-            while (flag && i > 0) {
+            while (flag && i > 0)
+            {
                 key = KeyFactory.createKey("Post", needYourPosts + ":" + i);
                 i--;
-                try {
+                try
+                {
                     e = datastore.get(key);
                     date = new Date((long) e.getProperty("date"));
-                    if (date.toInstant().isAfter(now.minus(1, ChronoUnit.DAYS))) {
+                    if (date.toInstant().isAfter(now.minus(1, ChronoUnit.DAYS)))
+                    {
                         result.add(e);
-                    } else {
+                    }
+                    else
+                    {
                         flag = false;
                     }
-                } catch (EntityNotFoundException exception) {
+                }
+                catch (EntityNotFoundException exception)
+                {
                     //TODO : Handle this
                     System.out.println("---- Not found : " + key.getName());
                 }
             }
         }
 
-        //This cost a LOT, need to improve
         result.sort(Comparator.comparing(entity -> (new Date((long) entity.getProperty("date")))));
         Collections.reverse(result);
 
@@ -258,10 +265,11 @@ public class PostEndpoint {
             toReturn = result.subList(0, result.size() - 1);
         else System.out.println("------ AUCUNE TL");
 
-        System.out.println(result.size());
+        System.out.println("RESULT : " + result.size());
 
         ShardedCounter sc2;
-        for (Entity entity : toReturn) {
+        for (Entity entity : toReturn)
+        {
 
             sc2 = new ShardedCounter(entity.getKey().getName());
             entity.setProperty("likes", sc2.getCount());
@@ -269,6 +277,45 @@ public class PostEndpoint {
 
 
         return toReturn;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         //Post Key("Post", userId + i);
         // i = postNumber
@@ -335,9 +382,6 @@ public class PostEndpoint {
         return pq.asList(FetchOptions.Builder.withLimit(20));
 */
 
-    }
-
-}
 
 /**
  * Architecture idea:

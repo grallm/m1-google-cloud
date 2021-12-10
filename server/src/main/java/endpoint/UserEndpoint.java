@@ -52,7 +52,7 @@ public class UserEndpoint {
         }
 
         // If already exists, fetch
-        Entity e = null;
+        Entity e;
         try {
             e = getUser(user.getId());
         } catch (Exception err) {
@@ -176,20 +176,6 @@ public class UserEndpoint {
         }
 
         return null;
-
-		/* //OLD VERSION
-		// Check if exists
-		Query q = new Query("Follow").setFilter(new Query.FilterPredicate("user", Query.FilterOperator.EQUAL, user))
-									 .setFilter(new Query.FilterPredicate("following", Query.FilterOperator.EQUAL, userFollowing));
-
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery pq = datastore.prepare(q);
-
-		List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(1));
-
-		// Return null if doesn't follow
-		return results.size() > 0 ? results.get(0) : null;
-		 */
     }
 
     /**
@@ -232,21 +218,6 @@ public class UserEndpoint {
         }
 
         return userChecked;
-
-/*
-		// Add the follow entity to datastore
-		Entity e = new Entity("Follow");
-		e.setProperty("user", user.getId());
-		e.setProperty("following", userToFollow);
-		
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = datastore.beginTransaction();
-		datastore.put(e);
-		txn.commit();
-
-		return e;
-*/
-
     }
 
     /**

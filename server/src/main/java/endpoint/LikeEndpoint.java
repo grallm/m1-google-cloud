@@ -33,10 +33,6 @@ public class LikeEndpoint {
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        // Check if user registered
-        //       UserEndpoint userEndpoint = new UserEndpoint();
-        //       userEndpoint.getUser(user.getId());
-        // Add like to Datastore
         Entity e = new Entity("Like", postId + ":" + user.getId());
         e.setProperty("postId", postId);
         e.setUnindexedProperty("userEmail", user.getId());
@@ -46,7 +42,6 @@ public class LikeEndpoint {
             datastore.get(KeyFactory.createKey("Like", postId + ":" + user.getId()));
 
         } catch (EntityNotFoundException exception) {
-//        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             ShardedCounter sc = new ShardedCounter(postId);
             TransactionOptions options = TransactionOptions.Builder.withXG(true);
             Transaction txn = datastore.beginTransaction(options);
@@ -96,8 +91,6 @@ public class LikeEndpoint {
     public Entity getLikesCount(@Named("id") String id) throws EntityNotFoundException {
         Key postKey = KeyFactory.createKey("Post", id);
 
-        //       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
         Entity post = datastore.get(postKey);
 
         ShardedCounter sc = new ShardedCounter(id);
@@ -124,7 +117,6 @@ public class LikeEndpoint {
 
         //	Find corresponding Like
         Key likeKey = KeyFactory.createKey("Like", postId + ':' + user.getId());
-        //    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         return datastore.get(likeKey);
     }

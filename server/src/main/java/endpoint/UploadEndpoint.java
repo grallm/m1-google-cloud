@@ -29,7 +29,7 @@ public class UploadEndpoint {
         Storage storage = storageOptions.getService();
 
         byte[] decodedImg = new byte[0];
-        String encodedImg = "";
+        String encodedImg;
         System.out.println("CONTENT SUB : " + content.substring(0, 100));
 
 
