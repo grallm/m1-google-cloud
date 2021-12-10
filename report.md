@@ -31,15 +31,15 @@ Malo GRALL, Mathis ROCHER, Guillaume POIGNANT
 ![Like](./img-report/like.png)
 
 ### Sharded Counter
-![Sharded Counter](./img-report/sharded-counter.png)
-Afin d'optimiser au maximum les likes, et éviter la contention, nous utilisons des "sharded counters", "compteurs fragmentés". 1 groupe d'entités est créé par poste, et des compteurs (entités) sont crées en fonction des besoins.
+![Sharded Counter](./img-report/sharded-counter.png)<br/>
+Afin d'optimiser au maximum les likes et éviter la contention, nous utilisons des "sharded counters", "compteurs fragmentés". 1 groupe d'entités est créé par poste, et des compteurs (entités) sont crées en fonction des besoins.
  
 
 ## Commentaires
 ### Frontend
 Cherchant à fournir la meilleure expérience pour nos utilisateurs, nous avons décidé d'utiliser le framework `NextJS`, basé sur `ReactJS`.
 
-Ce choix fut fait par notre connaissance de React et des outils associés, mais aussi pour les performances que propose `NextJS`.
+Ce choix a été motivé par notre connaissance de React et des outils associés, mais aussi pour les performances que propose `NextJS`.
 
 Nous avons choisi d'utiliser Compute Engine pour héberger le front, car c'est un VM classique et simple d'utilisation qui répondais a tous nos besoins. 
 
@@ -92,10 +92,14 @@ Afin d'obtenir une timeline efficace, nous avons dû itérer plusieurs fois.
 a une liste et enfin nous récupérions tous les posts des utilisateurs dans la liste de followings.
 Mais le `Query.FilterOperator.IN` est limité à 30 sous requêtes donc nous ne récupérions que 30 posts. 
 
+<br/>
+
 - Dans un second temps nous nous sommes débarrassé de l'entité `Follow` pour n'utiliser que des listes et des objets java 
 accompagnés d'un comparator pour les trier. Mais cette solution a tres vite vu ses limites puisque la manipulation de liste 
 d'objets en java est tres couteuse en temps.
 De plus pour le front ne plus utiliser d'entités `Post` et seulement des listes d'objets Java nous pénalisais.
+
+<br/>
 
 - Enfin nous avons fait un mix des deux. Notre User a une liste de followings que l'on va récupérer pour obtenir les posts
 vieux de maximum 1 jour afin d'avoir une timeline "intelligente" enfin nous récupérons la date des posts que nous trions avec notre
@@ -106,18 +110,17 @@ Le temps de publication est constant, car une entité `Post` est créée. Nous a
 
 
 ## Benchmark - Performances
-Temps pour poster (Moyenne sur 30 tests) :
-10 Followers : 86ms
-100 Followers : 91ms
-500 Followers : 96ms
+Temps pour poster (Moyenne sur 30 tests) : <br/>
+10 Followers : 86ms <br/>
+100 Followers : 91ms <br/>
+500 Followers : 96ms <br/>
 
-Temps pour afficher la timeline :
-10 Followers : 310ms
-100 Followers : 1920ms
-500 Followers : Timeout
+Temps pour afficher la timeline : <br/>
+10 Followers : 310ms <br/>
+100 Followers : 1920ms <br/>
+500 Followers : Timeout <br/>
 
 Combien de likes en une seconde : 121/s
-
 
 ## Améliorations
 Nous avons plusieurs idees d'améliorations :
