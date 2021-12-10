@@ -279,6 +279,7 @@ public class UtilsEndpoint {
         long stopCount;
         User spam;
 
+        List<Thread> threadsLikes = new ArrayList<>();
 
         startCount = System.currentTimeMillis();
         for (int i = 0; i < nbLikes; i++) {
@@ -345,7 +346,7 @@ public class UtilsEndpoint {
 
     }
 
-    ApiMethod(name = "fakeLikesPerSeconds", path = "utils/fakeLikesPerSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
+    @ApiMethod(name = "fakeLikesPerSeconds", path = "utils/fakeLikesPerSeconds/{nbLikes}", httpMethod = ApiMethod.HttpMethod.GET)
     public Entity fakeLikes(@Named("nbLikes") int nbLikes) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
         UserEndpoint userEndpoint = new UserEndpoint();
