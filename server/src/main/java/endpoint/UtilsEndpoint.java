@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.ThreadManager;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.repackaged.com.google.datastore.v1.Datastore;
 import entities.Post;
 import entities.Test;
 import entities.UserTiny;
@@ -201,14 +202,15 @@ public class UtilsEndpoint {
     }
 
 
-    @ApiMethod(name = "timeLineTests", path = "utils/timeLineTests/{nbUsers}", httpMethod = ApiMethod.HttpMethod.GET)
-    public Entity timeLineTest10(@Named("nbUsers") int nbUsers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+    @ApiMethod(name = "timeLineTests", path = "utils/timeLineTests/{userId}/{nbTests}", httpMethod = ApiMethod.HttpMethod.GET)
+    public Entity timeLineTest10(@Named("userId") String userId, @Named("nbTests") int nbTests) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
 
-        Double testGetTimeLine1 = averageGetTimeLine(1, nbUsers);
+        Double testGetTimeLine1 = averageGetTimeLine(userId, nbTests);
 
-        System.out.println("--1 test :");
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Entity user = datastore.get(KeyFactory.createKey("User", userId));
 
-        System.out.println("---Getting the timeLine with " + nbUsers + " follows : " + testGetTimeLine1 + " milliseconds");
+        System.out.println("---Getting the timeLine with " + ((List) user.getProperty("listFollowing")).size() + " : " + testGetTimeLine1 + " milliseconds");
 
         Entity ret = new Entity("Test");
         ret.setProperty("Time", (testGetTimeLine1));
@@ -312,20 +314,20 @@ public class UtilsEndpoint {
                 }
             });
 
-            threadsLikes.add(thread);
+            //threadsLikes.add(thread);
 
             thread.start();
         }
         stopCount = System.currentTimeMillis();
 
 
-        for (Thread thread : threadsLikes) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        for (Thread thread : threadsLikes) {
+//            try {
+//                thread.join();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
         stopCount = System.currentTimeMillis();
 
         // Nb Likes end
@@ -481,7 +483,7 @@ public class UtilsEndpoint {
 
     }
 
-    private Double averageGetTimeLine(int nbTests, int nbUsers) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
+    private Double averageGetTimeLine(String userId, int nbTests) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
 
 
         List<Long> averageTestPost = new ArrayList<>();
@@ -489,21 +491,25 @@ public class UtilsEndpoint {
 
         for (int i = 0; i < nbTests; i++) {
 
-            averageTestPost.add(testTimeLine(nbUsers));
+            averageTestPost.add(testTimeLine(new User(userId, "")));
         }
 
         return averageTestPost.stream().mapToLong(val -> val).average().getAsDouble();
 
 
+
     }
 
-
-
-    private Long testTimeLine(int numberOfFollowers) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
-
+    /**
+     * Add users with 1 post and make user userFollowing follow them, to test timeline
+     * @param followerId
+     * @param nbUsers
+     * @return
+     */
+    @ApiMethod(name = "populateTimeline", path = "utils/populateTimeline/{nbUsers}/{followerId}", httpMethod = ApiMethod.HttpMethod.GET)
+    public void populateTimeline(@Named("nbUsers") int nbUsers, @Named("followerId") String followerId) throws EntityNotFoundException, BadRequestException, UnauthorizedException {
         UserEndpoint userEndpoint = new UserEndpoint();
         PostEndpoint postEndpoint = new PostEndpoint();
-
 
         /**
          * Tests time to post a message, with 10 followers
@@ -517,7 +523,7 @@ public class UtilsEndpoint {
 
         Date date;
 
-        for (int i = 0; i < numberOfFollowers; i++) {
+        for (int i = 0; i < nbUsers; i++) {
 
             date = new Date();
             user = new User(Integer.toString(i) + date.getTime(), "testingAccountAgain" + i + "@mail.mail");
@@ -532,24 +538,25 @@ public class UtilsEndpoint {
             );
         }
 
-        //The user that will post
-        date = new Date();
-        user = new User("OverTestedUser" + date.getTime(), "TestShowAccount@mail.mail");
-        userTiny = new UserTiny("TestShow");
-        Entity testedUser = userEndpoint.addUser(
-                user,
-                userTiny
-        );
-
         //Making the users follow our TestUser, and posting one post
         for (User user1 : usersTest10) {
-            userEndpoint.follow(user, user1.getId());
+            userEndpoint.follow(new User(
+                    followerId,
+                    "dontcarmail"
+            ), user1.getId());
             //creating the posts
             Post post = new Post(user1.getId(), "Test" + usersTest10.indexOf(user1), "https://img.20mn.fr/sIChN5W-TCG0VWSpGYJYLw/768x492_tous-trolls.jpg", "short desc", new Date().getTime(), 0);
 
             //starting time measure
             postEndpoint.addPost(user1, post);
         }
+    }
+
+
+
+    private Long testTimeLine(User user) throws UnauthorizedException, EntityNotFoundException, BadRequestException {
+
+        PostEndpoint postEndpoint = new PostEndpoint();
 
 
         long timeRequestStart;
@@ -561,7 +568,7 @@ public class UtilsEndpoint {
         timeRequestFinish = System.currentTimeMillis();
 
         long timeTest = timeRequestFinish - timeRequestStart;
-        System.out.println("--- Time to get TimeLine with " + usersTest10.size() + " follows : ");
+        System.out.println("--- Time to get TimeLine with : ");
         System.out.println("----- In seconds : " + TimeUnit.MILLISECONDS.toSeconds(timeTest));
         System.out.println("----- In miliseconds : " + timeTest);
 
