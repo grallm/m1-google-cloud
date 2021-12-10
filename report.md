@@ -116,9 +116,9 @@ Temps pour poster (Moyenne sur 30 tests) : <br/>
 500 Followers : 96ms <br/>
 
 Temps pour afficher la timeline : <br/>
-10 Followers : 310ms <br/>
-100 Followers : 1920ms <br/>
-500 Followers : Timeout <br/>
+10 Followings : 310ms <br/>
+100 Followings : 1920ms <br/>
+500 Followings : Timeout  (À cause de la génération des entités)<br/>
 
 Combien de likes en une seconde : 121/s
 
