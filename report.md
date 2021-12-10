@@ -110,7 +110,7 @@ Le temps de publication est constant, car une entité `Post` est créée. Nous a
 
 
 ## Benchmark - Performances
-Pour voir les différentes fonctionnalitées vous devez chercher dans l'onglet `Rencontrer` les User ArKeid0s et Malo (/!\ case sensitive /!\)
+Pour voir les différentes fonctionnalitées vous devez chercher dans l'onglet `Rencontrer` les User ArKeid0s, Malo et Guillaume (/!\ case sensitive /!\)
 
 Temps pour poster (Moyenne sur 30 tests) : <br/>
 10 Followers : 86ms <br/>
